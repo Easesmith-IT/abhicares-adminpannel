@@ -1,0 +1,11 @@
+.FAQcontainer > li {
+  margin: 1.25rem;
+  margin-left: 0;
+}
+
+.FAQcontainer {
+  /* border: 2px solid; */
+  list-style-type: none;
+  font-weight: 400;
+  margin-left: 0;
+}

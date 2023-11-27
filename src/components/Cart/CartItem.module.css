@@ -1,0 +1,15 @@
+.cart-item {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 10px;
+  border: 1px solid;
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.itemName p {
+  margin-bottom: 0;
+  max-width: 100px;
+}

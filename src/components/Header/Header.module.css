@@ -1,0 +1,12 @@
+.logo {
+  height: 48px;
+  width: 200px;
+}
+.navigation-list {
+  width: 100%;
+}
+
+.navigation-list li {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}

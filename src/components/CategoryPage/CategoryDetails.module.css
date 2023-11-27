@@ -1,0 +1,51 @@
+.radioContainer {
+  display: flex;
+  flex-direction: column;
+  margin-left: 2rem;
+  margin: 0 auto;
+  width: 30rem;
+  border: 3px solid grey;
+  margin-bottom: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-radius: 10px;
+}
+
+.radioOptionPrice {
+  display: block;
+  margin-bottom: 1rem;
+  margin-left: 2rem;
+}
+
+.radioSpanText {
+  margin-left: 0.75rem;
+}
+.center {
+  text-align: center;
+}
+
+.serviceTimeText {
+  margin-left: 12rem;
+  margin-bottom: 1rem;
+}
+
+.action {
+  /* border: 2px solid; */
+  width: 30rem;
+  margin: 0 auto;
+  border-radius: 7px;
+  padding: 1rem;
+}
+
+.cartBtn {
+  position: relative;
+  left: 16rem;
+  padding: 0.5rem;
+  width: 10.25rem;
+  border-radius: 5px;
+  background-color: blanchedalmond;
+  cursor: pointer;
+}
+.totalAmt {
+  font-size: 1.25rem;
+  font-weight: bolder;
+}

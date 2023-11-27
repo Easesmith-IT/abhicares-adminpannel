@@ -1,0 +1,37 @@
+.footer {
+  /* position: fixed; */
+  position: relative;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #0c0c0c;
+  color: white;
+  height: auto;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 1.25rem;
+}
+
+.servicesContainer > ul > li,
+.pagesContainer > ul > li {
+  padding: 0.5rem;
+  max-width: 125px;
+}
+
+.servicesContainer > ul,
+.pagesContainer > ul {
+  list-style: none;
+}
+
+.servicesContainer a,
+.pagesContainer a {
+  color: white;
+  text-decoration: none;
+}
+
+@media (min-width: 320px) and (max-width: 500px) {
+  .footer {
+    flex-direction: column;
+  }
+}

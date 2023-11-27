@@ -1,0 +1,10 @@
+.link {
+  border: 2px solid black;
+  margin: 10px;
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+  background-color: whitesmoke;
+  color: black;
+  text-decoration: none;
+}
