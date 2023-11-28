@@ -30,7 +30,7 @@
   padding: 0 30px;
   background-color: var(--background-color1);
   position: fixed;
-  z-index: 100;
+  z-index: 10;
   box-shadow: 1px 1px 15px rgba(161, 182, 253, 0.825);
   display: flex;
   justify-content: space-between;
@@ -572,6 +572,34 @@
   background-color: var(--one-use-color);
   color: white;
   height: 80%;
-  width: 20%;
+  width: 25%;
   margin: 15px;
+}
+
+
+.card_container{
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+  align-items: center;
+  /* place-items: center; */
+  gap: 30px;
+}
+
+.card{
+  max-width: 320px;
+  /* width: 80%; */
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
+  /* padding: 20px; */
+  cursor: pointer;
+}
+
+.card img{
+  width: 100%;
+  height: 210px;
+  /* margin-bottom: 20px; */
+}
+
+.card >div{
+  margin: 20px;
 }
