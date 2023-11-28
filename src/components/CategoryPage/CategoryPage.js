@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { Link, useParams } from "react-router-dom";
 import ItemCard from "../CategoryPage/ItemCard";
-import Cart from "../Cart/Cart";
+// import Cart from "../Cart/Cart";
 import logo from "../../assets/logo .png";
 import DummyVideo from "../../assets/videos/dummy-video.mp4";
 import Icn from "../../assets/human.png";
@@ -106,7 +106,7 @@ const CategoryPage = (props) => {
             <ItemCard />
           </div>
           <div className={classes.rightContainer}>
-            <Cart />
+            {/* <Cart /> */}
             <div className={classes.offersContainer}>
               <p className={classes.center}>Offers will be listed here.</p>
             </div>
