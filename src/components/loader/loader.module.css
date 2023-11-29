@@ -1,0 +1,8 @@
+.img_container{
+    display: flex;
+    justify-content: center;
+}
+
+.img_container img{
+    width: 30px;
+}

@@ -12,33 +12,39 @@ import Payments from "./pages/AdminPanel/Payments";
 import Offers from "./pages/AdminPanel/Offers";
 import AdminLogin from "./pages/AdminPanel/AdminLogin";
 import ServiceInfoPage from "./pages/serviceInfoPage/ServiceInfoPage";
+
+import { Toaster } from 'react-hot-toast';
+
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/:categoryId/categories"
-          element={<CategoryPage />}
-          exact
-        />
-        <Route
-          path="/:categoryId/categories/:serviceId/details"
-          element={<CategoryDetails />}
-        />
-        <Route path="/admin" element={<AdminLogin />} />
-        <Route path="/" exact element={<Dashboard />} />
-        <Route path="/admin/partners" element={<Partners />} />
-        <Route path="/admin/customers" element={<Customers />} />
-        <Route path="/admin/services" element={<Services />} />
-        <Route path="/admin/payments" element={<Payments />} />
+    <>
+      <Router>
+        <Routes>
+          <Route
+            path="/:categoryId/categories"
+            element={<CategoryPage />}
+            exact
+          />
+          <Route
+            path="/:categoryId/categories/:serviceId/details"
+            element={<CategoryDetails />}
+          />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route path="/" exact element={<Dashboard />} />
+          <Route path="/admin/partners" element={<Partners />} />
+          <Route path="/admin/customers" element={<Customers />} />
+          <Route path="/admin/services" element={<Services />} />
+          <Route path="/admin/payments" element={<Payments />} />
 
-        <Route path="/admin/services/:categoryId" element={<CategoryServices />} />
-        <Route path="/admin/services/:categoryId/product/:serviceId" element={<ServiceInfoPage />} />
+          <Route path="/admin/services/:categoryId" element={<CategoryServices />} />
+          <Route path="/admin/services/:categoryId/product/:serviceId" element={<ServiceInfoPage />} />
 
-        <Route path="/admin/offers" element={<Offers />} />
-        <Route path="/*" element={<Error />} />
-      </Routes>
-    </Router>
+          <Route path="/admin/offers" element={<Offers />} />
+          <Route path="/*" element={<Error />} />
+        </Routes>
+      </Router>
+      <Toaster />
+    </>
   );
 }
 

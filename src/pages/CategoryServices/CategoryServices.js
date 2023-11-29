@@ -1,21 +1,73 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '../AdminPanel/components/Header'
-import { useNavigate } from 'react-router-dom';
-import SideNav from '../AdminPanel/components/SideNav';
-import AddBtn from "../../assets/add-icon-nobg.png";
-
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import classes from "../AdminPanel/Shared.module.css";
+import AddBtn from "../../assets/add-icon-nobg.png";
+import axios from 'axios';
+import parse from 'html-react-parser';
+import toast from 'react-hot-toast';
+
+import SideNav from '../AdminPanel/components/SideNav';
 import categoryServicesClasses from "./CategoryServices.module.css";
 import AddServiceModal from '../../components/add-service-modal/AddServiceModal';
+import DeleteModal from '../../components/deleteModal/DeleteModal';
+import Loader from '../../components/loader/Loader';
+
+import { MdDelete } from "react-icons/md";
+import { FiEdit } from "react-icons/fi";
 
 const CategoryServices = () => {
     const [showMenu, setShowMenu] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [allCategoryServices, setAllCategoryServices] = useState([]);
+    const [service, setService] = useState({});
+
     const navigate = useNavigate();
+    const { state } = useLocation();
+    const params = useParams();
 
     const toggleMenuHandler = () => {
         setShowMenu((prev) => !prev);
     };
+
+    const handleUpdateModal = (e,service) => {
+        e.stopPropagation();
+        setService(service)
+        setIsUpdateModalOpen(!isDeleteModalOpen);
+    };
+
+    const handleDeleteModal = (e, id) => {
+        e.stopPropagation();
+        setService(id);
+        setIsDeleteModalOpen(!isDeleteModalOpen);
+    };
+
+    const handleDelete = async () => {
+        try {
+            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-service/${service}`);
+            toast.success("Service deleted successfully");
+            getCategoryServices();
+            setIsDeleteModalOpen(!isDeleteModalOpen);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const getCategoryServices = async () => {
+        try {
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-category-service/${params?.categoryId}`);
+            setAllCategoryServices(data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        getCategoryServices();
+    }, [])
+
 
     return (
         <>
@@ -31,33 +83,28 @@ const CategoryServices = () => {
                     </div>
                     <div className={classes["services-wrapper"]}>
                         <div className={classes["services-header"]}>
-                            <h2>Category</h2>
+                            <h2>{state.categoryName}</h2>
                             <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
                                 <img src={AddBtn} alt="add service" />
                             </button>
                         </div>
                         <div className={classes.card_container}>
-                            <div onClick={() => navigate("/admin/services/:123/product/:1234")} className={classes.card}>
-                                <img src="https://iconicentertainment.in/wp-content/uploads/2013/11/dummy-image-square.jpg" alt="product" />
-                                <div>
-                                    <h5>Service name</h5>
-                                    <p>Service desc</p>
+                            {allCategoryServices.length === 0 && <Loader />}
+                            {allCategoryServices?.map((service) => (
+                                <div key={service._id} onClick={() => navigate(`/admin/services/${params?.categoryId}/product/${service._id}`, { state: service })} className={classes.card}>
+                                    <img src={service.imageUrl} alt="product" />
+                                    <div>
+                                        <div className={categoryServicesClasses.heading_container}>
+                                            <h5>{service.name}</h5>
+                                            <div className={classes.icon_container}>
+                                                <FiEdit onClick={(e) => handleUpdateModal(e,service)} size={20} />
+                                                <MdDelete onClick={(e) => handleDeleteModal(e, service._id)} size={22} color='red' />
+                                            </div>
+                                        </div>
+                                        <p>{parse(service.description)}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div onClick={() => navigate("/admin/services/:123/product/:1234")} className={classes.card}>
-                                <img src="https://iconicentertainment.in/wp-content/uploads/2013/11/dummy-image-square.jpg" alt="product" />
-                                <div>
-                                    <h5>Service name</h5>
-                                    <p>Service desc</p>
-                                </div>
-                            </div>
-                            <div onClick={() => navigate("/admin/services/:123/product/:1234")} className={classes.card}>
-                                <img src="https://iconicentertainment.in/wp-content/uploads/2013/11/dummy-image-square.jpg" alt="product" />
-                                <div>
-                                    <h5>Service name</h5>
-                                    <p>Service desc</p>
-                                </div>
-                            </div>
+                            ))}
                         </div>
 
                     </div>
@@ -66,6 +113,23 @@ const CategoryServices = () => {
             {isModalOpen &&
                 <AddServiceModal
                     setIsModalOpen={setIsModalOpen}
+                    categoryId={params?.categoryId}
+                    getCategoryServices={getCategoryServices}
+                />
+            }
+
+            {isUpdateModalOpen &&
+                <AddServiceModal
+                    setIsModalOpen={setIsUpdateModalOpen}
+                    service={service}
+                    getCategoryServices={getCategoryServices}
+                />
+            }
+
+            {isDeleteModalOpen &&
+                <DeleteModal
+                    setState={setIsDeleteModalOpen}
+                    handleDelete={handleDelete}
                 />
             }
         </>
