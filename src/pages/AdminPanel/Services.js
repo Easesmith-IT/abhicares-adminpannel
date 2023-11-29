@@ -1,18 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Header from "./components/Header";
 import SideNav from "./components/SideNav";
+import Loader from "../../components/loader/Loader";
 
 import classes from "./Shared.module.css";
+import axios from "axios";
 
 const Services = () => {
   const [showMenu, setShowMenu] = useState(false);
+  const [allCategories, setAllCategories] = useState([]);
+
   const navigate = useNavigate();
 
   const toggleMenuHandler = () => {
     setShowMenu((prev) => !prev);
   };
+
+  const getAllCategories = async () => {
+    try {
+      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-category`)
+      setAllCategories(data.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getAllCategories();
+  }, [])
+
+
   return (
     <div>
       <Header onClick={toggleMenuHandler} />
@@ -32,24 +51,15 @@ const Services = () => {
             </button> */}
           </div>
           <div className={classes.card_container}>
-            <div onClick={() => navigate("/admin/services/123")} className={classes.card}>
-              <div>
-                <h5>Category name</h5>
-                <p>Total Services : 3</p>
+            {allCategories.length === 0 && <Loader />}
+            {allCategories?.map((category) => (
+              <div key={category._id} onClick={() => navigate(`/admin/services/${category._id}`, { state: { categoryName: category.name } })} className={classes.card}>
+                <div>
+                  <h5>{category.name}</h5>
+                  <p>Total Services : {category.totalServices}</p>
+                </div>
               </div>
-            </div>
-            <div onClick={() => navigate("/admin/services/123")} className={classes.card}>
-              <div>
-                <h5>Category name</h5>
-                <p>Total Services : 3</p>
-              </div>
-            </div>
-            <div onClick={() => navigate("/admin/services/123")} className={classes.card}>
-              <div>
-                <h5>Category name</h5>
-                <p>Total Services : 3</p>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </div>

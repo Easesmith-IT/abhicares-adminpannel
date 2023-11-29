@@ -8,6 +8,7 @@
   box-sizing: border-box;
   font-family: "Poppins", sans-serif;
 }
+
 :root {
   --background-color1: #fafaff;
   --background-color2: #ffffff;
@@ -45,6 +46,7 @@
 .icn {
   height: 30px;
 }
+
 .menuicn {
   cursor: pointer;
 }
@@ -75,6 +77,7 @@
   outline: none;
   border: none;
 }
+
 .searchbtn {
   width: 50px;
   height: 42px;
@@ -91,6 +94,7 @@
   position: relative;
   cursor: pointer;
 }
+
 .circle {
   height: 7px;
   width: 7px;
@@ -100,6 +104,7 @@
   left: 19px;
   top: 8px;
 }
+
 .dp {
   height: 40px;
   width: 40px;
@@ -110,6 +115,7 @@
   justify-content: center;
   overflow: hidden;
 }
+
 .main-container {
   display: flex;
   width: 100vw;
@@ -117,6 +123,7 @@
   top: 70px;
   z-index: 1;
 }
+
 .dpicn {
   height: 42px;
 }
@@ -132,9 +139,11 @@
 .main::-webkit-scrollbar-thumb {
   background-image: linear-gradient(to bottom, rgb(0, 0, 85), rgb(0, 0, 50));
 }
+
 .main::-webkit-scrollbar {
   width: 5px;
 }
+
 .main::-webkit-scrollbar-track {
   background-color: #9e9e9eb2;
 }
@@ -146,6 +155,7 @@
   flex-wrap: wrap;
   gap: 50px;
 }
+
 .nav {
   min-height: 91vh;
   width: 250px;
@@ -160,6 +170,7 @@
   overflow: hidden;
   padding: 30px 0 20px 10px;
 }
+
 .navcontainer {
   height: calc(100vh - 70px);
   width: 250px;
@@ -168,12 +179,15 @@
   overflow-x: hidden;
   transition: all 0.5s ease-in-out;
 }
+
 .navcontainer::-webkit-scrollbar {
   display: none;
 }
+
 .navclose {
   width: 80px;
 }
+
 .nav-option--logout {
   width: 160px !important;
 }
@@ -187,11 +201,13 @@
   gap: 20px;
   transition: all 0.1s ease-in-out;
 }
+
 .nav-option:hover {
   border-left: 5px solid #a2a2a2;
   background-color: #dadada;
   cursor: pointer;
 }
+
 .nav-img {
   height: 30px;
 }
@@ -202,6 +218,7 @@
   align-items: center;
   gap: 30px;
 }
+
 .nav-upper-options a {
   text-decoration: none;
   color: black;
@@ -213,10 +230,12 @@
   color: white;
   cursor: pointer;
 }
+
 .option1:hover {
   border-left: 5px solid #010058af;
   background-color: var(--Border-color);
 }
+
 .box {
   height: 130px;
   width: 230px;
@@ -229,6 +248,7 @@
   cursor: pointer;
   transition: transform 0.3s ease-in-out;
 }
+
 .box:hover {
   transform: scale(1.08);
 }
@@ -236,12 +256,15 @@
 .box:nth-child(1) {
   background-color: var(--one-use-color);
 }
+
 .box:nth-child(2) {
   background-color: var(--two-use-color);
 }
+
 .box:nth-child(3) {
   background-color: var(--one-use-color);
 }
+
 .box:nth-child(4) {
   background-color: var(--two-use-color);
 }
@@ -249,9 +272,11 @@
 .box img {
   height: 50px;
 }
+
 .box .text {
   color: white;
 }
+
 .topic {
   font-size: 13px;
   font-weight: 400;
@@ -272,6 +297,7 @@
   box-shadow: 3px 3px 10px rgb(188, 188, 188);
   padding: 0px 20px 20px 20px;
 }
+
 .report-header {
   height: 80px;
   width: 100%;
@@ -304,6 +330,7 @@
   overflow-x: auto;
   padding: 20px;
 }
+
 .report-topic-heading,
 .item1 {
   width: 1120px;
@@ -311,6 +338,7 @@
   justify-content: space-between;
   align-items: center;
 }
+
 .t-op {
   font-size: 18px;
   letter-spacing: 0px;
@@ -324,6 +352,7 @@
 .item1 {
   margin-top: 20px;
 }
+
 .t-op-nextlvl {
   font-size: 14px;
   letter-spacing: 0px;
@@ -355,7 +384,7 @@
   background-color: white;
 }
 
-.partners > a {
+.partners>a {
   flex: 1;
   background-color: #3f0097;
   margin: 20px;
@@ -367,12 +396,15 @@
   .nav-img {
     height: 25px;
   }
+
   .nav-option {
     gap: 30px;
   }
+
   .nav-option h3 {
     font-size: 15px;
   }
+
   .report-topic-heading,
   .item1,
   .items {
@@ -384,17 +416,21 @@
   .nav-img {
     height: 30px;
   }
+
   .nav-option {
     gap: 30px;
   }
+
   .nav-option h3 {
     font-size: 20px;
   }
+
   .report-topic-heading,
   .item1,
   .items {
     width: 700px;
   }
+
   .navcontainer {
     width: 100vw;
     position: absolute;
@@ -402,25 +438,31 @@
     top: 0;
     left: -100vw;
   }
+
   .nav {
     width: 100%;
     position: absolute;
   }
+
   .navclose {
     left: 00px;
   }
+
   .searchbar {
     display: none;
   }
+
   .main {
     padding: 40px 30px 30px 30px;
   }
+
   .searchbar2 {
     width: 100%;
     display: flex;
     margin: 0 0 40px 0;
     justify-content: center;
   }
+
   .searchbar2 input {
     width: 250px;
     height: 42px;
@@ -436,31 +478,40 @@
   .message {
     display: none;
   }
+
   .logosec {
     width: 100%;
     justify-content: space-between;
   }
+
   .logo {
     font-size: 20px;
   }
+
   .menuicn {
     height: 25px;
   }
+
   .nav-img {
     height: 25px;
   }
+
   .nav-option {
     gap: 25px;
   }
+
   .nav-option h3 {
     font-size: 12px;
   }
+
   .nav-upper-options {
     gap: 15px;
   }
+
   .recent-Articles {
     font-size: 20px;
   }
+
   .report-topic-heading,
   .item1,
   .items {
@@ -472,15 +523,18 @@
   .recent-Articles {
     font-size: 17px;
   }
+
   .view {
     width: 60px;
     font-size: 10px;
     height: 27px;
   }
+
   .report-header {
     height: 60px;
     padding: 10px 10px 5px 10px;
   }
+
   .searchbtn img {
     height: 20px;
   }
@@ -490,38 +544,48 @@
   .recent-Articles {
     font-size: 12px;
   }
+
   .view {
     width: 50px;
     font-size: 8px;
     height: 27px;
   }
+
   .report-header {
     height: 60px;
     padding: 10px 5px 5px 5px;
   }
+
   .t-op {
     font-size: 12px;
   }
+
   .t-op-nextlvl {
     font-size: 10px;
   }
+
   .report-topic-heading,
   .item1,
   .items {
     width: 300px;
   }
+
   .report-body {
     padding: 10px;
   }
+
   .label-tag {
     width: 70px;
   }
+
   .label-tag--cancelled {
     width: 70px;
   }
+
   .searchbtn {
     width: 40px;
   }
+
   .searchbar2 input {
     width: 180px;
   }
@@ -534,12 +598,14 @@
   /* border: 3px solid black; */
   overflow: hidden;
 }
+
 .services-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin: 15px;
 }
+
 .services-header h2 {
   color: var(--one-use-color);
 }
@@ -577,16 +643,16 @@
 }
 
 
-.card_container{
+.card_container {
   padding: 20px;
   display: grid;
-  grid-template-columns: repeat(auto-fit,minmax(300px,1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   align-items: center;
   /* place-items: center; */
   gap: 30px;
 }
 
-.card{
+.card {
   max-width: 320px;
   /* width: 80%; */
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
@@ -594,12 +660,17 @@
   cursor: pointer;
 }
 
-.card img{
+.card img {
   width: 100%;
   height: 210px;
   /* margin-bottom: 20px; */
 }
 
-.card >div{
+.card>div {
   margin: 20px;
+}
+
+.icon_container {
+  display: flex;
+  gap: 7px;
 }

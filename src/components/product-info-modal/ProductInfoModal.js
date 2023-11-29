@@ -1,7 +1,8 @@
 import classes from './ProductInfoModal.module.css';
 import { RxCross2 } from 'react-icons/rx';
+import parse from 'html-react-parser';
 
-const ProductInfoModal = ({ setIsInfoModalOpen }) => {
+const ProductInfoModal = ({ setIsInfoModalOpen,product }) => {
     return (
         <div className={classes.wrapper}>
             <div className={classes.modal}>
@@ -12,13 +13,11 @@ const ProductInfoModal = ({ setIsInfoModalOpen }) => {
                     </div>
                 </div>
                 <div className={classes.contianer}>
-                    <h5>Product Name</h5>
-                    <p>
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga, eaque dolore, adipisci possimus iste debitis quia voluptate nobis laboriosam praesentium nulla minus est quibusdam obcaecati sed alias harum, earum rem?
-                    </p>
+                    <h5>{product?.name}</h5>
+                    <p>{parse(product.description)}</p>
                     <div>
-                        <span>₹1090</span>
-                        <span>₹899</span>
+                        <span>₹{product.price}</span>
+                        <span>₹{product.offerPrice}</span>
                     </div>
                 </div>
             </div>
