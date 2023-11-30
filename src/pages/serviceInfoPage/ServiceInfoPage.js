@@ -110,7 +110,7 @@ const ServiceInfoPage = () => {
                         {allProducts.length === 0 && <Loader />}
                             {allProducts?.map((product) => (
                                 <div key={product._id} onClick={(e) => handleProductInfoModal(e,product)} className={classes.card}>
-                                    <img src="https://iconicentertainment.in/wp-content/uploads/2013/11/dummy-image-square.jpg" alt="product" />
+                                    <img src={`http://localhost:5000/uploads/${product.imageUrl[0]}`} alt="product" />
                                     <div>
                                         <div className={serviceInfoPageClasses.heading_container}>
                                             <h5>{product.name}</h5>

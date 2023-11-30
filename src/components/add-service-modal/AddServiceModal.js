@@ -12,8 +12,9 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
     const [serviceInfo, setServiceInfo] = useState({
         name: service?.name || "",
         startingPrice: service?.startingPrice || "",
-        imageUrl: service?.imageUrl || "https://www.shutterstock.com/image-photo/interior-hotel-bathroom-260nw-283653278.jpg",
+        img: service?.img || "https://www.shutterstock.com/image-photo/interior-hotel-bathroom-260nw-283653278.jpg",
         appHomepage: service?.appHomepage || false,
+        webHomepage: service?.webHomepage || false,
         totalProducts: service?.totalProducts || ""
     });
 
@@ -21,8 +22,10 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
         e.preventDefault();
         const uploadedImage = e.target.files[0];
         console.log(uploadedImage);
-        setServiceInfo({ ...serviceInfo, imageUrl:uploadedImage });
+        setServiceInfo({ ...serviceInfo, img: uploadedImage });
     }
+
+    console.log(serviceInfo.img);
 
     const handleOnChange = (e) => {
         const { name, value } = e.target;
@@ -31,18 +34,29 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
 
     const handleOnSubmit = async (e) => {
         e.preventDefault();
-        if (!serviceInfo.name || !serviceInfo.startingPrice || !serviceInfo.imageUrl || !serviceInfo.totalProducts || !description) {
+        if (!serviceInfo.name || !serviceInfo.startingPrice || !serviceInfo.img || !serviceInfo.totalProducts || !description) {
             return;
         }
+        const formData = new FormData();
+        formData.append("name", serviceInfo.name);
+        formData.append("startingPrice", serviceInfo.startingPrice);
+        formData.append("description", description);
+        formData.append("appHomepage", serviceInfo.appHomepage);
+        formData.append("webHomepage", serviceInfo.webHomepage);
+        formData.append("totalProducts", serviceInfo.totalProducts);
+        formData.append("img", serviceInfo.img);
+        formData.append("categoryId", categoryId);
+
         if (service) {
-            const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-service/${service._id}`, { ...serviceInfo, description });
+            const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-service/${service._id}`, formData);
             console.log(data);
             toast.success("Service updated successfully");
             getCategoryServices();
             setIsModalOpen(false);
         }
         else {
-            const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-service`, { ...serviceInfo, categoryId, description });
+            const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-service`, formData);
+            console.log();
             toast.success("Service added successfully");
             getCategoryServices();
             setIsModalOpen(false);
@@ -81,6 +95,12 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
                             <option value="true">True</option>
                             <option value="false">False</option>
                         </select>
+                    </div>
+                    <div className={classes.input_container}>
+                        <label htmlFor="webHomepage">Web Homepage</label>
+                        <div className={classes.switch}>
+                            <div></div>
+                        </div>
                     </div>
                     <div className={classes.input_container}>
                         <label htmlFor="totalProducts">Total Products</label>

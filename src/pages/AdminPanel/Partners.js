@@ -111,7 +111,7 @@ const Partners = () => {
             <div className={classes["report-header"]}>
               <h1 className={classes["recent-Articles"]}>Sellers</h1>
               <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
-                <img src={AddBtn} alt="add product" />
+                <img src={AddBtn} alt="add seller" />
               </button>
             </div>
 
