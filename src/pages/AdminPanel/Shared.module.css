@@ -359,6 +359,13 @@
   font-weight: 600;
 }
 
+.item1 .t-op-nextlvl:last-child,
+.item1 .t-op-nextlvl:nth-child(5){
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
 .label-tag {
   width: 100px;
   text-align: center;
