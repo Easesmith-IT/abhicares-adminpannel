@@ -18,6 +18,7 @@ const Customers = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [user, setUser] = useState({});
   const [allUsers, setAllUsers] = useState([]);
+  const [isMessage, setIsMessage] = useState(false);
 
   const toggleMenuHandler = () => {
     setShowMenu((prev) => !prev);
@@ -81,6 +82,37 @@ const Customers = () => {
     }
   };
 
+  const handleSerach = async (e) => {
+    const value = e.target.value;
+
+    try {
+        const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-user?search=${value}`);
+        if (data.data.length === 0) {
+            setIsMessage(true);
+        }
+        else {
+            setIsMessage(false);
+        }
+        setAllUsers(data.data);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+function debounce(fx, time) {
+    let id = null;
+    return function (data) {
+        if (id) {
+            clearTimeout(id);
+        }
+        id = setTimeout(() => {
+            fx(data);
+            // id = null;
+        }, time);
+    };
+}
+
   return (
     <>
       <div>
@@ -95,7 +127,8 @@ const Customers = () => {
           </div>
           <div className={classes["report-container"]}>
             <div className={classes["report-header"]}>
-              <h1 className={classes["recent-Articles"]}>Customers</h1>
+              <h1 className={classes["recent-Articles"]}>Professionals</h1>
+              <input onChange={debounce(handleSerach,1000)} className={classes.input} type="text" placeholder="Search professional" />
               <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
                 <img src={AddBtn} alt="add product" />
               </button>
@@ -103,7 +136,7 @@ const Customers = () => {
 
             <div className={classes["report-body"]}>
               <div className={classes["report-topic-heading"]}>
-                <h3 className={classes["t-op"]}>Customer Name</h3>
+                <h3 className={classes["t-op"]}>Professional Name</h3>
                 <h3 className={classes["t-op"]}>Contact Number</h3>
                 <h3 className={classes["t-op"]}>Status</h3>
                 <h3 className={classes["t-op"]}>Update/Delete</h3>
@@ -124,6 +157,8 @@ const Customers = () => {
                     </h3>
                   </div>
                 ))}
+
+                {isMessage && <p>no result found</p>}
               </div>
             </div>
           </div>

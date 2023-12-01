@@ -19,6 +19,7 @@ const Partners = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [seller, setSeller] = useState({});
   const [allSellers, setAllSellers] = useState([]);
+  const [isMessage, setIsMessage] = useState(false);
 
   const toggleMenuHandler = () => {
     setShowMenu((prev) => !prev);
@@ -27,7 +28,6 @@ const Partners = () => {
   const getAllSellers = async () => {
     try {
       const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-seller`);
-      console.log(data);
       setAllSellers(data.data);
     } catch (error) {
       console.log(error);
@@ -44,7 +44,6 @@ const Partners = () => {
         const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller-status/${id}`, { status: true });
         toast.success("Seller status updated");
         getAllSellers();
-        console.log(data);
       } catch (error) {
         console.log(error);
       }
@@ -83,6 +82,37 @@ const Partners = () => {
     }
   };
 
+  const handleSerach = async (e) => {
+    const value = e.target.value;
+
+    try {
+        const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-seller?search=${value}`);
+        if (data.data.length === 0) {
+            setIsMessage(true);
+        }
+        else {
+            setIsMessage(false);
+        }
+        setAllSellers(data.data);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+function debounce(fx, time) {
+    let id = null;
+    return function (data) {
+        if (id) {
+            clearTimeout(id);
+        }
+        id = setTimeout(() => {
+            fx(data);
+            // id = null;
+        }, time);
+    };
+}
+
   return (
     <>
       <div>
@@ -96,20 +126,10 @@ const Partners = () => {
             <SideNav />
           </div>
 
-          {/* <div className={classes.partners}>
-          <Link>
-            <div>Partner -1</div>
-          </Link>
-          <Link>
-            <div>Partner -2</div>
-          </Link>
-          <Link>
-            <div>Partner -3</div>
-          </Link>
-        </div> */}
           <div className={classes["report-container"]}>
             <div className={classes["report-header"]}>
               <h1 className={classes["recent-Articles"]}>Sellers</h1>
+              <input onChange={debounce(handleSerach,1000)} className={classes.input} type="text" placeholder="Search seller" />
               <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
                 <img src={AddBtn} alt="add seller" />
               </button>
@@ -143,6 +163,8 @@ const Partners = () => {
 
                   </div>
                 ))}
+
+                {isMessage && <p>no result found</p>}
 
               </div>
             </div>
