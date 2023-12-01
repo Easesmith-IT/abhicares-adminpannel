@@ -56,7 +56,7 @@ const SideNav = () => {
             alt="customers"
             className={classes["nav-img"]}
           />
-          <h3 className={classes.title}>Customers</h3>
+          <h3 className={classes.title}>Professionals</h3>
         </Link>
 
         <Link

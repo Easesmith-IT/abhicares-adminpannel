@@ -14,8 +14,15 @@ const AddProductModal = ({ setIsModalOpen, serviceId, product = "", getAllProduc
         name: product?.name || "",
         price: product?.price || "",
         offerPrice: product?.offerPrice || "",
-        imageUrl: product?.imageUrl || ["https://www.shutterstock.com/image-photo/interior-hotel-bathroom-260nw-283653278.jpg"],
+        img: product?.imageUrl || ["https://www.shutterstock.com/image-photo/interior-hotel-bathroom-260nw-283653278.jpg"],
     });
+
+    const getImage = (e) => {
+        e.preventDefault();
+        const uploadedImage = e.target.files;
+        console.log(uploadedImage);
+        setProductInfo({ ...productInfo, img: uploadedImage });
+    }
 
     const handleOnChange = (e) => {
         const { name, value } = e.target;
@@ -23,12 +30,22 @@ const AddProductModal = ({ setIsModalOpen, serviceId, product = "", getAllProduc
     }
     const handleOnSubmit = async (e) => {
         e.preventDefault();
-        if (!productInfo.name || !productInfo.price || !productInfo.offerPrice || !productInfo.imageUrl || !description) {
+        if (!productInfo.name || !productInfo.price || !productInfo.offerPrice || !productInfo.img || !description) {
             return;
         }
+        const formData = new FormData();
+        formData.append("name", productInfo.name);
+        formData.append("price", productInfo.price);
+        formData.append("offerPrice", productInfo.offerPrice);
+        formData.append("serviceId", serviceId);
+        for (const img of productInfo.img) {
+            formData.append("img", img);            
+        }
+        formData.append("description", description);
+
         if (product) {
             try {
-                const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-product/${product._id}`, { ...productInfo,serviceId, description });
+                const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-product/${product._id}`, { ...productInfo, serviceId, description });
                 console.log(data);
                 toast.success("Product updated successfully");
                 getAllProducts();
@@ -39,7 +56,7 @@ const AddProductModal = ({ setIsModalOpen, serviceId, product = "", getAllProduc
         }
         else {
             try {
-                const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-product`, { ...productInfo, serviceId, description });
+                const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-product`, formData);
                 console.log(data);
                 toast.success("Product added successfully");
                 getAllProducts();
@@ -77,8 +94,8 @@ const AddProductModal = ({ setIsModalOpen, serviceId, product = "", getAllProduc
                         <ReactQuill theme="snow" value={description} onChange={setDescription} />
                     </div>
                     <div className={classes.input_container}>
-                        <label htmlFor="imageUrl">imageUrl</label>
-                        <input onChange={handleOnChange} type="file" name="imageUrl" id="imageUrl" />
+                        <label htmlFor="img">image</label>
+                        <input onChange={getImage} multiple type="file" name="img" id="img" />
                     </div>
                     <div className={classes.button_wrapper}>
                         <button className={classes.button}>{product ? "Update" : "Add"}</button>

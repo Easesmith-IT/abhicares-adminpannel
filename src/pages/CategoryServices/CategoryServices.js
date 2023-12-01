@@ -92,7 +92,7 @@ const CategoryServices = () => {
                             {allCategoryServices.length === 0 && <Loader />}
                             {allCategoryServices?.map((service) => (
                                 <div key={service._id} onClick={() => navigate(`/admin/services/${params?.categoryId}/product/${service._id}`, { state: service })} className={classes.card}>
-                                    <img src={service.imageUrl} alt="product" />
+                                    <img src={`http://localhost:5000/uploads/${service.imageUrl}`} alt="product" />
                                     <div>
                                         <div className={categoryServicesClasses.heading_container}>
                                             <h5>{service.name}</h5>
