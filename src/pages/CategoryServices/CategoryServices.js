@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Header from '../AdminPanel/components/Header'
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import classes from "../AdminPanel/Shared.module.css";
 import AddBtn from "../../assets/add-icon-nobg.png";
@@ -7,7 +6,6 @@ import axios from 'axios';
 import parse from 'html-react-parser';
 import toast from 'react-hot-toast';
 
-import SideNav from '../AdminPanel/components/SideNav';
 import categoryServicesClasses from "./CategoryServices.module.css";
 import AddServiceModal from '../../components/add-service-modal/AddServiceModal';
 import DeleteModal from '../../components/deleteModal/DeleteModal';
@@ -18,7 +16,6 @@ import { FiEdit } from "react-icons/fi";
 import Wrapper from '../Wrapper';
 
 const CategoryServices = () => {
-    const [showMenu, setShowMenu] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -29,9 +26,12 @@ const CategoryServices = () => {
     const { state } = useLocation();
     const params = useParams();
 
-    const toggleMenuHandler = () => {
-        setShowMenu((prev) => !prev);
-    };
+    const token = localStorage.getItem("adUx")
+    const headers = {
+        Authorization:token
+    }
+
+
 
     const handleUpdateModal = (e, service) => {
         e.stopPropagation();
@@ -44,23 +44,12 @@ const CategoryServices = () => {
         setService(id);
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
-    const token = localStorage.getItem("adUx")
-    const headers = {
-        Authorization:token
-    }
-    const handleDelete = async () => {
-        try {
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-service/${service}`,{headers});
-            toast.success("Service deleted successfully");
-            getCategoryServices();
-            setIsDeleteModalOpen(!isDeleteModalOpen);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
     const getCategoryServices = async () => {
         try {
+            if(!token){
+                navigate('/');
+                return;
+              }
             const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-category-service/${params?.categoryId}`,{headers});
             setAllCategoryServices(data.data);
         } catch (error) {
@@ -71,6 +60,28 @@ const CategoryServices = () => {
     useEffect(() => {
         getCategoryServices();
     }, [])
+   
+
+  
+    const handleDelete = async () => {
+        try {
+            if(!token){
+                navigate('/');
+                return;
+              }
+            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-service/${service}`,{headers});
+            toast.success("Service deleted successfully");
+            getCategoryServices();
+            setIsDeleteModalOpen(!isDeleteModalOpen);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    if(!token){
+        navigate('/');
+        return;
+      }
 
 
     return (

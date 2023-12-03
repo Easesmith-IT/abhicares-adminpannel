@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import Header from "./components/Header";
-import SideNav from "./components/SideNav";
 
 import classes from "./Shared.module.css";
 import AddBtn from "../../assets/add-icon-nobg.png";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import AddSellerModal from "../../components/add-seller-modal/AddSellerModal";
 import { FiEdit } from "react-icons/fi";
@@ -21,8 +19,8 @@ const Partners = () => {
   const [allSellers, setAllSellers] = useState([]);
   const [isMessage, setIsMessage] = useState(false);
 
-
-
+  const navigate = useNavigate()
+  
   const token = localStorage.getItem("adUx")
   const headers = {
       Authorization:token
@@ -30,6 +28,10 @@ const Partners = () => {
 
   const getAllSellers = async () => {
     try {
+      if(!token){
+        navigate('/');
+        return;
+      }
       const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-seller`,{headers});
       setAllSellers(data.data);
     } catch (error) {
@@ -41,9 +43,15 @@ const Partners = () => {
     getAllSellers();
   }, [])
 
+
+ 
   const handleOnChange = async (e, id) => {
     if (e.target.checked) {
       try {
+        if(!token){
+          navigate('/');
+          return;
+        }
         const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller-status/${id}`, { status: true },{headers});
         toast.success("Seller status updated");
         getAllSellers();
@@ -53,6 +61,10 @@ const Partners = () => {
     }
     else {
       try {
+        if(!token){
+          navigate('/');
+          return;
+        }
         const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller-status/${id}`, { status: false },{headers});
         toast.success("Seller status updated");
         getAllSellers();
@@ -76,6 +88,10 @@ const Partners = () => {
 
   const handleDelete = async () => {
     try {
+      if(!token){
+        navigate('/');
+        return;
+      }
       const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-seller/${seller}`,{headers});
       toast.success("Seller deleted successfully");
       getAllSellers();
@@ -89,6 +105,10 @@ const Partners = () => {
     const value = e.target.value;
 
     try {
+      if(!token){
+        navigate('/');
+        return;
+      }
         const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-seller?search=${value}`,{headers});
         if (data.data.length === 0) {
             setIsMessage(true);
@@ -114,6 +134,11 @@ function debounce(fx, time) {
             // id = null;
         }, time);
     };
+}
+
+if(!token){
+  navigate('/');
+  return;
 }
 
   return (

@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 
 
 import AddBtn from "../../assets/add-icon-nobg.png";
-
+import { useNavigate } from 'react-router-dom';
 import SideNav from '../AdminPanel/components/SideNav'
 import Header from '../AdminPanel/components/Header'
 import serviceInfoPageClasses from "./ServiceInfoPage.module.css";
@@ -22,6 +22,7 @@ import AddPackageModal from '../../components/add-package-modal/AddPackageModal'
 import Wrapper from '../Wrapper';
 
 const ServiceInfoPage = () => {
+    const navigate = useNavigate()
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [isInfoModalOpen, setIsInfoModalOpen] = useState(false);
@@ -36,6 +37,12 @@ const ServiceInfoPage = () => {
 
     const { state } = useLocation();
     const params = useParams();
+
+    const token = localStorage.getItem("adUx")
+    
+    const headers = {
+        Authorization:token
+    }
 
     const handleProductInfoModal = (e, product) => {
         e.stopPropagation();
@@ -54,12 +61,44 @@ const ServiceInfoPage = () => {
         setProduct(product)
         setIsUpdateModalOpen(!isDeleteModalOpen);
     };
-    const token = localStorage.getItem("adUx")
-    const headers = {
-        Authorization:token
-    }
+    const getAllProducts = async () => {
+        try {
+            if(!token){
+                navigate('/');
+                return;
+            }
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-service-product/${params?.serviceId}`,{headers});
+            console.log(data);
+            setAllProducts(data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    const getAllPackage = async () => {
+        try {
+            if(!token){
+                navigate('/');
+                return;
+            }
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-service-package/${params?.serviceId}`);
+            console.log(data);
+            setAllPackages(data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    useEffect(() => {
+        getAllProducts();
+        getAllPackage();
+    }, [])
+
     const handleDelete = async () => {
         try {
+            if(!token){
+                navigate('/');
+                return;
+            }
             const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-product/${product}`,{headers});
             console.log(product);
             toast.success("Prodct deleted successfully");
@@ -84,6 +123,10 @@ const ServiceInfoPage = () => {
 
     const handlePackageDelete = async () => {
         try {
+            if(!token){
+                navigate('/');
+                return;
+            }
             const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-package/${singlePackage}`);
             console.log(data);
             toast.success("Package deleted successfully");
@@ -94,29 +137,10 @@ const ServiceInfoPage = () => {
         }
     };
 
-    const getAllProducts = async () => {
-        try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-service-product/${params?.serviceId}`,{headers});
-            console.log(data);
-            setAllProducts(data.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-    const getAllPackage = async () => {
-        try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-service-package/${params?.serviceId}`);
-            console.log(data);
-            setAllPackages(data.data);
-        } catch (error) {
-            console.log(error);
-        }
-    };
-
-    useEffect(() => {
-        getAllProducts();
-        getAllPackage();
-    }, [])
+    if(!token){
+        navigate('/');
+        return;
+      }
 
     return (
         <>

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import Header from "./components/Header";
-import SideNav from "./components/SideNav";
 import Loader from "../../components/loader/Loader";
 
 import classes from "./Shared.module.css";
@@ -10,21 +8,22 @@ import axios from "axios";
 import Wrapper from "../Wrapper";
 
 const Services = () => {
-  const [showMenu, setShowMenu] = useState(false);
   const [allCategories, setAllCategories] = useState([]);
 
   const navigate = useNavigate();
 
-  const toggleMenuHandler = () => {
-    setShowMenu((prev) => !prev);
-  };
   const token = localStorage.getItem("adUx")
+
   const headers = {
       Authorization:token
   }
 
   const getAllCategories = async () => {
     try {
+      if(!token){
+        navigate('/');
+        return;
+      }
       console.log('url',process.env.REACT_APP_API_URL)
       const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-category`,{headers})
       setAllCategories(data.data);
@@ -37,6 +36,12 @@ const Services = () => {
     getAllCategories();
   }, [])
 
+
+
+  if(!token){
+    navigate('/');
+    return;
+  }
 
   return (
     <Wrapper>

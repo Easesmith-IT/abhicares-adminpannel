@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from "react";
-import Header from "./components/Header";
-import SideNav from "./components/SideNav";
-import AddBtn from "../../assets/add-icon-nobg.png";
 
 import classes from "./Shared.module.css";
 import AddUserModal from "../../components/add-user-modal/AddUserModal";
 import axios from "axios";
 import { FiEdit } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import { MdDelete } from "react-icons/md";
 import toast from "react-hot-toast";
 import DeleteModal from "../../components/deleteModal/DeleteModal";
 import Wrapper from "../Wrapper";
 
 const Customers = () => {
-  const [showMenu, setShowMenu] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -21,17 +18,19 @@ const Customers = () => {
   const [allUsers, setAllUsers] = useState([]);
   const [isMessage, setIsMessage] = useState(false);
 
-  const toggleMenuHandler = () => {
-    setShowMenu((prev) => !prev);
-  };
 
   const token = localStorage.getItem("adUx")
   const headers = {
       Authorization:token
   }
-
+  const navigate = useNavigate()
   const getAllUsers = async () => {
     try {
+      if(!token){
+        navigate('/');
+        return
+      }
+      console.log(headers)
       const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-user`,{headers});
       console.log(data);
       setAllUsers(data.data);
@@ -39,7 +38,6 @@ const Customers = () => {
       console.log(error);
     }
   };
-
   useEffect(() => {
     getAllUsers();
   }, [])
@@ -47,6 +45,10 @@ const Customers = () => {
   const handleOnChange = async (e, id) => {
     if (e.target.checked) {
       try {
+        if(!token){
+          navigate('/');
+          return
+        }
         const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user-status/${id}`, { status: true },{headers});
         toast.success("Seller status updated");
         getAllUsers();
@@ -57,6 +59,10 @@ const Customers = () => {
     }
     else {
       try {
+        if(!token){
+          navigate('/');
+          return
+        }
         const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user-status/${id}`, { status: false },{headers});
         toast.success("Seller status updated");
         getAllUsers();
@@ -78,6 +84,10 @@ const Customers = () => {
 
   const handleDelete = async () => {
     try {
+      if(!token){
+        navigate('/');
+        return
+      }
       const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-user/${user}`,{headers});
       console.log(data);
       toast.success("User deleted successfully");
@@ -92,6 +102,10 @@ const Customers = () => {
     const value = e.target.value;
 
     try {
+      if(!token){
+        navigate('/');
+        return
+      }
         const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-user?search=${value}`,{headers});
         if (data.data.length === 0) {
             setIsMessage(true);
@@ -117,6 +131,11 @@ const Customers = () => {
         // id = null;
       }, time);
     };
+  }
+
+  if(!token){
+    navigate('/');
+    return;
   }
 
   return (

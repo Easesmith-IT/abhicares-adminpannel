@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import classes from './AddSellerModal.module.css';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { useNavigate} from 'react-router-dom'
 
 import { RxCross2 } from 'react-icons/rx';
 import { IoIosArrowDown } from "react-icons/io";
@@ -66,14 +67,20 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
         setSellerInfo({ ...sellerInfo, [name]: value });
         setAddress({ ...address, [name]: value });
     }
+
     const token = localStorage.getItem("adUx")
+    const navigate = useNavigate()
+   
     const headers = {
         Authorization:token
     }
-
     const getAllCategories = async () => {
 
         try {
+            if(!token){
+                navigate('/');
+                return;
+              }
             const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-category`,{headers})
             setAllCategories(data.data);
         } catch (error) {
@@ -87,6 +94,10 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
 
     const getCategoryServices = async () => {
         try {
+            if(!token){
+                navigate('/');
+                return;
+              }
             const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-category-service/${sellerInfo.categoryId}`,{headers});
             // console.log(data);
             setAllCategoryServices(data.data);
@@ -98,6 +109,9 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
     useEffect(() => {
         getCategoryServices();
     }, [sellerInfo.categoryId])
+  
+
+
 
 
     const handleLocationClick = () => {
@@ -162,6 +176,10 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
             contactPerson
         }
         if (seller) {
+            if(!token){
+                navigate('/');
+                return;
+              }
             const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller/${seller._id}`, allData,{headers});
             console.log(data);
             toast.success("Seller updated successfully");
@@ -169,6 +187,10 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
             setIsModalOpen(false);
         }
         else {
+            if(!token){
+                navigate('/');
+                return;
+              }
             const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-seller`, allData,{headers});
             console.log(data);
             toast.success("Seller added successfully");
@@ -176,6 +198,11 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
             setIsModalOpen(false);
         }
     }
+
+    if(!token){
+        navigate('/');
+        return;
+      }
 
     return (
         <div className={classes.wrapper}>

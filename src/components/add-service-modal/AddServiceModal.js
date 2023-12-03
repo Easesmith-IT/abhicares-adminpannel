@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import classes from './AddServiceModal.module.css';
 import { RxCross2 } from 'react-icons/rx';
+import { useNavigate } from 'react-router-dom'
 
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -32,6 +33,7 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
         setServiceInfo({ ...serviceInfo, [name]: value });
     }
     const token = localStorage.getItem("adUx")
+    const navigate = useNavigate()
     const headers = {
         Authorization:token
     }
@@ -52,6 +54,10 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
         formData.append("categoryId", categoryId);
 
         if (service) {
+            if(!token){
+                navigate('/');
+                return;
+              }
             const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-service/${service._id}`, formData,{headers});
             console.log(data);
             toast.success("Service updated successfully");
@@ -59,6 +65,10 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
             setIsModalOpen(false);
         }
         else {
+            if(!token){
+                navigate('/');
+                return;
+              }
             const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-service`, formData,{headers});
             console.log();
             toast.success("Service added successfully");
@@ -66,6 +76,11 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
             setIsModalOpen(false);
         }
     }
+
+    if(!token){
+        navigate('/');
+        return;
+      }
 
     return (
         <div className={classes.wrapper}>

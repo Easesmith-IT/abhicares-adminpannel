@@ -3,6 +3,7 @@ import classes from './AddUserModal.module.css';
 import { RxCross2 } from 'react-icons/rx';
 
 import ReactQuill from 'react-quill';
+import {useNavigate} from 'react-router-dom'
 import 'react-quill/dist/quill.snow.css';
 import axios from 'axios';
 import toast from 'react-hot-toast';
@@ -21,7 +22,10 @@ const AddUserModal = ({ setIsModalOpen, user = "", getAllUsers }) => {
         const { name, value } = e.target;
         setUserInfo({ ...userInfo, [name]: value });
     }
+    const navigate = useNavigate()
     const token = localStorage.getItem("adUx")
+    
+ 
     const headers = {
         Authorization:token
     }
@@ -37,6 +41,10 @@ const AddUserModal = ({ setIsModalOpen, user = "", getAllUsers }) => {
         }
         if (user) {
             try {
+                if(!token){
+                    navigate('/');
+                    return;
+                  }
                 const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user/${user._id}`, { ...userInfo},{headers});
                 console.log(data);
                 toast.success("User updated successfully");
@@ -48,6 +56,10 @@ const AddUserModal = ({ setIsModalOpen, user = "", getAllUsers }) => {
         }
         else {
             try {
+                if(!token){
+                    navigate('/');
+                    return;
+                  }
                 const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-user`, { ...userInfo },{headers});
                 console.log(data);
                 toast.success("User added successfully");
@@ -58,7 +70,10 @@ const AddUserModal = ({ setIsModalOpen, user = "", getAllUsers }) => {
             }
         }
     }
-
+    if(!token){
+        navigate('/');
+        return;
+      }
     return (
         <div className={classes.wrapper}>
             <div className={classes.modal}>
