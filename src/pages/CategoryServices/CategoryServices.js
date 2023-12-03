@@ -43,10 +43,13 @@ const CategoryServices = () => {
         setService(id);
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
-
+    const token = localStorage.getItem("adUx")
+    const headers = {
+        Authorization:token
+    }
     const handleDelete = async () => {
         try {
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-service/${service}`);
+            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-service/${service}`,{headers});
             toast.success("Service deleted successfully");
             getCategoryServices();
             setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -57,7 +60,7 @@ const CategoryServices = () => {
 
     const getCategoryServices = async () => {
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-category-service/${params?.categoryId}`);
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-category-service/${params?.categoryId}`,{headers});
             setAllCategoryServices(data.data);
         } catch (error) {
             console.log(error);

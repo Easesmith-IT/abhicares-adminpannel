@@ -31,6 +31,10 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
         const { name, value } = e.target;
         setServiceInfo({ ...serviceInfo, [name]: value });
     }
+    const token = localStorage.getItem("adUx")
+    const headers = {
+        Authorization:token
+    }
 
     const handleOnSubmit = async (e) => {
         e.preventDefault();
@@ -48,14 +52,14 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
         formData.append("categoryId", categoryId);
 
         if (service) {
-            const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-service/${service._id}`, formData);
+            const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-service/${service._id}`, formData,{headers});
             console.log(data);
             toast.success("Service updated successfully");
             getCategoryServices();
             setIsModalOpen(false);
         }
         else {
-            const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-service`, formData);
+            const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-service`, formData,{headers});
             console.log();
             toast.success("Service added successfully");
             getCategoryServices();

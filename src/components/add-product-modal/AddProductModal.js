@@ -43,9 +43,14 @@ const AddProductModal = ({ setIsModalOpen, serviceId, product = "", getAllProduc
         }
         formData.append("description", description);
 
+        const token = localStorage.getItem("adUx")
+        const headers = {
+            Authorization:token
+        }
+
         if (product) {
             try {
-                const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-product/${product._id}`, { ...productInfo, serviceId, description });
+                const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-product/${product._id}`, { ...productInfo, serviceId, description },{headers});
                 console.log(data);
                 toast.success("Product updated successfully");
                 getAllProducts();
@@ -56,7 +61,7 @@ const AddProductModal = ({ setIsModalOpen, serviceId, product = "", getAllProduc
         }
         else {
             try {
-                const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-product`, formData);
+                const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-product`, formData,{headers});
                 console.log(data);
                 toast.success("Product added successfully");
                 getAllProducts();

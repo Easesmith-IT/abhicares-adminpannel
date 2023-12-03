@@ -67,10 +67,15 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
         setSellerInfo({ ...sellerInfo, [name]: value });
         setAddress({ ...address, [name]: value });
     }
+    const token = localStorage.getItem("adUx")
+    const headers = {
+        Authorization:token
+    }
 
     const getAllCategories = async () => {
+
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-category`)
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-category`,{headers})
             setAllCategories(data.data);
         } catch (error) {
             console.log(error);
@@ -83,7 +88,7 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
 
     const getCategoryServices = async () => {
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-category-service/${sellerInfo.categoryId}`);
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-category-service/${sellerInfo.categoryId}`,{headers});
             // console.log(data);
             setAllCategoryServices(data.data);
         } catch (error) {
@@ -158,14 +163,14 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
             contactPerson
         }
         if (seller) {
-            const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller/${seller._id}`, allData);
+            const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller/${seller._id}`, allData,{headers});
             console.log(data);
             toast.success("Seller updated successfully");
             getAllSellers();
             setIsModalOpen(false);
         }
         else {
-            const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-seller`, allData);
+            const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-seller`, allData,{headers});
             console.log(data);
             toast.success("Seller added successfully");
             getAllSellers();

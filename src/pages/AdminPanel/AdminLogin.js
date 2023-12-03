@@ -1,24 +1,35 @@
 import React, { useRef } from "react";
+import axios from 'axios';
 import logo from "../../assets/logo .png";
 import { useNavigate, Link } from "react-router-dom";
 
-import { ADMIN_PASSWORD, ADMIN_USERNAME } from "../../global-variables";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const userNameRef = useRef();
   const userPasswordRef = useRef();
-  const handleAdminLogin = () => {
+
+  const handleAdminLogin = async(e) => {
+    e.preventDefault()
+    console.log('inside ')
     const userName = userNameRef.current.value;
     const userPassword = userPasswordRef.current.value;
 
-    if (userName === ADMIN_USERNAME && userPassword === ADMIN_PASSWORD) {
-      navigate("/admin/dashboard");
-    } else {
-      alert("Invalid username or password");
-    }
+    const response = await axios.post(`${process.env.REACT_APP_API_URL}/login-Admin`,{
+        adminId:userName,
+        password:userPassword
+      })
 
-    console.log(userName, userPassword);
+        if(response.data.token){
+          const token = response.data.token;
+          localStorage.setItem('adUx',token);
+          alert('Logged in successfully');
+          navigate('/admin/dashboard')
+        }
+        else{
+          alert('Incorrect credentials');
+          return;
+        }
   };
   return (
     <div
@@ -31,6 +42,7 @@ const AdminLogin = () => {
       }}
     >
       <form
+      onSubmit={(e)=>handleAdminLogin(e)}
         style={{
           padding: "45px",
           width: "50%",
@@ -48,13 +60,12 @@ const AdminLogin = () => {
           Admin Login
         </h3>
         <div className="mb-3">
-          <label for="email" className="form-label">
-            User name
+          <label for="username" className="form-label">
+            Admin Id
           </label>
           <input
-            type="email"
+            type="text"
             className="form-control"
-            id="email"
             aria-describedby="emailHelp"
             ref={userNameRef}
           />
@@ -74,7 +85,6 @@ const AdminLogin = () => {
         <button
           type="submit"
           className="btn btn-primary"
-          onClick={handleAdminLogin}
         >
           Submit
         </button>
