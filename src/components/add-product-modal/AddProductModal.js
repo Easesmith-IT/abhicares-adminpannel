@@ -8,7 +8,6 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const AddProductModal = ({ setIsModalOpen, serviceId, product = "", getAllProducts }) => {
-    console.log(product);
     const [description, setDescription] = useState(product?.description || "");
     const [productInfo, setProductInfo] = useState({
         name: product?.name || "",

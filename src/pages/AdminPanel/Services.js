@@ -7,6 +7,7 @@ import Loader from "../../components/loader/Loader";
 
 import classes from "./Shared.module.css";
 import axios from "axios";
+import Wrapper from "../Wrapper";
 
 const Services = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -38,37 +39,27 @@ const Services = () => {
 
 
   return (
-    <div>
-      <Header onClick={toggleMenuHandler} />
-
-      <div className={classes["main-container"]}>
-        <div
-          className={`${classes.navcontainer} ${showMenu ? classes.navclose : ""
-            }`}
-        >
-          <SideNav />
-        </div>
-        <div className={classes["services-wrapper"]}>
-          <div className={classes["services-header"]}>
-            <h2>Categories</h2>
-            {/* <button className={classes.services_add_btn}>
+    <Wrapper>
+      <div className={classes["services-wrapper"]}>
+        <div className={classes["services-header"]}>
+          <h2>Categories</h2>
+          {/* <button className={classes.services_add_btn}>
               <img src={AddBtn} alt="add service" />
             </button> */}
-          </div>
-          <div className={classes.card_container}>
-            {allCategories.length === 0 && <Loader />}
-            {allCategories?.map((category) => (
-              <div key={category._id} onClick={() => navigate(`/admin/services/${category._id}`, { state: { categoryName: category.name } })} className={classes.card}>
-                <div>
-                  <h5>{category.name}</h5>
-                  <p>Total Services : {category.totalServices}</p>
-                </div>
+        </div>
+        <div className={classes.card_container}>
+          {allCategories.length === 0 && <Loader />}
+          {allCategories?.map((category) => (
+            <div key={category._id} onClick={() => navigate(`/admin/services/${category._id}`, { state: { categoryName: category.name } })} className={classes.card}>
+              <div>
+                <h5>{category.name}</h5>
+                <p>Total Services : {category.totalServices}</p>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
-    </div>
+    </Wrapper>
   );
 };
 

@@ -10,6 +10,7 @@ import { FiEdit } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
 import toast from "react-hot-toast";
 import DeleteModal from "../../components/deleteModal/DeleteModal";
+import Wrapper from "../Wrapper";
 
 const Customers = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -100,75 +101,66 @@ const Customers = () => {
         }
         setAllUsers(data.data);
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
-}
+  }
 
 
-function debounce(fx, time) {
+  function debounce(fx, time) {
     let id = null;
     return function (data) {
-        if (id) {
-            clearTimeout(id);
-        }
-        id = setTimeout(() => {
-            fx(data);
-            // id = null;
-        }, time);
+      if (id) {
+        clearTimeout(id);
+      }
+      id = setTimeout(() => {
+        fx(data);
+        // id = null;
+      }, time);
     };
-}
+  }
 
   return (
     <>
-      <div>
-        <Header onClick={toggleMenuHandler} />
+      <Wrapper>
 
-        <div className={classes["main-container"]}>
-          <div
-            className={`${classes.navcontainer} ${showMenu ? classes.navclose : ""
-              }`}
-          >
-            <SideNav />
-          </div>
-          <div className={classes["report-container"]}>
-            <div className={classes["report-header"]}>
-              <h1 className={classes["recent-Articles"]}>Professionals</h1>
-              <input onChange={debounce(handleSerach,1000)} className={classes.input} type="text" placeholder="Search professional" />
-              <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
+        <div className={classes["report-container"]}>
+          <div className={classes["report-header"]}>
+            <h1 className={classes["recent-Articles"]}>Users</h1>
+            <input onChange={debounce(handleSerach, 1000)} className={classes.input} type="text" placeholder="Search professional" />
+            {/* <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
                 <img src={AddBtn} alt="add product" />
-              </button>
+              </button> */}
+          </div>
+
+          <div className={classes["report-body"]}>
+            <div className={classes["report-topic-heading"]}>
+              <h3 className={classes["t-op"]}>User Name</h3>
+              <h3 className={classes["t-op"]}>Contact Number</h3>
+              <h3 className={classes["t-op"]}>Status</h3>
+              <h3 className={classes["t-op"]}>Update/Delete</h3>
             </div>
 
-            <div className={classes["report-body"]}>
-              <div className={classes["report-topic-heading"]}>
-                <h3 className={classes["t-op"]}>Professional Name</h3>
-                <h3 className={classes["t-op"]}>Contact Number</h3>
-                <h3 className={classes["t-op"]}>Status</h3>
-                <h3 className={classes["t-op"]}>Update/Delete</h3>
-              </div>
+            <div className={classes.items}>
+              {allUsers?.map((user) => (
+                <div key={user._id} className={classes.item1}>
+                  <h3 className={classes["t-op-nextlvl"]}>{user.name}</h3>
+                  <h3 className={classes["t-op-nextlvl"]}>{user.phone}</h3>
+                  <h3 className={`${classes["t-op-nextlvl"]}`}>
+                    <input checked={user.status} onChange={(e) => handleOnChange(e, user._id)} type="checkbox" name="" id="" />
+                    {user.status ? "Active" : "InActive"}
+                  </h3>
+                  <h3 className={`${classes["t-op-nextlvl"]}`}>
+                    <FiEdit onClick={() => handleUpdateModal(user)} cursor={"pointer"} size={20} />
+                    <MdDelete onClick={() => handleDeleteModal(user._id)} cursor={"pointer"} size={22} color='red' />
+                  </h3>
+                </div>
+              ))}
 
-              <div className={classes.items}>
-                {allUsers?.map((user) => (
-                  <div key={user._id} className={classes.item1}>
-                    <h3 className={classes["t-op-nextlvl"]}>{user.name}</h3>
-                    <h3 className={classes["t-op-nextlvl"]}>{user.phone}</h3>
-                    <h3 className={`${classes["t-op-nextlvl"]}`}>
-                      <input checked={user.status} onChange={(e) => handleOnChange(e, user._id)} type="checkbox" name="" id="" />
-                      {user.status ? "Active" : "InActive"}
-                    </h3>
-                    <h3 className={`${classes["t-op-nextlvl"]}`}>
-                      <FiEdit onClick={() => handleUpdateModal(user)} cursor={"pointer"} size={20} />
-                      <MdDelete onClick={() => handleDeleteModal(user._id)} cursor={"pointer"} size={22} color='red' />
-                    </h3>
-                  </div>
-                ))}
-
-                {isMessage && <p>no result found</p>}
-              </div>
+              {isMessage && <p>no result found</p>}
             </div>
           </div>
         </div>
-      </div>
+      </Wrapper>
       {isModalOpen &&
         <AddUserModal
           setIsModalOpen={setIsModalOpen}
