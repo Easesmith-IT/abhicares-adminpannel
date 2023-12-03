@@ -54,10 +54,14 @@ const ServiceInfoPage = () => {
         setProduct(product)
         setIsUpdateModalOpen(!isDeleteModalOpen);
     };
-
+    const token = localStorage.getItem("adUx")
+    const headers = {
+        Authorization:token
+    }
     const handleDelete = async () => {
         try {
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-product/${product}`);
+            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-product/${product}`,{headers});
+            console.log(product);
             toast.success("Prodct deleted successfully");
             getAllProducts();
             setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -92,7 +96,8 @@ const ServiceInfoPage = () => {
 
     const getAllProducts = async () => {
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-service-product/${params?.serviceId}`);
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-service-product/${params?.serviceId}`,{headers});
+            console.log(data);
             setAllProducts(data.data);
         } catch (error) {
             console.log(error);

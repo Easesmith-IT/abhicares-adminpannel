@@ -30,8 +30,8 @@ function App() {
             path="/:categoryId/categories/:serviceId/details"
             element={<CategoryDetails />}
           />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/" exact element={<Dashboard />} />
+          <Route path="/" element={<AdminLogin />} />
+          <Route path="/admin/dashboard" exact element={<Dashboard />} />
           <Route path="/admin/partners" element={<Partners />} />
           <Route path="/admin/customers" element={<Customers />} />
           <Route path="/admin/services" element={<Services />} />

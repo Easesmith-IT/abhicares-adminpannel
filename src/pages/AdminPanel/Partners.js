@@ -21,9 +21,16 @@ const Partners = () => {
   const [allSellers, setAllSellers] = useState([]);
   const [isMessage, setIsMessage] = useState(false);
 
+
+
+  const token = localStorage.getItem("adUx")
+  const headers = {
+      Authorization:token
+  }
+
   const getAllSellers = async () => {
     try {
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-seller`);
+      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-seller`,{headers});
       setAllSellers(data.data);
     } catch (error) {
       console.log(error);
@@ -37,7 +44,7 @@ const Partners = () => {
   const handleOnChange = async (e, id) => {
     if (e.target.checked) {
       try {
-        const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller-status/${id}`, { status: true });
+        const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller-status/${id}`, { status: true },{headers});
         toast.success("Seller status updated");
         getAllSellers();
       } catch (error) {
@@ -46,7 +53,7 @@ const Partners = () => {
     }
     else {
       try {
-        const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller-status/${id}`, { status: false });
+        const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller-status/${id}`, { status: false },{headers});
         toast.success("Seller status updated");
         getAllSellers();
       } catch (error) {
@@ -69,7 +76,7 @@ const Partners = () => {
 
   const handleDelete = async () => {
     try {
-      const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-seller/${seller}`);
+      const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-seller/${seller}`,{headers});
       toast.success("Seller deleted successfully");
       getAllSellers();
       setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -82,7 +89,7 @@ const Partners = () => {
     const value = e.target.value;
 
     try {
-        const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-seller?search=${value}`);
+        const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-seller?search=${value}`,{headers});
         if (data.data.length === 0) {
             setIsMessage(true);
         }

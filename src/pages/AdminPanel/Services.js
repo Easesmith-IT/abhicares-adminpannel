@@ -18,10 +18,15 @@ const Services = () => {
   const toggleMenuHandler = () => {
     setShowMenu((prev) => !prev);
   };
+  const token = localStorage.getItem("adUx")
+  const headers = {
+      Authorization:token
+  }
 
   const getAllCategories = async () => {
     try {
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-category`)
+      console.log('url',process.env.REACT_APP_API_URL)
+      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-category`,{headers})
       setAllCategories(data.data);
     } catch (error) {
       console.log(error);

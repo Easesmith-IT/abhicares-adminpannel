@@ -25,9 +25,14 @@ const Customers = () => {
     setShowMenu((prev) => !prev);
   };
 
+  const token = localStorage.getItem("adUx")
+  const headers = {
+      Authorization:token
+  }
+
   const getAllUsers = async () => {
     try {
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-user`);
+      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-user`,{headers});
       console.log(data);
       setAllUsers(data.data);
     } catch (error) {
@@ -42,7 +47,7 @@ const Customers = () => {
   const handleOnChange = async (e, id) => {
     if (e.target.checked) {
       try {
-        const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user-status/${id}`, { status: true });
+        const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user-status/${id}`, { status: true },{headers});
         toast.success("Seller status updated");
         getAllUsers();
         console.log(data);
@@ -52,7 +57,7 @@ const Customers = () => {
     }
     else {
       try {
-        const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user-status/${id}`, { status: false });
+        const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user-status/${id}`, { status: false },{headers});
         toast.success("Seller status updated");
         getAllUsers();
       } catch (error) {
@@ -73,7 +78,7 @@ const Customers = () => {
 
   const handleDelete = async () => {
     try {
-      const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-user/${user}`);
+      const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-user/${user}`,{headers});
       console.log(data);
       toast.success("User deleted successfully");
       getAllUsers();
@@ -87,14 +92,14 @@ const Customers = () => {
     const value = e.target.value;
 
     try {
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-user?search=${value}`);
-      if (data.data.length === 0) {
-        setIsMessage(true);
-      }
-      else {
-        setIsMessage(false);
-      }
-      setAllUsers(data.data);
+        const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-user?search=${value}`,{headers});
+        if (data.data.length === 0) {
+            setIsMessage(true);
+        }
+        else {
+            setIsMessage(false);
+        }
+        setAllUsers(data.data);
     } catch (error) {
       console.log(error);
     }
