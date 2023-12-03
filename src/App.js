@@ -14,6 +14,7 @@ import AdminLogin from "./pages/AdminPanel/AdminLogin";
 import ServiceInfoPage from "./pages/serviceInfoPage/ServiceInfoPage";
 
 import { Toaster } from 'react-hot-toast';
+import Enquiry from "./pages/AdminPanel/Inquiry";
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
           <Route path="/admin/services/:categoryId" element={<CategoryServices />} />
           <Route path="/admin/services/:categoryId/product/:serviceId" element={<ServiceInfoPage />} />
 
+          <Route path="/admin/enquiries" element={<Enquiry />} />
           <Route path="/admin/offers" element={<Offers />} />
           <Route path="/*" element={<Error />} />
         </Routes>

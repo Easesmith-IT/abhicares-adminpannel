@@ -11,19 +11,15 @@ import { FiEdit } from "react-icons/fi";
 import { MdDelete } from "react-icons/md";
 import toast from "react-hot-toast";
 import DeleteModal from "../../components/deleteModal/DeleteModal";
+import Wrapper from "../Wrapper";
 
 const Partners = () => {
-  const [showMenu, setShowMenu] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [seller, setSeller] = useState({});
   const [allSellers, setAllSellers] = useState([]);
   const [isMessage, setIsMessage] = useState(false);
-
-  const toggleMenuHandler = () => {
-    setShowMenu((prev) => !prev);
-  };
 
   const getAllSellers = async () => {
     try {
@@ -115,17 +111,7 @@ function debounce(fx, time) {
 
   return (
     <>
-      <div>
-        <Header onClick={toggleMenuHandler} />
-
-        <div className={classes["main-container"]}>
-          <div
-            className={`${classes.navcontainer} ${showMenu ? classes.navclose : ""
-              }`}
-          >
-            <SideNav />
-          </div>
-
+      <Wrapper>
           <div className={classes["report-container"]}>
             <div className={classes["report-header"]}>
               <h1 className={classes["recent-Articles"]}>Sellers</h1>
@@ -169,8 +155,7 @@ function debounce(fx, time) {
               </div>
             </div>
           </div>
-        </div>
-      </div >
+      </Wrapper >
       {isModalOpen &&
         <AddSellerModal
           setIsModalOpen={setIsModalOpen}

@@ -14,7 +14,6 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
         gstNumber: seller?.gstNumber || "",
         phone: seller?.phone || "",
         password: seller?.password || "",
-        status: seller?.status || true,
         categoryId: seller?.categoryId || "",
         services: seller?.services || [],
     });
@@ -203,13 +202,6 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
                         <label htmlFor="password">Password</label>
                         <input className={classes.input} onChange={handleOnChange} value={sellerInfo.password} type="password" name="password" id="password" />
                     </div>}
-                   {!seller && <div className={classes.input_container}>
-                        <label htmlFor="status">Status</label>
-                        <select onChange={handleOnChange} value={sellerInfo.status} className={classes.input} name="status" id="status">
-                            <option value="true">Active</option>
-                            <option value="false">InActive</option>
-                        </select>
-                    </div>}
                     <div className={classes.input_container}>
                         <label htmlFor="state">State</label>
                         <input className={classes.input} onChange={handleOnChange} value={address.state} type="text" name="state" id="state" />
@@ -255,7 +247,7 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
                         {isMultiSelectOpen &&
                             <div className={classes.multi_select}>
                                 {allCategoryServices?.map((service) => (
-                                    <div className={classes.d_flex}>
+                                    <div key={service._id} className={classes.d_flex}>
                                         <label htmlFor={service.name}>{service.name}</label>
                                         <input checked={sellerInfo.services.some((item)=> item.serviceId === service._id)} onChange={handleServiceOnChange} type="checkbox" value={service._id} name={service.name} id={service.name} />
                                     </div>
