@@ -14,16 +14,22 @@ const SideNav = () => {
   return (
     <nav className={classes.nav}>
       <div className={classes["nav-upper-options"]}>
-        <Link
-          to="/"
-          className={`${classes["nav-option"]} ${classes.option1}}`}
-        >
+        <Link to="/" className={`${classes["nav-option"]} ${classes.option1}}`}>
           <img
             src={DashboardIcn}
             alt="dashboard"
             className={classes["nav-img"]}
           />
           <h3 className={classes.title}>Dashboard</h3>
+        </Link>
+
+        <Link to="/admin/banners" className={`${classes["nav-option"]} ${classes.option1}}`}>
+          <img
+            src={DashboardIcn}
+            alt="banners"
+            className={classes["nav-img"]}
+          />
+          <h3 className={classes.title}>Banners</h3>
         </Link>
 
         <Link

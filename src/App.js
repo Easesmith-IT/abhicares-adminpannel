@@ -15,6 +15,13 @@ import ServiceInfoPage from "./pages/serviceInfoPage/ServiceInfoPage";
 
 import { Toaster } from 'react-hot-toast';
 import Enquiry from "./pages/AdminPanel/Inquiry";
+import Banner from "./pages/AdminPanel/Banners/Banner";
+import AppBanner from "./pages/AdminPanel/Banners/AppBanner";
+import WebsiteBanner from "./pages/AdminPanel/Banners/WebsiteBanner";
+import Home from "./pages/AdminPanel/Banners/App/Home";
+import Category from "./pages/AdminPanel/Banners/App/Category";
+import Service from "./pages/AdminPanel/Banners/App/Service";
+import Product from "./pages/AdminPanel/Banners/App/Product";
 
 function App() {
   return (
@@ -32,13 +39,34 @@ function App() {
           />
           <Route path="/" element={<AdminLogin />} />
           <Route path="/admin/dashboard" exact element={<Dashboard />} />
+
+          <Route path="/admin/banners" exact element={<Banner />} />
+          <Route path="/admin/banners/app" exact element={<AppBanner />} />
+          <Route path="/admin/banners/app/home" exact element={<Home />} />
+          <Route path="/admin/banners/app/category" exact element={<Category />} />
+          <Route path="/admin/banners/app/service" exact element={<Service />} />
+          <Route path="/admin/banners/app/product" exact element={<Product />} />
+
+
+          <Route
+            path="/admin/banners/website"
+            exact
+            element={<WebsiteBanner />}
+          />
+
           <Route path="/admin/partners" element={<Partners />} />
           <Route path="/admin/customers" element={<Customers />} />
           <Route path="/admin/services" element={<Services />} />
           <Route path="/admin/payments" element={<Payments />} />
 
-          <Route path="/admin/services/:categoryId" element={<CategoryServices />} />
-          <Route path="/admin/services/:categoryId/product/:serviceId" element={<ServiceInfoPage />} />
+          <Route
+            path="/admin/services/:categoryId"
+            element={<CategoryServices />}
+          />
+          <Route
+            path="/admin/services/:categoryId/product/:serviceId"
+            element={<ServiceInfoPage />}
+          />
 
           <Route path="/admin/enquiries" element={<Enquiry />} />
           <Route path="/admin/offers" element={<Offers />} />

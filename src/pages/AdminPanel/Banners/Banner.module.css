@@ -1,0 +1,76 @@
+.container{
+/* border: 2px solid; */
+width: 75%;
+margin: 0 auto;
+display: flex;
+justify-content: space-around;
+align-items: center;
+}
+
+.appBanner{
+/* border: 2px solid red; */
+background-color: rgb(208, 125, 125);
+padding: 80px 100px;
+font-size: 1.2rem;
+font-weight:bold;
+cursor: pointer;
+color: black;
+}
+
+
+.websiteBanner{
+/* border:2px solid green; */
+background-color: rgb(91, 240, 91);
+padding: 80px 100px;
+font-size: 1.2rem;
+font-weight:bold;
+cursor: pointer;
+color: black;
+}
+
+
+/* App Banner and Website Banner styles */
+
+.parentContainer{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
+    justify-content: space-around;
+
+}
+
+
+.pageBanner{
+/* border:2px solid green; */
+background-color: rgb(91, 180, 240);
+padding: 80px 100px;
+font-size: 1.2rem;
+font-weight:bold;
+cursor: pointer;
+color: black;
+}
+
+/* app pages stylings  */
+
+
+
+
+.imagesContainer{
+    border: 2px solid;
+    display: flex;
+    width: 90%;
+    margin: 0 auto;
+}
+
+.imageWrapper{
+    border: 1px solid grey;
+    width: 30%;
+    margin: 0 12px;
+    margin-bottom: 15px;
+}
+
+.imageWrapper img {
+    width: 100%;
+    height:  400px;
+}
