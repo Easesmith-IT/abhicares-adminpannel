@@ -20,6 +20,11 @@ const AdminLogin = () => {
         password:userPassword
       })
 
+      if(response.status===500){
+        alert('Something went wrong!')
+        return;
+      }
+
         if(response.data.token){
           const token = response.data.token;
           localStorage.setItem('adUx',token);
