@@ -22,6 +22,11 @@ import Home from "./pages/AdminPanel/Banners/App/Home";
 import Category from "./pages/AdminPanel/Banners/App/Category";
 import Service from "./pages/AdminPanel/Banners/App/Service";
 import Product from "./pages/AdminPanel/Banners/App/Product";
+import Cms from "./pages/AdminPanel/cms/Cms";
+import PrivacyPolicy from "./pages/AdminPanel/cms/privacy-policy/PrivacyPolicy";
+import AboutUs from "./pages/AdminPanel/cms/about-us/AboutUs";
+import ContactUs from "./pages/AdminPanel/cms/contact-us/ContactUs";
+import Bookings from "./pages/AdminPanel/bookings/Bookings";
 
 function App() {
   return (
@@ -48,12 +53,19 @@ function App() {
           <Route path="/admin/banners/app/product" exact element={<Product />} />
 
 
+          <Route path="/admin/cms" exact element={<Cms />} />
+          <Route path="/admin/cms/privacy-policy" exact element={<PrivacyPolicy />} />
+          <Route path="/admin/cms/about-us" exact element={<AboutUs />} />
+          <Route path="/admin/cms/contact-us" exact element={<ContactUs />} />
+
+
           <Route
             path="/admin/banners/website"
             exact
             element={<WebsiteBanner />}
           />
 
+          <Route path="/admin/bookings" element={<Bookings />} />
           <Route path="/admin/partners" element={<Partners />} />
           <Route path="/admin/customers" element={<Customers />} />
           <Route path="/admin/services" element={<Services />} />
