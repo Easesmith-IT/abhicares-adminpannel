@@ -19,6 +19,7 @@ const Enquiry = () => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [allInquiries, setAllInquiries] = useState([]);
     const [enquiryId, setEnquiryId] = useState("");
+    const [token, setToken] = useState("");
 
 
     const toggleMenuHandler = () => {
@@ -47,7 +48,7 @@ const Enquiry = () => {
 
     const getAllInquiries = async () => {
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-enquiry`);
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-enquiry`,{headers:{ Authorization: token }});
             console.log(data);
             setAllInquiries(data.data);
         } catch (error) {
@@ -58,6 +59,8 @@ const Enquiry = () => {
 
     useEffect(() => {
         getAllInquiries();
+        const adUx = localStorage.getItem("adUx");
+        setToken(adUx);
     }, [])
 
     return (

@@ -264,7 +264,8 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
                     </div>
                     <div className={classes.input_container}>
                         <label htmlFor="categoryId">Category</label>
-                        <select onChange={handleOnChange} value={sellerInfo.categoryId} className={classes.input} name="categoryId" id="categoryId">
+                        <select onChange={handleOnChange}  className={classes.input} name="categoryId" id="categoryId">
+                            <option value={"choose a category"}>choose a category</option>
                             {allCategories?.map((category) => (
                                 <option key={category._id} value={category._id}>{category.name}</option>
                             ))}
