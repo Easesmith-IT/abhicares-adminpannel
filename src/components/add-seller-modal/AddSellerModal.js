@@ -135,6 +135,7 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
 
 
 
+
     const handleOnSubmit = async (e) => {
         e.preventDefault();
         if (!sellerInfo.name
@@ -142,9 +143,7 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
             || !sellerInfo.gstNumber
             || !sellerInfo.phone
             || !sellerInfo.password
-            || !sellerInfo.status
             || !sellerInfo.categoryId
-            || sellerInfo.services.length === 0
             || !address.addressLine
             || !address.city
             || !address.pincode
@@ -175,6 +174,8 @@ const AddSellerModal = ({ setIsModalOpen, seller = "", getAllSellers }) => {
             },
             contactPerson
         }
+    console.log(allData);
+
         if (seller) {
             if(!token){
                 navigate('/');

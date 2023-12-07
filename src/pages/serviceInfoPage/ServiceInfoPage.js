@@ -39,9 +39,9 @@ const ServiceInfoPage = () => {
     const params = useParams();
 
     const token = localStorage.getItem("adUx")
-    
+
     const headers = {
-        Authorization:token
+        Authorization: token
     }
 
     const handleProductInfoModal = (e, product) => {
@@ -63,11 +63,11 @@ const ServiceInfoPage = () => {
     };
     const getAllProducts = async () => {
         try {
-            if(!token){
+            if (!token) {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-service-product/${params?.serviceId}`,{headers});
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-service-product/${params?.serviceId}`, { headers });
             console.log(data);
             setAllProducts(data.data);
         } catch (error) {
@@ -76,11 +76,11 @@ const ServiceInfoPage = () => {
     };
     const getAllPackage = async () => {
         try {
-            if(!token){
+            if (!token) {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-service-package/${params?.serviceId}`);
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-service-package/${params?.serviceId}`, { headers });
             console.log(data);
             setAllPackages(data.data);
         } catch (error) {
@@ -95,11 +95,11 @@ const ServiceInfoPage = () => {
 
     const handleDelete = async () => {
         try {
-            if(!token){
+            if (!token) {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-product/${product}`,{headers});
+            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-product/${product}`, { headers });
             console.log(product);
             toast.success("Prodct deleted successfully");
             getAllProducts();
@@ -123,11 +123,11 @@ const ServiceInfoPage = () => {
 
     const handlePackageDelete = async () => {
         try {
-            if(!token){
+            if (!token) {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-package/${singlePackage}`);
+            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-package/${singlePackage}`,{headers});
             console.log(data);
             toast.success("Package deleted successfully");
             getAllPackage();
@@ -137,71 +137,71 @@ const ServiceInfoPage = () => {
         }
     };
 
-    if(!token){
+    if (!token) {
         navigate('/');
         return;
-      }
+    }
 
     return (
         <>
             <Wrapper>
-            <div className={classes["services-wrapper"]}>
-               
-                <div className={serviceInfoPageClasses.service_info}>
-                    <h4>{state.name}</h4>
-                    <div>
-                        <p>Starting Price: ₹{state.startingPrice}</p>
-                        <p>Total Products: {state.totalProducts}</p>
+                <div className={classes["services-wrapper"]}>
+
+                    <div className={serviceInfoPageClasses.service_info}>
+                        <h4>{state.name}</h4>
+                        <div>
+                            <p>Starting Price: ₹{state.startingPrice}</p>
+                            <p>Total Products: {state.totalProducts}</p>
+                        </div>
+                        <p>{parse(state.description)}</p>
                     </div>
-                    <p>{parse(state.description)}</p>
-                </div>
-                <div className={classes["services-header"]}>
-                    <h4>Products</h4>
-                    <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
-                        <img src={AddBtn} alt="add product" />
-                    </button>
-                </div>
-                <div className={classes.card_container}>
-                    {allProducts.length === 0 && <Loader />}
-                    {allProducts?.map((product) => (
-                        <div key={product._id} onClick={(e) => handleProductInfoModal(e, product)} className={classes.card}>
-                            <img src={`http://localhost:5000/uploads/${product.imageUrl[0]}`} alt="product" />
-                            <div>
-                                <div className={serviceInfoPageClasses.heading_container}>
-                                    <h5>{product.name}</h5>
-                                    <div className={classes.icon_container}>
-                                        <FiEdit onClick={(e) => handleUpdateModal(e, product)} size={20} />
-                                        <MdDelete onClick={(e) => handleDeleteModal(e, product._id)} size={22} color='red' />
+                    <div className={classes["services-header"]}>
+                        <h4>Products</h4>
+                        <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
+                            <img src={AddBtn} alt="add product" />
+                        </button>
+                    </div>
+                    <div className={classes.card_container}>
+                        {allProducts.length === 0 && <Loader />}
+                        {allProducts?.map((product) => (
+                            <div key={product._id} onClick={(e) => handleProductInfoModal(e, product)} className={classes.card}>
+                                <img src={`http://localhost:5000/uploads/${product.imageUrl[0]}`} alt="product" />
+                                <div>
+                                    <div className={serviceInfoPageClasses.heading_container}>
+                                        <h5>{product.name}</h5>
+                                        <div className={classes.icon_container}>
+                                            <FiEdit onClick={(e) => handleUpdateModal(e, product)} size={20} />
+                                            <MdDelete onClick={(e) => handleDeleteModal(e, product._id)} size={22} color='red' />
+                                        </div>
                                     </div>
+                                    <p>{parse(product.description)}</p>
                                 </div>
-                                <p>{parse(product.description)}</p>
                             </div>
-                        </div>
-                    ))}
-                </div>
-                <div className={classes["services-header"]}>
-                    <h4>Packages</h4>
-                    <button onClick={() => setIsPackageModalOpen(true)} className={classes.services_add_btn}>
-                        <img src={AddBtn} alt="add package" />
-                    </button>
-                </div>
-                <div className={classes.card_container}>
-                    {allPackages.length === 0 && <Loader />}
-                    {allPackages?.map((singlePackage) => (
-                        <div key={singlePackage._id} onClick={(e) => handlePackageInfoModal(e, singlePackage)} className={classes.card}>
-                            <img src={`http://localhost:5000/uploads/${singlePackage.imageUrl[0]}`} alt="package" />
-                            <div>
-                                <div className={serviceInfoPageClasses.heading_container}>
-                                    <h5>{singlePackage.name}</h5>
-                                    <div className={classes.icon_container}>
-                                        <MdDelete onClick={(e) => handlePackageDeleteModal(e, singlePackage._id)} size={22} color='red' />
+                        ))}
+                    </div>
+                    <div className={classes["services-header"]}>
+                        <h4>Packages</h4>
+                        <button onClick={() => setIsPackageModalOpen(true)} className={classes.services_add_btn}>
+                            <img src={AddBtn} alt="add package" />
+                        </button>
+                    </div>
+                    <div className={classes.card_container}>
+                        {allPackages.length === 0 && <Loader />}
+                        {allPackages?.map((singlePackage) => (
+                            <div key={singlePackage._id} onClick={(e) => handlePackageInfoModal(e, singlePackage)} className={classes.card}>
+                                <img src={`http://localhost:5000/uploads/${singlePackage.imageUrl[0]}`} alt="package" />
+                                <div>
+                                    <div className={serviceInfoPageClasses.heading_container}>
+                                        <h5>{singlePackage.name}</h5>
+                                        <div className={classes.icon_container}>
+                                            <MdDelete onClick={(e) => handlePackageDeleteModal(e, singlePackage._id)} size={22} color='red' />
+                                        </div>
                                     </div>
+                                    {/* <p>{parse(singlePackage.description)}</p> */}
                                 </div>
-                                {/* <p>{parse(singlePackage.description)}</p> */}
                             </div>
-                        </div>
-                    ))}
-                </div>
+                        ))}
+                    </div>
 
                 </div>
             </Wrapper >

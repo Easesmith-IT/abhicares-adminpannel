@@ -40,7 +40,7 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
 
     const handleOnSubmit = async (e) => {
         e.preventDefault();
-        if (!serviceInfo.name || !serviceInfo.startingPrice || !serviceInfo.img || !serviceInfo.totalProducts || !description) {
+        if (!serviceInfo.name || !serviceInfo.startingPrice || !serviceInfo.img  || !description) {
             return;
         }
         const formData = new FormData();
@@ -120,10 +120,6 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
                         <div className={classes.switch}>
                             <div></div>
                         </div>
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="totalProducts">Total Products</label>
-                        <input className={classes.input} onChange={handleOnChange} value={serviceInfo.totalProducts} type="number" name="totalProducts" id="totalProducts" />
                     </div>
                     <div className={classes.button_wrapper}>
                         <button className={classes.button}>{service ? "Update" : "Add"}</button>

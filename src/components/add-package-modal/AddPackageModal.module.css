@@ -58,9 +58,9 @@
 }
 
 .multi_select {
-    position: absolute;
+    /* position: absolute;
     top: 71px;
-    left: 0;
+    left: 0; */
     background: white;
     padding: 5px 5px;
     width: 100%;

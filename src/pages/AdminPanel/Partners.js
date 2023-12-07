@@ -78,13 +78,13 @@ const Partners = () => {
   };
 
   const handleUpdateModal = (e, seller) => {
-    // e.stopPropagation();
+    e.stopPropagation();
     setSeller(seller);
     setIsUpdateModalOpen(!isDeleteModalOpen);
   };
 
   const handleDeleteModal = (e, id) => {
-    // e.stopPropagation();
+    e.stopPropagation();
     setSeller(id);
     setIsDeleteModalOpen(!isDeleteModalOpen);
   };
