@@ -354,6 +354,20 @@
   cursor: pointer;
 }
 
+.item1.cursor {
+  cursor: default;
+}
+
+.button{
+  background: transparent;
+  outline: none;
+  border: none;
+}
+
+.button:hover{
+  text-decoration: underline;
+}
+
 .t-op-nextlvl {
   font-size: 14px;
   letter-spacing: 0px;

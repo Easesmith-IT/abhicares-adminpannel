@@ -9,8 +9,13 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { IoIosArrowDown } from 'react-icons/io';
 
-const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage, allProducts }) => {
-    const navigate = useNavigate()
+const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage,allProducts }) => {
+    const token = localStorage.getItem("adUx")
+
+    const headers = {
+        Authorization: token
+    }
+
     const [packageInfo, setPackageInfo] = useState({
         name: "",
         price: "",
@@ -29,7 +34,6 @@ const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage, allProducts
     const getImage = (e) => {
         e.preventDefault();
         const uploadedImage = e.target.files;
-        console.log(uploadedImage);
         setPackageInfo({ ...packageInfo, img: uploadedImage });
     }
 
@@ -49,7 +53,6 @@ const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage, allProducts
         }
     }
 
-    console.log(packageInfo);
 
     const handleOnSubmit = async (e) => {
         e.preventDefault();

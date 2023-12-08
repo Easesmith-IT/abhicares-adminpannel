@@ -51,6 +51,7 @@ const CategoryServices = () => {
                 return;
               }
             const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-category-service/${params?.categoryId}`,{headers});
+            console.log(data);
             setAllCategoryServices(data.data);
         } catch (error) {
             console.log(error);

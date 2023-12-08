@@ -37,6 +37,7 @@ const AddUserModal = ({ setIsModalOpen, user = "", getAllUsers }) => {
             || !userInfo.gender
             || !userInfo.status
             ) {
+                alert("alert")
             return;
         }
         if (user) {

@@ -27,6 +27,7 @@ import PrivacyPolicy from "./pages/AdminPanel/cms/privacy-policy/PrivacyPolicy";
 import AboutUs from "./pages/AdminPanel/cms/about-us/AboutUs";
 import ContactUs from "./pages/AdminPanel/cms/contact-us/ContactUs";
 import Bookings from "./pages/AdminPanel/bookings/Bookings";
+import BookingDetails from "./pages/AdminPanel/bookingDetails/BookingDetails";
 
 function App() {
   return (
@@ -66,6 +67,9 @@ function App() {
           />
 
           <Route path="/admin/bookings" element={<Bookings />} />
+          <Route path="/admin/bookings/:id" element={<BookingDetails />} />
+
+
           <Route path="/admin/partners" element={<Partners />} />
           <Route path="/admin/customers" element={<Customers />} />
           <Route path="/admin/services" element={<Services />} />
