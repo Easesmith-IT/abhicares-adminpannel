@@ -11,6 +11,7 @@ import toast from "react-hot-toast";
 import DeleteModal from "../../components/deleteModal/DeleteModal";
 import Wrapper from "../Wrapper";
 import SellerInfoModal from "../../components/seller-info-modal/SellerInfoModal";
+import Loader from "../../components/loader/Loader";
 
 const Partners = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,7 +20,7 @@ const Partners = () => {
   const [isSellerInfoModalOpen, setIsSellerInfoModalOpen] = useState(false);
   const [seller, setSeller] = useState({});
   const [allSellers, setAllSellers] = useState([]);
-  const [isMessage, setIsMessage] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
 
   const navigate = useNavigate()
@@ -39,6 +40,9 @@ const Partners = () => {
       setAllSellers(data.data);
     } catch (error) {
       console.log(error);
+    }
+    finally {
+      setIsLoading(false);
     }
   };
 
@@ -113,12 +117,6 @@ const Partners = () => {
         return;
       }
       const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-seller?search=${value}`, { headers });
-      if (data.data.length === 0) {
-        setIsMessage(true);
-      }
-      else {
-        setIsMessage(false);
-      }
       setAllSellers(data.data);
     } catch (error) {
       console.log(error);
@@ -172,8 +170,17 @@ const Partners = () => {
             </div>
 
             <div className={classes.items}>
+              {!isLoading
+                && allSellers.length === 0
+                && <p>No sellers found</p>
+              }
+
+              {isLoading
+                && allSellers.length === 0
+                && <Loader />
+              }
               {allSellers?.map((seller) => (
-                <div key={seller._id} onClick={()=>handleSellerInfoModal(seller)} className={classes.item1}>
+                <div key={seller._id} onClick={() => handleSellerInfoModal(seller)} className={classes.item1}>
                   <h3 className={classes["t-op-nextlvl"]}>{seller.name}</h3>
                   <h3 className={`${classes["t-op-nextlvl"]}`}>service</h3>
                   <h3 className={`${classes["t-op-nextlvl"]}`}>category</h3>
@@ -190,8 +197,6 @@ const Partners = () => {
                 </div>
               ))}
 
-              {isMessage && <p>no result found</p>}
-
             </div>
           </div>
         </div>
@@ -205,7 +210,7 @@ const Partners = () => {
 
       {isSellerInfoModalOpen &&
         <SellerInfoModal
-        setIsSellerInfoModalOpen={setIsSellerInfoModalOpen}
+          setIsSellerInfoModalOpen={setIsSellerInfoModalOpen}
           seller={seller}
         />
       }

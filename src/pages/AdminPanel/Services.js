@@ -9,26 +9,30 @@ import Wrapper from "../Wrapper";
 
 const Services = () => {
   const [allCategories, setAllCategories] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
 
   const token = localStorage.getItem("adUx")
 
   const headers = {
-      Authorization:token
+    Authorization: token
   }
 
   const getAllCategories = async () => {
     try {
-      if(!token){
+      if (!token) {
         navigate('/');
         return;
       }
-      console.log('url',process.env.REACT_APP_API_URL)
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-category`,{headers})
+      console.log('url', process.env.REACT_APP_API_URL)
+      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-category`, { headers })
       setAllCategories(data.data);
     } catch (error) {
       console.log(error);
+    }
+    finally {
+      setIsLoading(false);
     }
   };
 
@@ -38,7 +42,7 @@ const Services = () => {
 
 
 
-  if(!token){
+  if (!token) {
     navigate('/');
     return;
   }
@@ -53,7 +57,16 @@ const Services = () => {
             </button> */}
         </div>
         <div className={classes.card_container}>
-          {allCategories.length === 0 && <Loader />}
+          {!isLoading
+            && allCategories.length === 0
+            && <p>No category found</p>
+          }
+
+          {isLoading
+            && allCategories.length === 0
+            && <Loader />
+          }
+
           {allCategories?.map((category) => (
             <div key={category._id} onClick={() => navigate(`/admin/services/${category._id}`, { state: { categoryName: category.name } })} className={classes.card}>
               <div>

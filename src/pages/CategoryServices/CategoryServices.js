@@ -21,6 +21,7 @@ const CategoryServices = () => {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [allCategoryServices, setAllCategoryServices] = useState([]);
     const [service, setService] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
 
     const navigate = useNavigate();
     const { state } = useLocation();
@@ -28,7 +29,7 @@ const CategoryServices = () => {
 
     const token = localStorage.getItem("adUx")
     const headers = {
-        Authorization:token
+        Authorization: token
     }
 
 
@@ -46,31 +47,34 @@ const CategoryServices = () => {
     };
     const getCategoryServices = async () => {
         try {
-            if(!token){
+            if (!token) {
                 navigate('/');
                 return;
-              }
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-category-service/${params?.categoryId}`,{headers});
+            }
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-category-service/${params?.categoryId}`, { headers });
             console.log(data);
             setAllCategoryServices(data.data);
         } catch (error) {
             console.log(error);
+        }
+        finally{
+            setIsLoading(false);
         }
     };
 
     useEffect(() => {
         getCategoryServices();
     }, [])
-   
 
-  
+
+
     const handleDelete = async () => {
         try {
-            if(!token){
+            if (!token) {
                 navigate('/');
                 return;
-              }
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-service/${service}`,{headers});
+            }
+            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-service/${service}`, { headers });
             toast.success("Service deleted successfully");
             getCategoryServices();
             setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -79,71 +83,59 @@ const CategoryServices = () => {
         }
     };
 
-    if(!token){
+    if (!token) {
         navigate('/');
         return;
-      }
+    }
 
 
     return (
-      <>
-        <Wrapper>
-          <div className={classes["services-wrapper"]}>
-            <div className={classes["services-header"]}>
-              <h2>{state.categoryName}</h2>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className={classes.services_add_btn}
-              >
-                <img src={AddBtn} alt="add service" />
-              </button>
-            </div>
-            <div className={classes.card_container}>
-              {allCategoryServices.length === 0 && <Loader />}
-              {allCategoryServices?.map((service) => (
-                <div
-                  key={service._id}
-                  onClick={() =>
-                    navigate(
-                      `/admin/services/${params?.categoryId}/product/${service._id}`,
-                      { state: service }
-                    )
-                  }
-                  className={classes.card}
-                >
-                  <img
-                    src={`${process.env.REACT_APP_IMAGE_URL}/${service.imageUrl}`}
-                    alt="product"
-                  />
-                  <div>
-                    <div className={categoryServicesClasses.heading_container}>
-                      <h5>{service.name}</h5>
-                      <div className={classes.icon_container}>
-                        <FiEdit
-                          onClick={(e) => handleUpdateModal(e, service)}
-                          size={20}
-                        />
-                        <MdDelete
-                          onClick={(e) => handleDeleteModal(e, service._id)}
-                          size={22}
-                          color="red"
-                        />
-                      </div>
+        <>
+            <Wrapper>
+                <div className={classes["services-wrapper"]}>
+                    <div className={classes["services-header"]}>
+                        <h2>{state.categoryName}</h2>
+                        <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
+                            <img src={AddBtn} alt="add service" />
+                        </button>
                     </div>
-                    <p>{parse(service.description)}</p>
-                  </div>
+                    <div className={classes.card_container}>
+                        {!isLoading
+                            && allCategoryServices.length === 0
+                            && <p>No service found</p>
+                        }
+
+                        {isLoading
+                            && allCategoryServices.length === 0
+                            && <Loader />
+                        }
+
+                        {allCategoryServices?.map((service) => (
+                            <div key={service._id} onClick={() => navigate(`/admin/services/${params?.categoryId}/product/${service._id}`, { state: service })} className={classes.card}>
+                                <img src={`${process.env.REACT_APP_IMAGE_URL}/uploads/${service.imageUrl}`} alt="product" />
+                                <div>
+                                    <div className={categoryServicesClasses.heading_container}>
+                                        <h5>{service.name}</h5>
+                                        <div className={classes.icon_container}>
+                                            <FiEdit onClick={(e) => handleUpdateModal(e, service)} size={20} />
+                                            <MdDelete onClick={(e) => handleDeleteModal(e, service._id)} size={22} color='red' />
+                                        </div>
+                                    </div>
+                                    <p>{parse(service.description)}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
                 </div>
-              ))}
-            </div>
-          </div>
-        </Wrapper>
-        {isModalOpen && (
-          <AddServiceModal
-            setIsModalOpen={setIsModalOpen}
-            categoryId={params?.categoryId}
-            getCategoryServices={getCategoryServices}
-          />
-        )}
+            </Wrapper>
+            {isModalOpen &&
+                <AddServiceModal
+                    setIsModalOpen={setIsModalOpen}
+                    categoryId={params?.categoryId}
+                    getCategoryServices={getCategoryServices}
+                />
+            }
 
         {isUpdateModalOpen && (
           <AddServiceModal

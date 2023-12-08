@@ -14,7 +14,7 @@ const SideNav = () => {
   return (
     <nav className={classes.nav}>
       <div className={classes["nav-upper-options"]}>
-        <Link to="/" className={`${classes["nav-option"]} ${classes.option1}}`}>
+        <Link to="/admin/dashboard" className={`${classes["nav-option"]} ${classes.option1}}`}>
           <img
             src={DashboardIcn}
             alt="dashboard"

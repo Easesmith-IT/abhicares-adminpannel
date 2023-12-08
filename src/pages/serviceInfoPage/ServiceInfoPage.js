@@ -34,6 +34,8 @@ const ServiceInfoPage = () => {
     const [allPackages, setAllPackages] = useState([]);
     const [product, setProduct] = useState({});
     const [singlePackage, setSinglePackage] = useState("");
+    const [isPackageLoading, setIsPackageLoading] = useState(true);
+    const [isProductLoading, setIsProductLoading] = useState(true);
 
     const { state } = useLocation();
     const params = useParams();
@@ -73,6 +75,9 @@ const ServiceInfoPage = () => {
         } catch (error) {
             console.log(error);
         }
+        finally{
+            setIsProductLoading(false);
+        }
     };
     const getAllPackage = async () => {
         try {
@@ -85,6 +90,9 @@ const ServiceInfoPage = () => {
             setAllPackages(data.data);
         } catch (error) {
             console.log(error);
+        }
+        finally{
+            setIsPackageLoading(false);
         }
     };
 
@@ -127,7 +135,7 @@ const ServiceInfoPage = () => {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-package/${singlePackage}`,{headers});
+            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-package/${singlePackage}`, { headers });
             console.log(data);
             toast.success("Package deleted successfully");
             getAllPackage();
@@ -162,10 +170,19 @@ const ServiceInfoPage = () => {
                         </button>
                     </div>
                     <div className={classes.card_container}>
-                        {allProducts.length === 0 && <Loader />}
+                        {!isProductLoading
+                            && allProducts.length === 0
+                            && <p>No products found</p>
+                        }
+
+                        {isProductLoading
+                            && allProducts.length === 0
+                            && <Loader />
+                        }
+
                         {allProducts?.map((product) => (
                             <div key={product._id} onClick={(e) => handleProductInfoModal(e, product)} className={classes.card}>
-                                <img src={`http://localhost:5000/uploads/${product.imageUrl[0]}`} alt="product" />
+                                <img src={`${process.env.REACT_APP_IMAGE_URL}/uploads/${product.imageUrl[0]}`} alt="product" />
                                 <div>
                                     <div className={serviceInfoPageClasses.heading_container}>
                                         <h5>{product.name}</h5>
@@ -186,10 +203,18 @@ const ServiceInfoPage = () => {
                         </button>
                     </div>
                     <div className={classes.card_container}>
-                        {allPackages.length === 0 && <Loader />}
+                        {!isPackageLoading
+                            && allPackages.length === 0
+                            && <p>No packages found</p>
+                        }
+
+                        {isPackageLoading
+                            && allPackages.length === 0
+                            && <Loader />
+                        }
                         {allPackages?.map((singlePackage) => (
                             <div key={singlePackage._id} onClick={(e) => handlePackageInfoModal(e, singlePackage)} className={classes.card}>
-                                <img src={`http://localhost:5000/uploads/${singlePackage.imageUrl[0]}`} alt="package" />
+                                <img src={`${process.env.REACT_APP_IMAGE_URL}/uploads/${singlePackage.imageUrl[0]}`} alt="package" />
                                 <div>
                                     <div className={serviceInfoPageClasses.heading_container}>
                                         <h5>{singlePackage.name}</h5>
