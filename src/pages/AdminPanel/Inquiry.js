@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams, useNavigate } from 'react-router-dom';
+
 import classes from "../AdminPanel/Shared.module.css";
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
 
-
-import SideNav from '../AdminPanel/components/SideNav'
-import Header from '../AdminPanel/components/Header'
 import DeleteModal from '../../components/deleteModal/DeleteModal';
 import Loader from '../../components/loader/Loader';
 
@@ -15,18 +13,12 @@ import { MdDelete } from 'react-icons/md';
 import Wrapper from '../Wrapper';
 
 const Enquiry = () => {
-    const [showMenu, setShowMenu] = useState(false);
+    const navigate = useNavigate();
+
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [allInquiries, setAllInquiries] = useState([]);
     const [enquiryId, setEnquiryId] = useState("");
-    const [token, setToken] = useState("");
-
-
-    const toggleMenuHandler = () => {
-        setShowMenu((prev) => !prev);
-    };
-
-
+    
 
     const handleDeleteModal = (e, id) => {
         e.stopPropagation();
@@ -34,9 +26,17 @@ const Enquiry = () => {
         setIsDeleteModalOpen(!isDeleteModalOpen);
     };
 
+    const token = localStorage.getItem("adUx");
+
+    const headers = {
+      Authorization: token,
+    };
+
+ 
+
     const handleDelete = async () => {
         try {
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-enquiry/${enquiryId}`, { headers: { Authorization: token } });
+            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-enquiry/${enquiryId}`,{headers});
             console.log(data);
             toast.success("Enquiry deleted successfully");
             getAllInquiries();
@@ -48,7 +48,7 @@ const Enquiry = () => {
 
     const getAllInquiries = async () => {
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-enquiry`, { headers: { Authorization: token } });
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-enquiry`,{headers});
             console.log(data);
             setAllInquiries(data.data);
         } catch (error) {
@@ -56,12 +56,13 @@ const Enquiry = () => {
         }
     };
 
-
     useEffect(() => {
-        getAllInquiries();
-        const adUx = localStorage.getItem("adUx");
-        setToken(adUx);
-    }, [])
+        getAllInquiries()
+    },[])
+   if (!token) {
+     navigate("/");
+     return;
+   }
 
     return (
         <>
