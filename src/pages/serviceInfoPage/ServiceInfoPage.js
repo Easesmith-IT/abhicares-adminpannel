@@ -206,67 +206,61 @@ const ServiceInfoPage = () => {
                 </div>
             </Wrapper >
 
-            {isInfoModalOpen &&
-                <ProductInfoModal
-                    product={product}
-                    setIsInfoModalOpen={setIsInfoModalOpen}
-                />
-            }
+        {isInfoModalOpen && (
+          <ProductInfoModal
+            product={product}
+            setIsInfoModalOpen={setIsInfoModalOpen}
+          />
+        )}
 
-            {
-                isPackageInfoModalOpen &&
-                <ProductInfoModal
-                    isPackage
-                    product={singlePackage}
-                    setIsInfoModalOpen={setIsPackageInfoModalOpen}
-                />
-            }
+        {isPackageInfoModalOpen && (
+          <ProductInfoModal
+            isPackage
+            product={singlePackage}
+            setIsInfoModalOpen={setIsPackageInfoModalOpen}
+          />
+        )}
 
-            {
-                isModalOpen &&
-                <AddProductModal
-                    serviceId={params?.serviceId}
-                    setIsModalOpen={setIsModalOpen}
-                    getAllProducts={getAllProducts}
-                />
-            }
+        {isModalOpen && (
+          <AddProductModal
+            serviceId={params?.serviceId}
+            setIsModalOpen={setIsModalOpen}
+            getAllProducts={getAllProducts}
+          />
+        )}
 
-            {
-                isPackageModalOpen &&
-                <AddPackageModal
-                    serviceId={params?.serviceId}
-                    setIsModalOpen={setIsPackageModalOpen}
-                    getAllPackage={getAllPackage}
-                    allProducts={allProducts}
-                />
-            }
+        {isPackageModalOpen && (
+          <AddPackageModal
+            serviceId={params?.serviceId}
+            setIsModalOpen={setIsPackageModalOpen}
+            getAllPackage={getAllPackage}
+            allProducts={allProducts}
+          />
+        )}
 
-            {
-                isUpdateModalOpen &&
-                <AddProductModal
-                    serviceId={params?.serviceId}
-                    setIsModalOpen={setIsUpdateModalOpen}
-                    product={product}
-                    getAllProducts={getAllProducts}
-                />
-            }
+        {isUpdateModalOpen && (
+          <AddProductModal
+            serviceId={params?.serviceId}
+            setIsModalOpen={setIsUpdateModalOpen}
+            product={product}
+            getAllProducts={getAllProducts}
+          />
+        )}
 
-            {
-                isDeleteModalOpen &&
-                <DeleteModal
-                    setState={setIsDeleteModalOpen}
-                    handleDelete={handleDelete}
-                />
-            }
-            {
-                isPackageDeleteModalOpen &&
-                <DeleteModal
-                    setState={setIsPackageDeleteModalOpen}
-                    handleDelete={handlePackageDelete}
-                />
-            }
-        </>
-    )
+        {isDeleteModalOpen && (
+          <DeleteModal
+            setState={setIsDeleteModalOpen}
+            handleDelete={handleDelete}
+          />
+        )}
+        {isPackageDeleteModalOpen && (
+          <DeleteModal
+            setState={setIsPackageDeleteModalOpen}
+            handleDelete={handlePackageDelete}
+          />
+        )}
+      </>
+    );
 }
 
 export default ServiceInfoPage

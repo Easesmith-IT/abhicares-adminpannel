@@ -86,60 +86,81 @@ const CategoryServices = () => {
 
 
     return (
-        <>
-            <Wrapper>
-                <div className={classes["services-wrapper"]}>
-                    <div className={classes["services-header"]}>
-                        <h2>{state.categoryName}</h2>
-                        <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
-                            <img src={AddBtn} alt="add service" />
-                        </button>
+      <>
+        <Wrapper>
+          <div className={classes["services-wrapper"]}>
+            <div className={classes["services-header"]}>
+              <h2>{state.categoryName}</h2>
+              <button
+                onClick={() => setIsModalOpen(true)}
+                className={classes.services_add_btn}
+              >
+                <img src={AddBtn} alt="add service" />
+              </button>
+            </div>
+            <div className={classes.card_container}>
+              {allCategoryServices.length === 0 && <Loader />}
+              {allCategoryServices?.map((service) => (
+                <div
+                  key={service._id}
+                  onClick={() =>
+                    navigate(
+                      `/admin/services/${params?.categoryId}/product/${service._id}`,
+                      { state: service }
+                    )
+                  }
+                  className={classes.card}
+                >
+                  <img
+                    src={`${process.env.REACT_APP_IMAGE_URL}/${service.imageUrl}`}
+                    alt="product"
+                  />
+                  <div>
+                    <div className={categoryServicesClasses.heading_container}>
+                      <h5>{service.name}</h5>
+                      <div className={classes.icon_container}>
+                        <FiEdit
+                          onClick={(e) => handleUpdateModal(e, service)}
+                          size={20}
+                        />
+                        <MdDelete
+                          onClick={(e) => handleDeleteModal(e, service._id)}
+                          size={22}
+                          color="red"
+                        />
+                      </div>
                     </div>
-                    <div className={classes.card_container}>
-                        {allCategoryServices.length === 0 && <Loader />}
-                        {allCategoryServices?.map((service) => (
-                            <div key={service._id} onClick={() => navigate(`/admin/services/${params?.categoryId}/product/${service._id}`, { state: service })} className={classes.card}>
-                                <img src={`http://localhost:5000/uploads/${service.imageUrl}`} alt="product" />
-                                <div>
-                                    <div className={categoryServicesClasses.heading_container}>
-                                        <h5>{service.name}</h5>
-                                        <div className={classes.icon_container}>
-                                            <FiEdit onClick={(e) => handleUpdateModal(e, service)} size={20} />
-                                            <MdDelete onClick={(e) => handleDeleteModal(e, service._id)} size={22} color='red' />
-                                        </div>
-                                    </div>
-                                    <p>{parse(service.description)}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
+                    <p>{parse(service.description)}</p>
+                  </div>
                 </div>
-            </Wrapper>
-            {isModalOpen &&
-                <AddServiceModal
-                    setIsModalOpen={setIsModalOpen}
-                    categoryId={params?.categoryId}
-                    getCategoryServices={getCategoryServices}
-                />
-            }
+              ))}
+            </div>
+          </div>
+        </Wrapper>
+        {isModalOpen && (
+          <AddServiceModal
+            setIsModalOpen={setIsModalOpen}
+            categoryId={params?.categoryId}
+            getCategoryServices={getCategoryServices}
+          />
+        )}
 
-            {isUpdateModalOpen &&
-                <AddServiceModal
-                    setIsModalOpen={setIsUpdateModalOpen}
-                    service={service}
-                    getCategoryServices={getCategoryServices}
-                />
-            }
+        {isUpdateModalOpen && (
+          <AddServiceModal
+            setIsModalOpen={setIsUpdateModalOpen}
+            service={service}
+            getCategoryServices={getCategoryServices}
+          />
+        )}
 
-            {isDeleteModalOpen &&
-                <DeleteModal
-                    setState={setIsDeleteModalOpen}
-                    handleDelete={handleDelete}
-                />
-            }
-        </>
-    )
+        {isDeleteModalOpen && (
+          <DeleteModal
+            setState={setIsDeleteModalOpen}
+            handleDelete={handleDelete}
+          />
+        )}
+      </>
+    );
 }
 
 export default CategoryServices

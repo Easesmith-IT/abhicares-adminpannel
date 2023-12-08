@@ -100,29 +100,3 @@ const mapDispatchToProps = (dispatch) => {
 
 export default connect(null,mapDispatchToProps) (ItemCard);
 
-{
-  /* return (
-   <React.Fragment>
-     <h3 className={styles.center}>Frequently Booked</h3>
-     {ITEMS.map((item) => (
-      <div className={styles.itemCard} key={item.id}>
-        <Link to={`${item.id}/details`} className={styles.categoryInfo}>
-          <h4 className={styles.name}>{item.name}</h4>
-          <p>{item.rating}</p>
-          <p>&#x20b9;{item.price}</p>
-          <p>{item.offers}</p>
-          <ul>
-            {item.description.map((des) => (
-              <li>{des}</li>
-            ))}
-          </ul>
-        </Link>
-        <div className={styles.imgDiv}>
-          <img src={item.img} alt="Switch" className={styles.boxImg} />
-        </div>
-        <AddBtn item={item} />
-      </div>
-    ))}
-  </React.Fragment>
-); */
-}
