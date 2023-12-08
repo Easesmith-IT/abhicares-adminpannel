@@ -9,6 +9,7 @@ import { MdDelete } from "react-icons/md";
 import toast from "react-hot-toast";
 import DeleteModal from "../../components/deleteModal/DeleteModal";
 import Wrapper from "../Wrapper";
+import Loader from "../../components/loader/Loader";
 
 const Customers = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -16,61 +17,62 @@ const Customers = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [user, setUser] = useState({});
   const [allUsers, setAllUsers] = useState([]);
-  const [isMessage, setIsMessage] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
 
   const token = localStorage.getItem("adUx")
   const headers = {
-      Authorization:token
+    Authorization: token
   }
   const navigate = useNavigate()
   const getAllUsers = async () => {
     try {
-      if(!token){
+      if (!token) {
         navigate('/');
         return
       }
-      console.log(headers)
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-user`,{headers});
-      console.log(data);
+      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-user`, { headers });
       setAllUsers(data.data);
     } catch (error) {
       console.log(error);
+    }
+    finally{
+      setIsLoading(false);
     }
   };
   useEffect(() => {
     getAllUsers();
   }, [])
 
-  const handleOnChange = async (e, id) => {
-    if (e.target.checked) {
-      try {
-        if(!token){
-          navigate('/');
-          return
-        }
-        const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user-status/${id}`, { status: true },{headers});
-        toast.success("Seller status updated");
-        getAllUsers();
-        console.log(data);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-    else {
-      try {
-        if(!token){
-          navigate('/');
-          return
-        }
-        const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user-status/${id}`, { status: false },{headers});
-        toast.success("Seller status updated");
-        getAllUsers();
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
+  // const handleOnChange = async (e, id) => {
+  //   if (e.target.checked) {
+  //     try {
+  //       if (!token) {
+  //         navigate('/');
+  //         return
+  //       }
+  //       const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user-status/${id}`, { status: true }, { headers });
+  //       toast.success("Seller status updated");
+  //       getAllUsers();
+  //       console.log(data);
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  //   else {
+  //     try {
+  //       if (!token) {
+  //         navigate('/');
+  //         return
+  //       }
+  //       const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user-status/${id}`, { status: false }, { headers });
+  //       toast.success("Seller status updated");
+  //       getAllUsers();
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  // };
 
   const handleUpdateModal = (seller) => {
     setUser(seller);
@@ -84,11 +86,11 @@ const Customers = () => {
 
   const handleDelete = async () => {
     try {
-      if(!token){
+      if (!token) {
         navigate('/');
         return
       }
-      const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-user/${user}`,{headers});
+      const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-user/${user}`, { headers });
       console.log(data);
       toast.success("User deleted successfully");
       getAllUsers();
@@ -102,18 +104,12 @@ const Customers = () => {
     const value = e.target.value;
 
     try {
-      if(!token){
+      if (!token) {
         navigate('/');
         return
       }
-        const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-user?search=${value}`,{headers});
-        if (data.data.length === 0) {
-            setIsMessage(true);
-        }
-        else {
-            setIsMessage(false);
-        }
-        setAllUsers(data.data);
+      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-user?search=${value}`, { headers });
+      setAllUsers(data.data);
     } catch (error) {
       console.log(error);
     }
@@ -133,7 +129,7 @@ const Customers = () => {
     };
   }
 
-  if(!token){
+  if (!token) {
     navigate('/');
     return;
   }
@@ -146,36 +142,35 @@ const Customers = () => {
           <div className={classes["report-header"]}>
             <h1 className={classes["recent-Articles"]}>Users</h1>
             <input onChange={debounce(handleSerach, 1000)} className={classes.input} type="text" placeholder="Search professional" />
-            {/* <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
-                <img src={AddBtn} alt="add product" />
-              </button> */}
           </div>
 
           <div className={classes["report-body"]}>
             <div className={classes["report-topic-heading"]}>
               <h3 className={classes["t-op"]}>User Name</h3>
               <h3 className={classes["t-op"]}>Contact Number</h3>
-              <h3 className={classes["t-op"]}>Status</h3>
               <h3 className={classes["t-op"]}>Update/Delete</h3>
             </div>
 
             <div className={classes.items}>
+              {!isLoading
+                && allUsers?.length === 0
+                && <p>No users found</p>
+              }
+
+              {isLoading
+                && allUsers?.length === 0
+                && <Loader />
+              }
               {allUsers?.map((user) => (
                 <div key={user._id} className={classes.item1}>
                   <h3 className={classes["t-op-nextlvl"]}>{user.name}</h3>
                   <h3 className={classes["t-op-nextlvl"]}>{user.phone}</h3>
-                  <h3 className={`${classes["t-op-nextlvl"]}`}>
-                    <input checked={user.status} onChange={(e) => handleOnChange(e, user._id)} type="checkbox" name="" id="" />
-                    {user.status ? "Active" : "InActive"}
-                  </h3>
                   <h3 className={`${classes["t-op-nextlvl"]}`}>
                     <FiEdit onClick={() => handleUpdateModal(user)} cursor={"pointer"} size={20} />
                     <MdDelete onClick={() => handleDeleteModal(user._id)} cursor={"pointer"} size={22} color='red' />
                   </h3>
                 </div>
               ))}
-
-              {isMessage && <p>no result found</p>}
             </div>
           </div>
         </div>
