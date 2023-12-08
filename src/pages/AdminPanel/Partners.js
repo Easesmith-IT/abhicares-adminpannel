@@ -154,8 +154,8 @@ const Partners = () => {
       <Wrapper>
         <div className={classes["report-container"]}>
           <div className={classes["report-header"]}>
-            <h1 className={classes["recent-Articles"]}>Sellers</h1>
-            <input onChange={debounce(handleSerach, 1000)} className={classes.input} type="text" placeholder="Search seller" />
+            <h1 className={classes["recent-Articles"]}>Professionals</h1>
+            <input onChange={debounce(handleSerach, 1000)} className={classes.input} type="text" placeholder="Search professionals" />
             <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
               <img src={AddBtn} alt="add seller" />
             </button>

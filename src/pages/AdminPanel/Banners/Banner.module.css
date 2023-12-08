@@ -81,9 +81,15 @@ color: black;
     /* border: 2px solid; */
 }
 
+.bannerFooter{
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
 .bannerContainer{
     border: 1px solid grey;
-    width: 90%;
+    width: 70%;
     margin: 20px auto;
     margin-bottom: 15px;
 }

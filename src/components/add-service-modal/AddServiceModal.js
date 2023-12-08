@@ -16,7 +16,7 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
         img: service?.img || "https://www.shutterstock.com/image-photo/interior-hotel-bathroom-260nw-283653278.jpg",
         appHomepage: service?.appHomepage || false,
         webHomepage: service?.webHomepage || false,
-        totalProducts: service?.totalProducts || ""
+        // totalProducts: service?.totalProducts || ""
     });
 
     const getImage = (e) => {
@@ -40,7 +40,7 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
 
     const handleOnSubmit = async (e) => {
         e.preventDefault();
-        if (!serviceInfo.name || !serviceInfo.startingPrice || !serviceInfo.img || !serviceInfo.totalProducts || !description) {
+        if (!serviceInfo.name || !serviceInfo.startingPrice || !serviceInfo.img || !description) {
             return;
         }
         const formData = new FormData();
@@ -49,7 +49,6 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
         formData.append("description", description);
         formData.append("appHomepage", serviceInfo.appHomepage);
         formData.append("webHomepage", serviceInfo.webHomepage);
-        formData.append("totalProducts", serviceInfo.totalProducts);
         formData.append("img", serviceInfo.img);
         formData.append("categoryId", categoryId);
 
@@ -83,55 +82,97 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
       }
 
     return (
-        <div className={classes.wrapper}>
-            <div className={classes.modal}>
-                <div className={classes.heading_container}>
-                    <h4>{service ? "Update" : "Add"} Service</h4>
-                    <div className={classes.d_flex}>
-                        <RxCross2 onClick={() => setIsModalOpen(false)} cursor={"pointer"} size={26} />
-                    </div>
-                </div>
-                <form onSubmit={handleOnSubmit} className={classes.form}>
-                    <div className={classes.input_container}>
-                        <label htmlFor="name">Name</label>
-                        <input className={classes.input} onChange={handleOnChange} value={serviceInfo.name} type="text" name="name" id="name" />
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="startingPrice">Starting Price</label>
-                        <input className={classes.input} onChange={handleOnChange} value={serviceInfo.startingPrice} type="number" name="startingPrice" id="startingPrice" />
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="description">Description</label>
-                        <ReactQuill theme="snow" value={description} onChange={setDescription} />
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="imageUrl">imageUrl</label>
-                        <input onChange={getImage} type="file" name="imageUrl" id="imageUrl" />
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="appHomepage">App Homepage</label>
-                        <select onChange={handleOnChange} value={serviceInfo.appHomepage} className={classes.input} name="appHomepage" id="appHomepage">
-                            <option value="true">True</option>
-                            <option value="false">False</option>
-                        </select>
-                    </div>
-                    <div className={classes.input_container}>
-                        <label htmlFor="webHomepage">Web Homepage</label>
-                        <div className={classes.switch}>
-                            <div></div>
-                        </div>
-                    </div>
-                    <div className={classes.input_container}>
+      <div className={classes.wrapper}>
+        <div className={classes.modal}>
+          <div className={classes.heading_container}>
+            <h4>{service ? "Update" : "Add"} Service</h4>
+            <div className={classes.d_flex}>
+              <RxCross2
+                onClick={() => setIsModalOpen(false)}
+                cursor={"pointer"}
+                size={26}
+              />
+            </div>
+          </div>
+          <form onSubmit={handleOnSubmit} className={classes.form}>
+            <div className={classes.input_container}>
+              <label htmlFor="name">Name</label>
+              <input
+                className={classes.input}
+                onChange={handleOnChange}
+                value={serviceInfo.name}
+                type="text"
+                name="name"
+                id="name"
+              />
+            </div>
+            <div className={classes.input_container}>
+              <label htmlFor="startingPrice">Starting Price</label>
+              <input
+                className={classes.input}
+                onChange={handleOnChange}
+                value={serviceInfo.startingPrice}
+                type="number"
+                name="startingPrice"
+                id="startingPrice"
+              />
+            </div>
+            <div className={classes.input_container}>
+              <label htmlFor="description">Description</label>
+              <ReactQuill
+                theme="snow"
+                value={description}
+                onChange={setDescription}
+              />
+            </div>
+            <div className={classes.input_container}>
+              <label htmlFor="imageUrl">imageUrl</label>
+              <input
+                onChange={getImage}
+                type="file"
+                name="imageUrl"
+                id="imageUrl"
+              />
+            </div>
+            <div className={classes.input_container}>
+              <label htmlFor="appHomepage">App Homepage</label>
+              <select
+                onChange={handleOnChange}
+                value={serviceInfo.appHomepage}
+                className={classes.input}
+                name="appHomepage"
+                id="appHomepage"
+              >
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
+            </div>
+            <div className={classes.input_container}>
+              <label htmlFor="webHomepage">Web Homepage</label>
+              <select
+                onChange={handleOnChange}
+                value={serviceInfo.webHomepage}
+                className={classes.input}
+                name="webHomepage"
+                id="webHomepage"
+              >
+                <option value="true">True</option>
+                <option value="false">False</option>
+              </select>
+            </div>
+            {/* <div className={classes.input_container}>
                         <label htmlFor="totalProducts">Total Products</label>
                         <input className={classes.input} onChange={handleOnChange} value={serviceInfo.totalProducts} type="number" name="totalProducts" id="totalProducts" />
-                    </div>
-                    <div className={classes.button_wrapper}>
-                        <button className={classes.button}>{service ? "Update" : "Add"}</button>
-                    </div>
-                </form>
+                    </div> */}
+            <div className={classes.button_wrapper}>
+              <button className={classes.button}>
+                {service ? "Update" : "Add"}
+              </button>
             </div>
+          </form>
         </div>
-    )
+      </div>
+    );
 }
 
 export default AddServiceModal
