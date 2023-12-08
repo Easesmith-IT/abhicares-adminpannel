@@ -9,7 +9,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { IoIosArrowDown } from 'react-icons/io';
 
-const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage,allProducts }) => {
+const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage, allProducts }) => {
+    const navigate = useNavigate()
     const token = localStorage.getItem("adUx")
 
     const headers = {
@@ -25,11 +26,7 @@ const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage,allProducts 
     });
     const [isMultiSelectOpen, setIsMultiSelectOpen] = useState(false);
 
-     const token = localStorage.getItem("adUx");
 
-     const headers = {
-       Authorization: token,
-     };
 
     const getImage = (e) => {
         e.preventDefault();
