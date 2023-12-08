@@ -140,8 +140,11 @@ const Customers = () => {
 
         <div className={classes["report-container"]}>
           <div className={classes["report-header"]}>
-            <h1 className={classes["recent-Articles"]}>Users</h1>
-            <input onChange={debounce(handleSerach, 1000)} className={classes.input} type="text" placeholder="Search professional" />
+            <h1 className={classes["recent-Articles"]}>Customers</h1>
+            <input onChange={debounce(handleSerach, 1000)} className={classes.input} type="text" placeholder="Search customers" />
+            {/* <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
+                <img src={AddBtn} alt="add product" />
+              </button> */}
           </div>
 
           <div className={classes["report-body"]}>

@@ -137,22 +137,4 @@ const CategoryPage = (props) => {
 };
 export default CategoryPage;
 
-{
-  /* <div className={classes.leftContainer}>
-  <h4 className={classes.center}>Select a service</h4>
-  <div style={{ display: "flex", justifyContent: "space-between" }}>
-    <div>
-      <img src={Icn} width={60} height={60}></img>
-      <p>abc</p>
-    </div>
-    <div>
-      <img src={Icn} width={60} height={60}></img>
-      <p>abc</p>
-    </div>
-    <div>
-      <img src={Icn} width={60} height={60}></img>
-      <p>abc</p>
-    </div>
-  </div>
-</div>; */
-}
+

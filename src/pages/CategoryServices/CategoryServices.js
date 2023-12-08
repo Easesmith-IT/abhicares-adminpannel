@@ -137,22 +137,22 @@ const CategoryServices = () => {
                 />
             }
 
-            {isUpdateModalOpen &&
-                <AddServiceModal
-                    setIsModalOpen={setIsUpdateModalOpen}
-                    service={service}
-                    getCategoryServices={getCategoryServices}
-                />
-            }
+        {isUpdateModalOpen && (
+          <AddServiceModal
+            setIsModalOpen={setIsUpdateModalOpen}
+            service={service}
+            getCategoryServices={getCategoryServices}
+          />
+        )}
 
-            {isDeleteModalOpen &&
-                <DeleteModal
-                    setState={setIsDeleteModalOpen}
-                    handleDelete={handleDelete}
-                />
-            }
-        </>
-    )
+        {isDeleteModalOpen && (
+          <DeleteModal
+            setState={setIsDeleteModalOpen}
+            handleDelete={handleDelete}
+          />
+        )}
+      </>
+    );
 }
 
 export default CategoryServices

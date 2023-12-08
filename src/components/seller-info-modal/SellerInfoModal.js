@@ -8,7 +8,7 @@ const SellerInfoModal = ({ setIsSellerInfoModalOpen, seller }) => {
         <div className={classes.wrapper}>
             <div className={classes.modal}>
                 <div className={classes.heading_container}>
-                    <h4>Seller Info</h4>
+                    <h4>Professional Info</h4>
                     <div className={classes.d_flex}>
                         <RxCross2 onClick={() => setIsSellerInfoModalOpen(false)} cursor={"pointer"} size={26} />
                     </div>

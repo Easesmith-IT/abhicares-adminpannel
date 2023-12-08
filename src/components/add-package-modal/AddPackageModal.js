@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import classes from './AddPackageModal.module.css';
 import { RxCross2 } from 'react-icons/rx';
+import {useNavigate} from 'react-router-dom'
 
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -8,7 +9,8 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 import { IoIosArrowDown } from 'react-icons/io';
 
-const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage,allProducts }) => {
+const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage, allProducts }) => {
+    const navigate = useNavigate()
     const token = localStorage.getItem("adUx")
 
     const headers = {
@@ -23,6 +25,8 @@ const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage,allProducts 
         products: [],
     });
     const [isMultiSelectOpen, setIsMultiSelectOpen] = useState(false);
+
+
 
     const getImage = (e) => {
         e.preventDefault();
@@ -69,6 +73,10 @@ const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage,allProducts 
 
 
         try {
+            if (!token) {
+              navigate("/");
+              return;
+            }
             const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-package`, formData,{headers});
             toast.success("Package added successfully");
             getAllPackage();
@@ -77,7 +85,10 @@ const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage,allProducts 
             console.log(error);
         }
     }
-
+if (!token) {
+  navigate("/");
+  return;
+}
     return (
         <div className={classes.wrapper}>
             <div className={classes.modal}>
