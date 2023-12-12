@@ -9,7 +9,7 @@ import Customers from "./pages/AdminPanel/Customers";
 import Services from "./pages/AdminPanel/Services";
 import CategoryServices from "./pages/CategoryServices/CategoryServices";
 import Payments from "./pages/AdminPanel/Payments";
-import Offers from "./pages/AdminPanel/Offers";
+import Offers from "./pages/AdminPanel/offers/Offers";
 import AdminLogin from "./pages/AdminPanel/AdminLogin";
 import ServiceInfoPage from "./pages/serviceInfoPage/ServiceInfoPage";
 
@@ -28,6 +28,7 @@ import AboutUs from "./pages/AdminPanel/cms/about-us/AboutUs";
 import ContactUs from "./pages/AdminPanel/cms/contact-us/ContactUs";
 import Bookings from "./pages/AdminPanel/bookings/Bookings";
 import BookingDetails from "./pages/AdminPanel/bookingDetails/BookingDetails";
+import AvailableCities from "./pages/AdminPanel/availableCities/AvailableCities";
 
 function App() {
   return (
@@ -86,6 +87,8 @@ function App() {
 
           <Route path="/admin/enquiries" element={<Enquiry />} />
           <Route path="/admin/offers" element={<Offers />} />
+          <Route path="/admin/available-cities" element={<AvailableCities />} />
+
           <Route path="/*" element={<Error />} />
         </Routes>
       </Router>

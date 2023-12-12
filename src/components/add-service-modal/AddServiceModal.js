@@ -70,7 +70,6 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
                 return;
               }
             const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-service`, formData,{headers});
-            console.log();
             toast.success("Service added successfully");
             getCategoryServices();
             setIsModalOpen(false);

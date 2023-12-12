@@ -180,12 +180,12 @@ const Partners = () => {
                 && <Loader />
               }
               {allSellers?.map((seller) => (
-                <div key={seller._id} onClick={() => handleSellerInfoModal(seller)} className={classes.item1}>
+                <div key={seller._id} onClick={(e) => handleSellerInfoModal(seller)} className={classes.item1}>
                   <h3 className={classes["t-op-nextlvl"]}>{seller.name}</h3>
                   <h3 className={`${classes["t-op-nextlvl"]}`}>service</h3>
                   <h3 className={`${classes["t-op-nextlvl"]}`}>category</h3>
                   <h3 className={`${classes["t-op-nextlvl"]}`}>{seller.phone}</h3>
-                  <h3 className={`${classes["t-op-nextlvl"]}`}>
+                  <h3 onClick={(e) => e.stopPropagation()} className={`${classes["t-op-nextlvl"]}`}>
                     <input checked={seller.status} onChange={(e) => handleOnChange(e, seller._id)} type="checkbox" name="" id="" />
                     {seller.status ? "Active" : "InActive"}
                   </h3>
