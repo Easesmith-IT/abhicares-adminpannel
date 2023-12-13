@@ -1,0 +1,34 @@
+.container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.city {
+    max-width: 370px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.d_flex{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.p{
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+.city_right {
+    display: flex;
+    gap: 10px;
+}

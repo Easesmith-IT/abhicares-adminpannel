@@ -291,6 +291,7 @@
 .report-container {
   min-height: 300px;
   max-width: 1200px;
+  width: 100%;
   margin: 70px auto 0px auto;
   background-color: #ffffff;
   border-radius: 30px;

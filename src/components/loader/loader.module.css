@@ -1,6 +1,7 @@
 .img_container{
     display: flex;
     justify-content: center;
+    width: 100%;
 }
 
 .img_container img{
