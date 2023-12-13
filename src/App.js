@@ -29,6 +29,10 @@ import ContactUs from "./pages/AdminPanel/cms/contact-us/ContactUs";
 import Bookings from "./pages/AdminPanel/bookings/Bookings";
 import BookingDetails from "./pages/AdminPanel/bookingDetails/BookingDetails";
 import AvailableCities from "./pages/AdminPanel/availableCities/AvailableCities";
+import WebCategory from "./pages/AdminPanel/Banners/Website/Category";
+import WebHome from "./pages/AdminPanel/Banners/Website/Home";
+import WebService from "./pages/AdminPanel/Banners/Website/Service";
+import WebProduct from "./pages/AdminPanel/Banners/Website/Product";
 
 function App() {
   return (
@@ -53,6 +57,12 @@ function App() {
           <Route path="/admin/banners/app/category" exact element={<Category />} />
           <Route path="/admin/banners/app/service" exact element={<Service />} />
           <Route path="/admin/banners/app/product" exact element={<Product />} />
+
+          <Route path="/admin/banners/web" exact element={<WebsiteBanner />} />
+          <Route path="/admin/banners/web/home" exact element={<WebHome />} />
+          <Route path="/admin/banners/web/category" exact element={<WebCategory />} />
+          <Route path="/admin/banners/web/service" exact element={<WebService />} />
+          <Route path="/admin/banners/web/product" exact element={<WebProduct />} />
 
 
           <Route path="/admin/cms" exact element={<Cms />} />
