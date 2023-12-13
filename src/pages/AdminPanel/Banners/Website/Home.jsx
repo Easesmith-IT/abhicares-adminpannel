@@ -8,9 +8,9 @@ import toast from "react-hot-toast";
 
 const WebHome = () => {
   const [images, setImages] = useState([
-    { bannerName: "banner1", file: null, preview: null },
-    { bannerName: "banner2", file: null, preview: null },
-    { bannerName: "banner3", file: null, preview: null },
+    { bannerName: "hero-banner1", file: null, preview: null },
+    { bannerName: "hero-banner2", file: null, preview: null },
+    { bannerName: "hero-banner3", file: null, preview: null },
   ]);
 
   const [banners, setBanners] = useState([
@@ -20,29 +20,34 @@ const WebHome = () => {
 
   const bannerChangeHandler = (e, bannerName) => {
     const file = e.target.files[0];
-    const fileReader = new FileReader();
 
+    const fileReader = new FileReader();
     fileReader.readAsDataURL(file);
     fileReader.addEventListener("load", function () {
       console.log(this.result);
-      const index = banners.findIndex((banner) => banner.bannerName === bannerName);
+      const index = banners.findIndex(
+        (banner) => banner.bannerName === bannerName
+      );
       console.log("index", index);
       const instance = [...banners];
-      instance.splice(index, 1, { bannerName, file, preview: this.result })
+      instance.splice(index, 1, { bannerName, file, preview: this.result });
       setBanners(instance);
     });
   };
 
   const imageChangeHandler = (e, bannerName) => {
     const file = e.target.files[0];
-    const fileReader = new FileReader();
+    console.log(file);
 
+    const fileReader = new FileReader();
     fileReader.readAsDataURL(file);
     fileReader.addEventListener("load", function () {
       console.log(this.result);
-      const index = images.findIndex((banner) => banner.bannerName === bannerName);
+      const index = images.findIndex(
+        (banner) => banner.bannerName === bannerName
+      );
       const instance = [...images];
-      instance.splice(index, 1, { bannerName, file, preview: this.result })
+      instance.splice(index, 1, { bannerName, file, preview: this.result });
       setImages(instance);
     });
   };
@@ -51,32 +56,21 @@ const WebHome = () => {
     //params
     // type='hero-banners','banner1','banner2'
 
-    console.log('type==', type)
+    console.log("type==", type);
 
     const formDataHero = new FormData();
     const t = type === "banner1" ? 0 : 1;
 
-    if (type === "hero-banners") {
-      formDataHero.append("no_of_images", "multiple");
-      for (const img of images) {
-        if (img.file === null) {
-          alert('Please select the images');
-          return;
-        }
-        formDataHero.append("img", img.file);
-      }
-    } else {
-      formDataHero.append("no_of_images", "single");
-      if (banners[t].file === null) {
-        alert("Please select the images");
-        return;
-      }
-      formDataHero.append("img", banners[t].file);
+    if (banners[t].file === null) {
+      alert("Please select the images");
+      return;
     }
+
+    formDataHero.append("img", banners[t].file);
 
     formDataHero.append("type", type);
 
-    formDataHero.append("page", "home");
+    formDataHero.append("page", "home-banners");
     formDataHero.append("section", "web-homepage");
 
     try {
@@ -94,7 +88,35 @@ const WebHome = () => {
     }
   };
 
-  console.log("images",images);
+  const uploadHeroImages = async (type) => {
+    console.log(type);
+    const formDataHero = new FormData();
+    let filtered = images.find((image) => image.bannerName === type);
+
+    if (filtered.file === null) {
+      toast.error("Please select the image");
+      return;
+    }
+    formDataHero.append("img", filtered.file);
+    formDataHero.append("type", type);
+
+    formDataHero.append("page", "home-hero-banners");
+    formDataHero.append("section", "web-homepage");
+
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/content/upload-banners",
+        formDataHero
+      );
+
+      if (response.status === 200) {
+        getBannersFromServer();
+        toast.success("Updated successfully!");
+      }
+    } catch (err) {
+      console.log("ERROR", err.message);
+    }
+  };
 
   const getBannersFromServer = async () => {
     try {
@@ -102,8 +124,8 @@ const WebHome = () => {
         "http://localhost:5000/api/content/get-banners",
         {
           params: {
-            type: "hero-banners",
-            page: "home",
+            heroBanners: true,
+            page: "home-hero-banners",
             section: "web-homepage",
           },
         }
@@ -113,8 +135,14 @@ const WebHome = () => {
       let i = 0;
       for (const img of response1.data.banners) {
         i = i + 1;
-        const index = images.findIndex((banner) => banner.bannerName === `banner${i}`);
-        imgInstance.splice(index, 1, { bannerName: `banner${i}`, file: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}`, preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}` })
+        const index = images.findIndex(
+          (banner) => banner.bannerName === `hero-banner${i}`
+        );
+        imgInstance.splice(index, 1, {
+          bannerName: `hero-banner${i}`,
+          file: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}`,
+          preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}`,
+        });
       }
       setImages(() => imgInstance);
 
@@ -123,15 +151,22 @@ const WebHome = () => {
         {
           params: {
             type: "banner1",
-            page: "home",
+            page: "home-banners",
             section: "web-homepage",
           },
         }
       );
+      console.log("rs 2 bann", response2);
 
       const instance = [...banners];
-      const index = banners.findIndex((banner) => banner.bannerName === "banner4");
-      instance.splice(index, 1, { bannerName: "banner4", file: null, preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response2.data.banners[0]}` })
+      const index = banners.findIndex(
+        (banner) => banner.bannerName === "banner4"
+      );
+      instance.splice(index, 1, {
+        bannerName: "banner4",
+        file: null,
+        preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response2.data.banners}`,
+      });
       setBanners(() => instance);
 
       const response3 = await axios.get(
@@ -139,21 +174,25 @@ const WebHome = () => {
         {
           params: {
             type: "banner2",
-            page: "home",
+            page: "home-banners",
             section: "web-homepage",
           },
         }
       );
-
-      const index2 = banners.findIndex((banner) => banner.bannerName === "banner5");
-      instance.splice(index2, 1, { bannerName: "banner5", file: null, preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response3.data.banners[0]}` })
+      const index2 = banners.findIndex(
+        (banner) => banner.bannerName === "banner5"
+      );
+      instance.splice(index2, 1, {
+        bannerName: "banner5",
+        file: null,
+        preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response3.data.banners}`,
+      });
       setBanners(() => instance);
 
-      console.log(response1);
+      console.log("response1", response1);
 
       console.log(response2);
       console.log(response3);
-
     } catch (err) {
       console.log(err.message);
     }
@@ -163,28 +202,19 @@ const WebHome = () => {
     getBannersFromServer();
   }, []);
 
+
   return (
     <Wrapper>
       <div>
         <div className="my-3 mx-5 d-flex justify-content-between">
           <h3>Hero Banners(3)</h3>
-          <button
-            type="button"
-            className="btn btn-primary"
-            onClick={() => uploadImages('hero-banners')}
-          >
-            Update
-          </button>
         </div>
         <div className={classes.imagesContainer}>
           {images &&
             images.map((img, index) => (
               <div key={index} className={classes.imageWrapper}>
                 {img.bannerName && img.preview && (
-                  <img
-                    src={img.preview}
-                    alt={`i${index + 1}`}
-                  />
+                  <img src={img.preview} alt={`i${index + 1}`} />
                 )}
                 <input
                   type="file"
@@ -195,6 +225,13 @@ const WebHome = () => {
                   }
                   className="mb-2"
                 />
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => uploadHeroImages(`hero-banner${index + 1}`)}
+                >
+                  Update
+                </button>
               </div>
             ))}
         </div>
@@ -206,10 +243,7 @@ const WebHome = () => {
                 <h4>{`Banner ${index + 1}`}</h4>
 
                 {banner.bannerName && banner.preview && (
-                  <img
-                    src={banner.preview}
-                    alt={`banner${index + 1}`}
-                  />
+                  <img src={banner.preview} alt={`banner${index + 1}`} />
                 )}
                 <div className={classes.bannerFooter}>
                   <input

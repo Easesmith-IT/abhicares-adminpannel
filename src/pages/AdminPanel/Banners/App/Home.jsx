@@ -58,23 +58,14 @@ const Home = () => {
     const formDataHero = new FormData();
     const t = type === "banner1" ? 0 : 1;
 
-    if (type === "hero-banners") {
-      formDataHero.append("no_of_images", "multiple");
-      for (const img of images) {
-        if (img.file === null) {
-          alert('Please select the images');
-          return;
-        }
-        formDataHero.append("img", img.file);
-      }
-    } else {
-      formDataHero.append("no_of_images", "single");
+  
       if (banners[t].file === null) {
         alert("Please select the images");
         return;
-      }
-      formDataHero.append("img", banners[t].file);
     }
+    
+      formDataHero.append("img", banners[t].file);
+    
 
     formDataHero.append("type", type);
 
@@ -97,34 +88,15 @@ const Home = () => {
   };
 
   const uploadHeroImages = async (type) => {
+    console.log(type)
     const formDataHero = new FormData();
-    // formDataHero.append("no_of_images", "multiple");
-    if (type === "hero-banner1") {
-      const filtered = images.find((image) => image.bannerName === "banner1")
-      if (filtered.file === null) {
-        toast.error("Please select the image");
-        return;
-      }
-      formDataHero.append("img", filtered.file);
-    } else if (type === "hero-banner2") {
-      const filtered = images.find((image) => image.bannerName === "banner2")
-      formDataHero.append("no_of_images", "single");
-      if (banners.file === null) {
-        toast.error("Please select the image");
-        return;
-      }
-      formDataHero.append("img", filtered.file);
-    }
-    else if (type === "hero-banner3") {
-      const filtered = images.find((image) => image.bannerName === "banner2")
-      formDataHero.append("no_of_images", "single");
-      if (banners.file === null) {
-        toast.error("Please select the image");
-        return;
-      }
-      formDataHero.append("img", filtered.file);
-    }
+    let filtered = images.find((image) => image.bannerName === type);
 
+    if (filtered.file === null) {
+      toast.error("Please select the image");
+      return;
+    }
+    formDataHero.append("img", filtered.file);
     formDataHero.append("type", type);
 
     formDataHero.append("page", "home-hero-banners");
@@ -151,7 +123,7 @@ const Home = () => {
         "http://localhost:5000/api/content/get-banners",
         {
           params: {
-            type: "hero-banners",
+           heroBanners:true,
             page: "home-hero-banners",
             section: "app-homepage",
           },
@@ -172,15 +144,16 @@ const Home = () => {
         {
           params: {
             type: "banner1",
-            page: "home-banner",
+            page: "home-banners",
             section: "app-homepage",
           },
         }
       );
+      console.log('rs 2 bann',response2)
 
       const instance = [...banners];
       const index = banners.findIndex((banner) => banner.bannerName === "banner4");
-      instance.splice(index, 1, { bannerName: "banner4", file: null, preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response2.data.banners[0]}` })
+      instance.splice(index, 1, { bannerName: "banner4", file: null, preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response2.data.banners}` })
       setBanners(() => instance);
 
       const response3 = await axios.get(
@@ -188,13 +161,13 @@ const Home = () => {
         {
           params: {
             type: "banner2",
-            page: "home-banner",
+            page: "home-banners",
             section: "app-homepage",
           },
         }
       );
       const index2 = banners.findIndex((banner) => banner.bannerName === "banner5");
-      instance.splice(index2, 1, { bannerName: "banner5", file: null, preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response3.data.banners[0]}` })
+      instance.splice(index2, 1, { bannerName: "banner5", file: null, preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response3.data.banners}` })
       setBanners(() => instance);
 
       console.log("response1", response1);
