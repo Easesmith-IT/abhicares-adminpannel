@@ -14,7 +14,7 @@ const AddOfferModal = ({ setIsModalOpen, offer = "", getAllOffers }) => {
         name: offer?.name || "",
         offPercentage: offer?.offPercentage || "",
         // date: offer?.date || "",
-        // status: offer?.status || true,
+        status: offer?.status || true,
     });
 
     const handleOnChange = (e) => {
@@ -93,13 +93,13 @@ const AddOfferModal = ({ setIsModalOpen, offer = "", getAllOffers }) => {
                         <label htmlFor="date">Date</label>
                         <input className={classes.input} onChange={handleOnChange} value={offerInfo.date} type="date" name="date" id="date" />
                     </div> */}
-                    {/* <div className={classes.input_container}>
+                    {offer && <div className={classes.input_container}>
                         <label htmlFor="status">Status</label>
                         <select className={classes.input} name="status" id="status">
                             <option value="true">Active</option>
                             <option value="false">InActive</option>
                         </select>
-                    </div> */}
+                    </div>}
                     <div className={classes.input_container}>
                         <label htmlFor="description">Description</label>
                         <ReactQuill theme="snow" value={description} onChange={setDescription} />
