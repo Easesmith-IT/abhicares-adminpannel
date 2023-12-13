@@ -6,11 +6,11 @@ import DummyImage from "../../../../assets/dummy.png";
 import classes from "../Banner.module.css";
 import toast from "react-hot-toast";
 
-const Home = () => {
+const WebHome = () => {
   const [images, setImages] = useState([
-    { bannerName: "hero-banner1", file: null, preview: null },
-    { bannerName: "hero-banner2", file: null, preview: null },
-    { bannerName: "hero-banner3", file: null, preview: null },
+    { bannerName: "banner1", file: null, preview: null },
+    { bannerName: "banner2", file: null, preview: null },
+    { bannerName: "banner3", file: null, preview: null },
   ]);
 
   const [banners, setBanners] = useState([
@@ -20,8 +20,8 @@ const Home = () => {
 
   const bannerChangeHandler = (e, bannerName) => {
     const file = e.target.files[0];
-
     const fileReader = new FileReader();
+
     fileReader.readAsDataURL(file);
     fileReader.addEventListener("load", function () {
       console.log(this.result);
@@ -33,12 +33,10 @@ const Home = () => {
     });
   };
 
-
   const imageChangeHandler = (e, bannerName) => {
     const file = e.target.files[0];
-    console.log(file);
-
     const fileReader = new FileReader();
+
     fileReader.readAsDataURL(file);
     fileReader.addEventListener("load", function () {
       console.log(this.result);
@@ -78,8 +76,8 @@ const Home = () => {
 
     formDataHero.append("type", type);
 
-    formDataHero.append("page", "home-banners");
-    formDataHero.append("section", "app-homepage");
+    formDataHero.append("page", "home");
+    formDataHero.append("section", "web-homepage");
 
     try {
       const response = await axios.post(
@@ -96,54 +94,7 @@ const Home = () => {
     }
   };
 
-  const uploadHeroImages = async (type) => {
-    const formDataHero = new FormData();
-    // formDataHero.append("no_of_images", "multiple");
-    if (type === "hero-banner1") {
-      const filtered = images.find((image) => image.bannerName === "banner1")
-      if (filtered.file === null) {
-        toast.error("Please select the image");
-        return;
-      }
-      formDataHero.append("img", filtered.file);
-    } else if (type === "hero-banner2") {
-      const filtered = images.find((image) => image.bannerName === "banner2")
-      formDataHero.append("no_of_images", "single");
-      if (banners.file === null) {
-        toast.error("Please select the image");
-        return;
-      }
-      formDataHero.append("img", filtered.file);
-    }
-    else if (type === "hero-banner3") {
-      const filtered = images.find((image) => image.bannerName === "banner2")
-      formDataHero.append("no_of_images", "single");
-      if (banners.file === null) {
-        toast.error("Please select the image");
-        return;
-      }
-      formDataHero.append("img", filtered.file);
-    }
-
-    formDataHero.append("type", type);
-
-    formDataHero.append("page", "home-hero-banners");
-    formDataHero.append("section", "app-homepage");
-
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/content/upload-banners",
-        formDataHero
-      );
-
-      if (response.status === 200) {
-        getBannersFromServer();
-        toast.success("Updated successfully!");
-      }
-    } catch (err) {
-      console.log("ERROR", err.message);
-    }
-  }
+  console.log("images",images);
 
   const getBannersFromServer = async () => {
     try {
@@ -152,8 +103,8 @@ const Home = () => {
         {
           params: {
             type: "hero-banners",
-            page: "home-hero-banners",
-            section: "app-homepage",
+            page: "home",
+            section: "web-homepage",
           },
         }
       );
@@ -162,8 +113,8 @@ const Home = () => {
       let i = 0;
       for (const img of response1.data.banners) {
         i = i + 1;
-        const index = images.findIndex((banner) => banner.bannerName === `hero-banner${i}`);
-        imgInstance.splice(index, 1, { bannerName: `hero-banner${i}`, file: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}`, preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}` })
+        const index = images.findIndex((banner) => banner.bannerName === `banner${i}`);
+        imgInstance.splice(index, 1, { bannerName: `banner${i}`, file: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}`, preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}` })
       }
       setImages(() => imgInstance);
 
@@ -172,8 +123,8 @@ const Home = () => {
         {
           params: {
             type: "banner1",
-            page: "home-banner",
-            section: "app-homepage",
+            page: "home",
+            section: "web-homepage",
           },
         }
       );
@@ -188,24 +139,25 @@ const Home = () => {
         {
           params: {
             type: "banner2",
-            page: "home-banner",
-            section: "app-homepage",
+            page: "home",
+            section: "web-homepage",
           },
         }
       );
+
       const index2 = banners.findIndex((banner) => banner.bannerName === "banner5");
       instance.splice(index2, 1, { bannerName: "banner5", file: null, preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response3.data.banners[0]}` })
       setBanners(() => instance);
 
-      console.log("response1", response1);
+      console.log(response1);
 
       console.log(response2);
       console.log(response3);
+
     } catch (err) {
       console.log(err.message);
     }
   };
-
 
   useEffect(() => {
     getBannersFromServer();
@@ -216,6 +168,13 @@ const Home = () => {
       <div>
         <div className="my-3 mx-5 d-flex justify-content-between">
           <h3>Hero Banners(3)</h3>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => uploadImages('hero-banners')}
+          >
+            Update
+          </button>
         </div>
         <div className={classes.imagesContainer}>
           {images &&
@@ -236,13 +195,6 @@ const Home = () => {
                   }
                   className="mb-2"
                 />
-                <button
-                    type="button"
-                    className="btn btn-primary"
-                    onClick={() => uploadHeroImages(`hero-banner${index + 1}`)}
-                  >
-                    Update
-                  </button>
               </div>
             ))}
         </div>
@@ -286,4 +238,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default WebHome;
