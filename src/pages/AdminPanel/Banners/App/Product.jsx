@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import Wrapper from "../../../Wrapper";
 import classes from "../Banner.module.css";
-import { useState } from "react";
+import toast from "react-hot-toast";
+import { useState,useEffect } from "react";
 
 const Product = () => {
   const [image, setImage] = useState({
@@ -21,27 +22,64 @@ const Product = () => {
   };
 
   const uploadImages = async () => {
- 
-    const formData = new FormData();
-    formData.append("type", "product-banner");
-    formData.append("page", "product");
-    formData.append("section", "app-productpage");
-    formData.append("no_of_images", "single");
-    formData.append("img", image.file)
+   
+    const formDataHero = new FormData();
+      if (image.file === null) {
+        alert("Please select the images");
+        return;
+    }
     
-    console.log('imgfile',image.file)
+      formDataHero.append("img", image.file);
+    
 
+    formDataHero.append("type", "product-banner");
+
+    formDataHero.append("page", "product-banners");
+    formDataHero.append("section", "app-productpage");
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/content/upload-banners",
-        formData
+        `${process.env.REACT_APP_CMS_URL}/upload-banners`,
+        formDataHero
       );
-      console.log(response);
+
+      if (response.status === 200) {
+        getBannersFromServer();
+        toast.success("Updated successfully!");
+      }
     } catch (err) {
       console.log("ERROR", err.message);
     }
   };
+
+  const getBannersFromServer = async () => {
+    try {
+ 
+
+      const response = await axios.get(
+        `${process.env.REACT_APP_CMS_URL}/get-banners`,
+        {
+          params: {
+            type: "product-banner",
+            page: "product-banners",
+            section: "app-productpage",
+          },
+        }
+      );
+
+      setImage({
+        file: null, preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response.data.banners}`
+      })
+      console.log("response1", response);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+
+  useEffect(() => {
+    getBannersFromServer();
+  }, []);
 
   return (
     <Wrapper>

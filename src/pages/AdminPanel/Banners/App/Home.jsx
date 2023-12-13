@@ -74,7 +74,7 @@ const Home = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/content/upload-banners",
+        `${process.env.REACT_APP_CMS_URL}/upload-banners`,
         formDataHero
       );
 
@@ -104,7 +104,7 @@ const Home = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/content/upload-banners",
+        `${process.env.REACT_APP_CMS_URL}/upload-banners`,
         formDataHero
       );
 
@@ -120,7 +120,7 @@ const Home = () => {
   const getBannersFromServer = async () => {
     try {
       const response1 = await axios.get(
-        "http://localhost:5000/api/content/get-banners",
+        `${process.env.REACT_APP_CMS_URL}/get-banners`,
         {
           params: {
            heroBanners:true,
@@ -131,16 +131,25 @@ const Home = () => {
       );
 
       const imgInstance = [...images];
-      let i = 0;
-      for (const img of response1.data.banners) {
-        i = i + 1;
-        const index = images.findIndex((banner) => banner.bannerName === `hero-banner${i}`);
-        imgInstance.splice(index, 1, { bannerName: `hero-banner${i}`, file: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}`, preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}` })
+      for (let i = 0; i < response1.data.banners.length; i++) {
+        const img = response1.data.banners[i];
+        const bannerName = `hero-banner${i + 1}`;
+        const index = images.findIndex(
+          (banner) => banner.bannerName === bannerName
+        );
+
+        if (index !== -1) {
+          imgInstance.splice(index, 1, {
+            bannerName: bannerName,
+            file: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}`,
+            preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}`,
+          });
+        }
       }
-      setImages(() => imgInstance);
+      setImages(imgInstance);
 
       const response2 = await axios.get(
-        "http://localhost:5000/api/content/get-banners",
+        `${process.env.REACT_APP_CMS_URL}/get-banners`,
         {
           params: {
             type: "banner1",
@@ -157,7 +166,7 @@ const Home = () => {
       setBanners(() => instance);
 
       const response3 = await axios.get(
-        "http://localhost:5000/api/content/get-banners",
+        `${process.env.REACT_APP_CMS_URL}/get-banners`,
         {
           params: {
             type: "banner2",

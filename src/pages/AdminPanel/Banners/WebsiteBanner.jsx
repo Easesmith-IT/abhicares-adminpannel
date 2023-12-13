@@ -11,14 +11,14 @@ const WebsiteBanner = () => {
           <Link to="/admin/banners/web/home" className={classes.pageBanner}>
             HomePage
           </Link>
-          <Link
+          {/* <Link
             to="/admin/banners/web/category"
             className={classes.pageBanner}
           >
             Category Page
-          </Link>
+          </Link> */}
         </div>
-        <div className={classes.container}>
+        {/* <div className={classes.container}>
           <Link
             to="/admin/banners/web/service"
             className={classes.pageBanner}
@@ -28,7 +28,7 @@ const WebsiteBanner = () => {
           <Link to="/admin/banners/web/product" className={classes.pageBanner}>
             Product Page
           </Link>
-        </div>
+        </div> */}
       </div>
     </Wrapper>
   );

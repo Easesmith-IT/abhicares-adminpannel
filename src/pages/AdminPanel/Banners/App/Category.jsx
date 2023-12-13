@@ -1,205 +1,204 @@
 import { Link } from "react-router-dom";
-import axios from 'axios';
-import React, { useState,useEffect } from "react";
+import axios from "axios";
+import React, { useState, useEffect } from "react";
 import Wrapper from "../../../Wrapper";
 import classes from "../Banner.module.css";
 import toast from "react-hot-toast";
 
 const Category = () => {
-   const [images, setImages] = useState([
-     { bannerName: "hero-banner1", file: null, preview: null },
-     { bannerName: "hero-banner2", file: null, preview: null },
-     { bannerName: "hero-banner3", file: null, preview: null },
-   ]);
+  const [images, setImages] = useState([
+    { bannerName: "hero-banner1", file: null, preview: null },
+    { bannerName: "hero-banner2", file: null, preview: null },
+    { bannerName: "hero-banner3", file: null, preview: null },
+  ]);
 
-   const [banners, setBanners] = useState([
-     { bannerName: "banner4", file: null, preview: null },
-     { bannerName: "banner5", file: null, preview: null },
-   ]);
+  const [banners, setBanners] = useState([
+    { bannerName: "banner4", file: null, preview: null },
+    { bannerName: "banner5", file: null, preview: null },
+  ]);
 
-   const bannerChangeHandler = (e, bannerName) => {
-     const file = e.target.files[0];
+  const bannerChangeHandler = (e, bannerName) => {
+    const file = e.target.files[0];
 
-     const fileReader = new FileReader();
-     fileReader.readAsDataURL(file);
-     fileReader.addEventListener("load", function () {
-       console.log(this.result);
-       const index = banners.findIndex(
-         (banner) => banner.bannerName === bannerName
-       );
-       console.log("index", index);
-       const instance = [...banners];
-       instance.splice(index, 1, { bannerName, file, preview: this.result });
-       setBanners(instance);
-     });
-   };
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.addEventListener("load", function () {
+      console.log(this.result);
+      const index = banners.findIndex(
+        (banner) => banner.bannerName === bannerName
+      );
+      console.log("index", index);
+      const instance = [...banners];
+      instance.splice(index, 1, { bannerName, file, preview: this.result });
+      setBanners(instance);
+    });
+  };
 
-   const imageChangeHandler = (e, bannerName) => {
-     const file = e.target.files[0];
-     console.log(file);
+  const imageChangeHandler = (e, bannerName) => {
+    const file = e.target.files[0];
+    console.log(file);
 
-     const fileReader = new FileReader();
-     fileReader.readAsDataURL(file);
-     fileReader.addEventListener("load", function () {
-       console.log(this.result);
-       const index = images.findIndex(
-         (banner) => banner.bannerName === bannerName
-       );
-       const instance = [...images];
-       instance.splice(index, 1, { bannerName, file, preview: this.result });
-       setImages(instance);
-     });
-   };
+    const fileReader = new FileReader();
+    fileReader.readAsDataURL(file);
+    fileReader.addEventListener("load", function () {
+      console.log(this.result);
+      const index = images.findIndex(
+        (banner) => banner.bannerName === bannerName
+      );
+      const instance = [...images];
+      instance.splice(index, 1, { bannerName, file, preview: this.result });
+      setImages(instance);
+    });
+  };
 
-   const uploadImages = async (type) => {
-     //params
-     // type='hero-banners','banner1','banner2'
+  const uploadImages = async (type) => {
+    //params
+    // type='hero-banners','banner1','banner2'
 
-     console.log("type==", type);
+    console.log("type==", type);
 
-     const formDataHero = new FormData();
-     const t = type === "banner1" ? 0 : 1;
+    const formDataHero = new FormData();
+    const t = type === "banner1" ? 0 : 1;
 
-     if (banners[t].file === null) {
-       alert("Please select the images");
-       return;
-     }
+    if (banners[t].file === null) {
+      alert("Please select the images");
+      return;
+    }
 
-     formDataHero.append("img", banners[t].file);
+    formDataHero.append("img", banners[t].file);
 
-     formDataHero.append("type", type);
+    formDataHero.append("type", type);
 
-     formDataHero.append("page", "category-banners");
-     formDataHero.append("section", "app-categorypage");
+    formDataHero.append("page", "category-banners");
+    formDataHero.append("section", "app-categorypage");
 
-     try {
-       const response = await axios.post(
-         "http://localhost:5000/api/content/upload-banners",
-         formDataHero
-       );
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_CMS_URL}/upload-banners`,
+        formDataHero
+      );
 
-       if (response.status === 200) {
-         getBannersFromServer();
-         toast.success("Updated successfully!");
-       }
-     } catch (err) {
-       console.log("ERROR", err.message);
-     }
-   };
+      if (response.status === 200) {
+        getBannersFromServer();
+        toast.success("Updated successfully!");
+      }
+    } catch (err) {
+      console.log("ERROR", err.message);
+    }
+  };
 
-   const uploadHeroImages = async (type) => {
-     console.log(type);
-     const formDataHero = new FormData();
-     let filtered = images.find((image) => {
-       //  image.bannerName === type
-       console.log(image.bannerName)
-     });
-     console.log('filtered img',filtered)
-     if (filtered && filtered.file === null) {
-       toast.error("Please select the image");
-       return;
-     }
-     formDataHero.append("img", filtered.file);
-     formDataHero.append("type", type);
+  const uploadHeroImages = async (type) => {
+    console.log(type);
+    const formDataHero = new FormData();
+    let filtered = images.find((image) => image.bannerName === type);
+    console.log("filtered img", filtered);
+    if (filtered && filtered.file === null) {
+      toast.error("Please select the image");
+      return;
+    }
+    formDataHero.append("img", filtered.file);
+    formDataHero.append("type", type);
 
-     formDataHero.append("page", "category-banners");
-     formDataHero.append("section", "app-categorypage");
+    formDataHero.append("page", "category-banners");
+    formDataHero.append("section", "app-categorypage");
 
-     try {
-       const response = await axios.post(
-         "http://localhost:5000/api/content/upload-banners",
-         formDataHero
-       );
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_CMS_URL}/upload-banners`,
+        formDataHero
+      );
 
-       if (response.status === 200) {
-         getBannersFromServer();
-         toast.success("Updated successfully!");
-       }
-     } catch (err) {
-       console.log("ERROR", err.message);
-     }
-   };
+      if (response.status === 200) {
+        getBannersFromServer();
+        toast.success("Updated successfully!");
+      }
+    } catch (err) {
+      console.log("ERROR", err.message);
+    }
+  };
 
-   const getBannersFromServer = async () => {
-     try {
-       const response1 = await axios.get(
-         "http://localhost:5000/api/content/get-banners",
-         {
-           params: {
-             heroBanners: true,
-             page: "category-banners",
-             section: "app-categorypage",
-           },
-         }
-       );
+  const getBannersFromServer = async () => {
+    try {
+      const response1 = await axios.get(
+        `${process.env.REACT_APP_CMS_URL}/get-banners`,
+        {
+          params: {
+            heroBanners: true,
+            page: "category-banners",
+            section: "app-categorypage",
+          },
+        }
+      );
 
-       const imgInstance = [...images];
-       let i = 0;
-       for (const img of response1.data.banners) {
-         i = i + 1;
-         const index = images.findIndex(
-           (banner) => banner.bannerName === `hero-banner${i}`
-         );
-         imgInstance.splice(index, 1, {
-           bannerName: `hero-banner${i}`,
-           file: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}`,
-           preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}`,
-         });
-       }
-       setImages(() => imgInstance);
+      const imgInstance = [...images];
+      for (let i = 0; i < response1.data.banners.length; i++) {
+        const img = response1.data.banners[i];
+        const bannerName = `hero-banner${i + 1}`;
+        const index = images.findIndex(
+          (banner) => banner.bannerName === bannerName
+        );
 
-       const response2 = await axios.get(
-         "http://localhost:5000/api/content/get-banners",
-         {
-           params: {
-             type: "banner1",
-             page: "category-banners",
-             section: "app-categorypage",
-           },
-         }
-       );
-       console.log("rs 2 bann", response2);
+        if (index !== -1) {
+          imgInstance.splice(index, 1, {
+            bannerName: bannerName,
+            file: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}`,
+            preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${img}`,
+          });
+        }
+      }
+      setImages(imgInstance);
 
-       const instance = [...banners];
-       const index = banners.findIndex(
-         (banner) => banner.bannerName === "banner4"
-       );
-       instance.splice(index, 1, {
-         bannerName: "banner4",
-         file: null,
-         preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response2.data.banners}`,
-       });
-       setBanners(() => instance);
+      const response2 = await axios.get(
+        `${process.env.REACT_APP_CMS_URL}/get-banners`,
+        {
+          params: {
+            type: "banner1",
+            page: "category-banners",
+            section: "app-categorypage",
+          },
+        }
+      );
+      console.log("rs 2 bann", response2);
 
-       const response3 = await axios.get(
-         "http://localhost:5000/api/content/get-banners",
-         {
-           params: {
-             type: "banner2",
-             page: "category-banners",
-             section: "app-categorypage",
-           },
-         }
-       );
+      const instance = [...banners];
+      const index = banners.findIndex(
+        (banner) => banner.bannerName === "banner4"
+      );
+      instance.splice(index, 1, {
+        bannerName: "banner4",
+        file: null,
+        preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response2.data.banners}`,
+      });
+      setBanners(() => instance);
 
-       const index2 = banners.findIndex(
-         (banner) => banner.bannerName === "banner5"
-       );
-       instance.splice(index2, 1, {
-         bannerName: "banner5",
-         file: null,
-         preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response3.data.banners}`,
-       });
-       setBanners(() => instance);
+      const response3 = await axios.get(
+        `${process.env.REACT_APP_CMS_URL}/get-banners`,
+        {
+          params: {
+            type: "banner2",
+            page: "category-banners",
+            section: "app-categorypage",
+          },
+        }
+      );
 
-     } catch (err) {
-       console.log(err.message);
-     }
-   };
+      const index2 = banners.findIndex(
+        (banner) => banner.bannerName === "banner5"
+      );
+      instance.splice(index2, 1, {
+        bannerName: "banner5",
+        file: null,
+        preview: `${process.env.REACT_APP_IMAGE_URL}/uploads/${response3.data.banners}`,
+      });
+      setBanners(() => instance);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
 
-   useEffect(() => {
-     getBannersFromServer();
-   }, []);
+  useEffect(() => {
+    getBannersFromServer();
+  }, []);
   return (
     <Wrapper>
       <div>
