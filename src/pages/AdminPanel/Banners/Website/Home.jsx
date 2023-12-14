@@ -11,6 +11,9 @@ const WebHome = () => {
     { bannerName: "banner1", file: null, preview: null },
     { bannerName: "banner2", file: null, preview: null },
     { bannerName: "banner3", file: null, preview: null },
+    { bannerName: "banner4", file: null, preview: null },
+    { bannerName: "banner5", file: null, preview: null },
+    { bannerName: "banner6", file: null, preview: null },
   ]);
 
 

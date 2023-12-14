@@ -8,6 +8,21 @@ import 'react-quill/dist/quill.snow.css';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
+const validateCouponCode = (code) => {
+    const hasSpaces = /\s/.test(code);
+    
+    const hasUpperCaseLetters = [...code].every(
+      (char) => char === char.toUpperCase()
+    );
+    
+    if (!hasSpaces && hasUpperCaseLetters) {
+        return true;
+    }
+
+    return false;
+
+}
+
 const AddOfferModal = ({ setIsModalOpen, offer = "", getAllOffers }) => {
     const [description, setDescription] = useState(offer?.description || "");
     const [offerInfo, setOfferInfo] = useState({
@@ -57,6 +72,11 @@ const AddOfferModal = ({ setIsModalOpen, offer = "", getAllOffers }) => {
                     navigate('/');
                     return;
                 }
+
+                if (!validateCouponCode(offerInfo.name)) {
+                    toast.error('Please enter valid coupon code');
+                    return;
+                }
                 const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-coupon`, { ...offerInfo, description }, { headers });
                 console.log(data);
                 toast.success("Offer added successfully");
@@ -82,7 +102,7 @@ const AddOfferModal = ({ setIsModalOpen, offer = "", getAllOffers }) => {
                 </div>
                 <form onSubmit={handleOnSubmit} className={classes.form}>
                     <div className={classes.input_container}>
-                        <label htmlFor="name">Name</label>
+                        <label htmlFor="name">Coupon Code (in block letters and without space)</label>
                         <input className={classes.input} onChange={handleOnChange} value={offerInfo.name} type="text" name="name" id="name" />
                     </div>
                     <div className={classes.input_container}>
