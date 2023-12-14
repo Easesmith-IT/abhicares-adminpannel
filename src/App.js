@@ -33,6 +33,7 @@ import WebCategory from "./pages/AdminPanel/Banners/Website/Category";
 import WebHome from "./pages/AdminPanel/Banners/Website/Home";
 import WebService from "./pages/AdminPanel/Banners/Website/Service";
 import WebProduct from "./pages/AdminPanel/Banners/Website/Product";
+import HelpCenter from "./pages/AdminPanel/helpCenter/HelpCenter";
 
 function App() {
   return (
@@ -98,6 +99,7 @@ function App() {
           <Route path="/admin/enquiries" element={<Enquiry />} />
           <Route path="/admin/offers" element={<Offers />} />
           <Route path="/admin/available-cities" element={<AvailableCities />} />
+          <Route path="/admin/help-center" element={<HelpCenter />} />
 
           <Route path="/*" element={<Error />} />
         </Routes>
