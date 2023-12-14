@@ -109,6 +109,18 @@ const SideNav = () => {
           <h3 className={classes.title}>Payments</h3>
         </Link>
         <Link
+          to="/admin/help-center"
+          className={`${classes["nav-option"]} ${classes.option6}}`}
+        >
+          <img
+            src={PaymentsIcn}
+            alt="help-center"
+            className={classes["nav-img"]}
+          />
+
+          <h3 className={classes.title}>Help Center</h3>
+        </Link>
+        <Link
           to="/admin/enquiries"
           className={`${classes["nav-option"]} ${classes.option6}}`}
         >

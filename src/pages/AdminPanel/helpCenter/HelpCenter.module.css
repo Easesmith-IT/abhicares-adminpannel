@@ -1,0 +1,96 @@
+.container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.helpCenter {
+    max-width: 370px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.helpCenter_right {
+    display: flex;
+    gap: 10px;
+}
+
+.button{
+    border: none;
+    padding: 4px 10px;
+    background: #000;
+    color: white;
+    margin-top: 20px;
+    border-radius: 6px;
+}
+
+.under_review{
+    color: orange;
+}
+
+.resolved{
+    color: green;
+}
+
+.containerClassName {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    margin-top: 30px;
+    text-decoration: none;
+}
+
+.active,
+.pbtn {
+    color: black;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.active {
+    background: #000;
+    color: white;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    text-decoration: none;
+}
+
+.pbtn {
+    margin-inline: 10px;
+    border: 1px solid black;
+    padding: 6px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%; 
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    color: black;
+}
+
+.disabled {
+    cursor: pointer;
+    border: 1px solid black;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 18px;
+    height: 18px;
+    text-decoration: none !important;
+}

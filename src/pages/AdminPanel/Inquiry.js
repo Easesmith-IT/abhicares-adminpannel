@@ -74,6 +74,7 @@ const Enquiry = () => {
 
                     <div className={classes["report-body"]}>
                         <div className={classes["report-topic-heading"]}>
+                            <h3 className={classes["t-op"]}>Name</h3>
                             <h3 className={classes["t-op"]}>Phone</h3>
                             <h3 className={classes["t-op"]}>City</h3>
                             <h3 className={classes["t-op"]}>State</h3>
@@ -84,6 +85,7 @@ const Enquiry = () => {
                         <div className={classes.items}>
                             {allInquiries?.map((inquiry) => (
                                 <div key={inquiry._id} className={classes.item1}>
+                                    <h3 className={classes["t-op-nextlvl"]}>{inquiry.name}</h3>
                                     <h3 className={classes["t-op-nextlvl"]}>{inquiry.phone}</h3>
                                     <h3 className={`${classes["t-op-nextlvl"]}`}>{inquiry.city}</h3>
                                     <h3 className={`${classes["t-op-nextlvl"]}`}>{inquiry.state}</h3>
