@@ -114,7 +114,7 @@ const HelpCenterTickets = () => {
             {allIssues?.map((issue) => (
               <div className={helpCenterClasses.helpCenter}>
                 <div className={helpCenterClasses.helpCenter_left}>
-                  <p>name: {issue.userId.name}</p>
+                  <p>name: {issue?.userId?.name}</p>
                   <p>
                     status:{" "}
                     <span
