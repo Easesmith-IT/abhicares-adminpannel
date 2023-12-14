@@ -12,6 +12,7 @@ import DeleteModal from "../../components/deleteModal/DeleteModal";
 import Wrapper from "../Wrapper";
 import SellerInfoModal from "../../components/seller-info-modal/SellerInfoModal";
 import Loader from "../../components/loader/Loader";
+import UnapprovedSellerModal from "../../components/unapproved-seller-modal/UnapprovedSellerModal";
 
 const Partners = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,6 +22,7 @@ const Partners = () => {
   const [seller, setSeller] = useState({});
   const [allSellers, setAllSellers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isUnapprovedSellerModalOpen, setIsUnapprovedSellerModalOpen] = useState(false);
 
 
   const navigate = useNavigate()
@@ -154,6 +156,7 @@ const Partners = () => {
           <div className={classes["report-header"]}>
             <h1 className={classes["recent-Articles"]}>Professionals</h1>
             <input onChange={debounce(handleSerach, 1000)} className={classes.input} type="text" placeholder="Search professionals" />
+            <button onClick={() => setIsUnapprovedSellerModalOpen(true)} className={classes.button}>Unapproved Seller</button>
             <button onClick={() => setIsModalOpen(true)} className={classes.services_add_btn}>
               <img src={AddBtn} alt="add seller" />
             </button>
@@ -227,6 +230,12 @@ const Partners = () => {
         <DeleteModal
           setState={setIsDeleteModalOpen}
           handleDelete={handleDelete}
+        />
+      }
+      {isUnapprovedSellerModalOpen &&
+        <UnapprovedSellerModal
+          setIsUnapprovedSellerModalOpen={setIsUnapprovedSellerModalOpen}
+          allSellers={allSellers}
         />
       }
     </>

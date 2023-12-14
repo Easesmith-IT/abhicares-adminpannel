@@ -10,6 +10,12 @@ const BookingDetails = () => {
                         <div>
                             <h4>seller name</h4>
                             <p>seller phone: 1234567890</p>
+                            <select className={classes.select} name="status" id="status">
+                                <option value="Pending">Pending</option>
+                                <option value="OutOfDelivery">OutOfDelivery</option>
+                                <option value="Completed">Completed</option>
+                                <option value="Cancelled">Cancelled</option>
+                            </select>
                         </div>
                         <div>
                             <p>booking date: 07/12/2023</p>
