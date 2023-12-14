@@ -1,8 +1,53 @@
 import unapprovedSellerModalClasses from './UnapprovedSellerModal.module.css';
 import classes from '../../pages/AdminPanel/Shared.module.css';
 import { RxCross2 } from 'react-icons/rx';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 
-const UnapprovedSellerModal = ({ setIsUnapprovedSellerModalOpen, allSellers }) => {
+const UnapprovedSellerModal = ({ setIsUnapprovedSellerModalOpen }) => {
+    const [allSellers, setAllSellers] = useState([]);
+    const navigate = useNavigate()
+
+    const token = localStorage.getItem("adUx")
+    const headers = {
+        Authorization: token
+    }
+
+    const getAllSellers = async () => {
+        try {
+            if (!token) {
+                navigate('/');
+                return;
+            }
+            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/in-review-seller`, { headers });
+            console.log("appppp",data);
+            setAllSellers(data.data);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const handleOnChange = async (id) => {
+        try {
+            if (!token) {
+                navigate('/');
+                return;
+            }
+            const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller-status/${id}`, { status: "active" }, { headers });
+            console.log(data);
+            toast.success("Seller approved");
+            getAllSellers();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        getAllSellers();
+    }, [])
+
     return (
         <div className={unapprovedSellerModalClasses.wrapper}>
             <div className={unapprovedSellerModalClasses.modal}>
@@ -29,7 +74,10 @@ const UnapprovedSellerModal = ({ setIsUnapprovedSellerModalOpen, allSellers }) =
                                 <h3 className={`${classes["t-op-nextlvl"]}`}>category</h3>
                                 <h3 className={`${classes["t-op-nextlvl"]}`}>{seller.phone}</h3>
                                 <h3 className={`${classes["t-op-nextlvl"]}`}>
-                                    <button className={unapprovedSellerModalClasses.button}>Approve</button>
+                                    {seller.status === "in-review" ?
+                                        <button onClick={() => handleOnChange(seller._id)} className={unapprovedSellerModalClasses.button}>Approve</button>
+                                        : <p>Approved</p>
+                                    }
                                 </h3>
                             </div>
                         ))}
