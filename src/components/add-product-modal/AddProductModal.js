@@ -17,6 +17,7 @@ const AddProductModal = ({ setIsModalOpen, serviceId, product = "", getAllProduc
         img: product?.imageUrl || ["https://www.shutterstock.com/image-photo/interior-hotel-bathroom-260nw-283653278.jpg"],
     });
 
+
     const getImage = (e) => {
         e.preventDefault();
         const uploadedImage = e.target.files;
@@ -58,8 +59,7 @@ const AddProductModal = ({ setIsModalOpen, serviceId, product = "", getAllProduc
                     navigate('/');
                     return;
                   }
-                const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-product/${product._id}`, { ...productInfo, serviceId, description },{headers});
-                console.log(data);
+                const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-product/${product._id}`, formData, {headers});
                 toast.success("Product updated successfully");
                 getAllProducts();
                 setIsModalOpen(false);

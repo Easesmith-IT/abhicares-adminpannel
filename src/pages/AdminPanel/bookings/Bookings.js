@@ -24,8 +24,8 @@ const Bookings = () => {
                         </div>
 
                         <div className={classes.items}>
-                            {arr?.map(() => (
-                                <div className={`${classes.item1} ${classes.cursor}`}>
+                            {arr?.map((_,i) => (
+                                <div key={i} className={`${classes.item1} ${classes.cursor}`}>
                                     <h3 className={classes["t-op-nextlvl"]}>07/12/2023</h3>
                                     <h3 className={classes["t-op-nextlvl"]}>Product1</h3>
                                     <h3 className={classes["t-op-nextlvl"]}>Seller1</h3>
