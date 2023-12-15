@@ -9,8 +9,10 @@ import toast from 'react-hot-toast';
 import Loader from '../../../components/loader/Loader';
 import AddResoulationModal from '../../../components/add-resoulation-modal/AddResoulationModal';
 import DeleteModal from '../../../components/deleteModal/DeleteModal';
-import ReactPaginate from 'react-paginate';
 import { format } from 'date-fns';
+
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { PaginationControl } from 'react-bootstrap-pagination-control';
 
 const HelpCenterTickets = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -20,6 +22,7 @@ const HelpCenterTickets = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [status, setStatus] = useState("in-review");
   const [pageCount, setPageCount] = useState(3);
+  const [page, setPage] = useState(1);
 
   const navigate = useNavigate();
 
@@ -35,11 +38,11 @@ const HelpCenterTickets = () => {
         return;
       }
       const { data } = await axios.post(
-        `${process.env.REACT_APP_API_URL}/get-all-help-list`,
+        `${process.env.REACT_APP_ADMIN_API_URL}/get-all-help-list`,
         { status },
         { headers }
       );
-      console.log(data);
+      setPageCount(data.totalPage);
       setAllIssues(data.data);
     } catch (error) {
       console.log(error);
@@ -68,7 +71,7 @@ const HelpCenterTickets = () => {
         return;
       }
       const { data } = await axios.delete(
-        `${process.env.REACT_APP_API_URL}/delete-help-list/${issue}`,
+        `${process.env.REACT_APP_ADMIN_API_URL}/delete-help-list/${issue}`,
         { headers }
       );
       toast.success("Issue deleted successfully");
@@ -79,15 +82,11 @@ const HelpCenterTickets = () => {
     }
   };
 
-  const handlePageClick = (e) => {
-    (async () => {
-      const { data } = await axios.get(
-        `${process.env.REACT_APP_API_URL}/admin/all-clients?page=${
-          e.selected + 1
-        }`
-      );
-      setAllIssues(data.AllClient);
-    })();
+  const handlePageClick = async (page) => {
+    setPage(page);
+    const { data } = await axios.post(
+      `${process.env.REACT_APP_ADMIN_API_URL}/get-all-help-list?page=${page}`, { status }, { headers });
+    setAllIssues(data.data);
   };
 
   return (
@@ -153,20 +152,14 @@ const HelpCenterTickets = () => {
               </div>
             ))}
           </div>
-          <ReactPaginate
-            breakLabel="..."
-            nextLabel=">>"
-            onPageChange={handlePageClick}
-            pageRangeDisplayed={0}
-            pageCount={pageCount}
-            previousLabel="<<"
-            renderOnZeroPageCount={null}
-            containerClassName={helpCenterClasses.containerClassName}
-            previousClassName={helpCenterClasses.pbtn}
-            nextClassName={helpCenterClasses.pbtn}
-            activeLinkClassName={helpCenterClasses.active}
-            pageLinkClassName={helpCenterClasses.disabled}
-          />
+          <div>
+            <PaginationControl
+              changePage={handlePageClick}
+              limit={10}
+              page={page}
+              total={pageCount + "0"}
+            />
+          </div>
         </div>
       </Wrapper>
 

@@ -57,7 +57,7 @@ const AddOfferModal = ({ setIsModalOpen, offer = "", getAllOffers }) => {
                     navigate('/');
                     return;
                 }
-                const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-coupon/${offer._id}`, { ...offerInfo, description }, { headers });
+                const { data } = await axios.patch(`${process.env.REACT_APP_ADMIN_API_URL}/update-coupon/${offer._id}`, { ...offerInfo, description }, { headers });
                 console.log(data);
                 toast.success("Offer updated successfully");
                 getAllOffers();
@@ -77,7 +77,7 @@ const AddOfferModal = ({ setIsModalOpen, offer = "", getAllOffers }) => {
                     toast.error('Please enter valid coupon code');
                     return;
                 }
-                const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-coupon`, { ...offerInfo, description }, { headers });
+                const { data } = await axios.post(`${process.env.REACT_APP_ADMIN_API_URL}/create-coupon`, { ...offerInfo, description }, { headers });
                 console.log(data);
                 toast.success("Offer added successfully");
                 getAllOffers();

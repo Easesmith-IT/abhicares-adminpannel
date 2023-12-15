@@ -46,7 +46,7 @@ const AddUserModal = ({ setIsModalOpen, user = "", getAllUsers }) => {
                     navigate('/');
                     return;
                   }
-                const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user/${user._id}`, { ...userInfo},{headers});
+                const { data } = await axios.patch(`${process.env.REACT_APP_ADMIN_API_URL}/update-user/${user._id}`, { ...userInfo},{headers});
                 console.log(data);
                 toast.success("User updated successfully");
                 getAllUsers();
@@ -61,7 +61,7 @@ const AddUserModal = ({ setIsModalOpen, user = "", getAllUsers }) => {
                     navigate('/');
                     return;
                   }
-                const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-user`, { ...userInfo },{headers});
+                const { data } = await axios.post(`${process.env.REACT_APP_ADMIN_API_URL}/create-user`, { ...userInfo },{headers});
                 console.log(data);
                 toast.success("User added successfully");
                 getAllUsers();

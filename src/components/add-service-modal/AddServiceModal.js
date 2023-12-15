@@ -57,7 +57,7 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
                 navigate('/');
                 return;
               }
-            const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-service/${service._id}`, formData,{headers});
+            const { data } = await axios.patch(`${process.env.REACT_APP_ADMIN_API_URL}/update-service/${service._id}`, formData,{headers});
             console.log(data);
             toast.success("Service updated successfully");
             getCategoryServices();
@@ -68,7 +68,7 @@ const AddServiceModal = ({ setIsModalOpen, categoryId, service = "", getCategory
                 navigate('/');
                 return;
               }
-            const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-service`, formData,{headers});
+            const { data } = await axios.post(`${process.env.REACT_APP_ADMIN_API_URL}/create-service`, formData,{headers});
             toast.success("Service added successfully");
             getCategoryServices();
             setIsModalOpen(false);

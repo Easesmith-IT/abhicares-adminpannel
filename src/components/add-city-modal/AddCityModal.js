@@ -39,7 +39,7 @@ const AddCityModal = ({ setIsModalOpen, city = "", getAllCities }) => {
                     navigate('/');
                     return;
                   }
-                const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-availabe-city/${city._id}`, { ...cityInfo},{headers});
+                const { data } = await axios.patch(`${process.env.REACT_APP_ADMIN_API_URL}/update-availabe-city/${city._id}`, { ...cityInfo},{headers});
                 console.log(data);
                 toast.success("City updated successfully");
                 getAllCities();
@@ -54,7 +54,7 @@ const AddCityModal = ({ setIsModalOpen, city = "", getAllCities }) => {
                     navigate('/');
                     return;
                   }
-                const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-availabe-city  `, { ...cityInfo },{headers});
+                const { data } = await axios.post(`${process.env.REACT_APP_ADMIN_API_URL}/create-availabe-city  `, { ...cityInfo },{headers});
                 console.log(data);
                 toast.success("City added successfully");
                 getAllCities();

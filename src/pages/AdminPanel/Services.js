@@ -25,8 +25,8 @@ const Services = () => {
         navigate('/');
         return;
       }
-      console.log('url', process.env.REACT_APP_API_URL)
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-category`, { headers })
+      console.log('url', process.env.REACT_APP_ADMIN_API_URL)
+      const { data } = await axios.get(`${process.env.REACT_APP_ADMIN_API_URL}/get-all-category`, { headers })
       setAllCategories(data.data);
     } catch (error) {
       console.log(error);

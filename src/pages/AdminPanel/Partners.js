@@ -38,7 +38,7 @@ const Partners = () => {
         navigate('/');
         return;
       }
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-seller`, { headers });
+      const { data } = await axios.get(`${process.env.REACT_APP_ADMIN_API_URL}/get-all-seller`, { headers });
       setAllSellers(data.data);
     } catch (error) {
       console.log(error);
@@ -61,7 +61,7 @@ const Partners = () => {
           navigate('/');
           return;
         }
-        const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller-status/${id}`, { status: true }, { headers });
+        const { data } = await axios.patch(`${process.env.REACT_APP_ADMIN_API_URL}/update-seller-status/${id}`, { status: true }, { headers });
         toast.success("Seller status updated");
         getAllSellers();
       } catch (error) {
@@ -74,7 +74,7 @@ const Partners = () => {
           navigate('/');
           return;
         }
-        const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller-status/${id}`, { status: false }, { headers });
+        const { data } = await axios.patch(`${process.env.REACT_APP_ADMIN_API_URL}/update-seller-status/${id}`, { status: false }, { headers });
         toast.success("Seller status updated");
         getAllSellers();
       } catch (error) {
@@ -101,7 +101,7 @@ const Partners = () => {
         navigate('/');
         return;
       }
-      const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-seller/${seller}`, { headers });
+      const { data } = await axios.delete(`${process.env.REACT_APP_ADMIN_API_URL}/delete-seller/${seller}`, { headers });
       toast.success("Seller deleted successfully");
       getAllSellers();
       setIsDeleteModalOpen(!isDeleteModalOpen);
@@ -118,7 +118,7 @@ const Partners = () => {
         navigate('/');
         return;
       }
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-seller?search=${value}`, { headers });
+      const { data } = await axios.get(`${process.env.REACT_APP_ADMIN_API_URL}/search-seller?search=${value}`, { headers });
       setAllSellers(data.data);
     } catch (error) {
       console.log(error);

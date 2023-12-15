@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import classes from "../AdminPanel/Shared.module.css";
-import AddBtn from "../../assets/add-icon-nobg.png";
+import classes from "../Shared.module.css";
+import AddBtn from "../../../assets/add-icon-nobg.png";
 import axios from 'axios';
 import parse from 'html-react-parser';
 import toast from 'react-hot-toast';
 
 import categoryServicesClasses from "./CategoryServices.module.css";
-import AddServiceModal from '../../components/add-service-modal/AddServiceModal';
-import DeleteModal from '../../components/deleteModal/DeleteModal';
-import Loader from '../../components/loader/Loader';
+import AddServiceModal from '../../../components/add-service-modal/AddServiceModal';
+import DeleteModal from '../../../components/deleteModal/DeleteModal';
+import Loader from '../../../components/loader/Loader';
 
 import { MdDelete } from "react-icons/md";
 import { FiEdit } from "react-icons/fi";
-import Wrapper from '../Wrapper';
+import Wrapper from '../../Wrapper';
 
 const CategoryServices = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,7 +51,7 @@ const CategoryServices = () => {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-category-service/${params?.categoryId}`, { headers });
+            const { data } = await axios.get(`${process.env.REACT_APP_ADMIN_API_URL}/get-category-service/${params?.categoryId}`, { headers });
             console.log(data);
             setAllCategoryServices(data.data);
         } catch (error) {
@@ -74,7 +74,7 @@ const CategoryServices = () => {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-service/${service}`, { headers });
+            const { data } = await axios.delete(`${process.env.REACT_APP_ADMIN_API_URL}/delete-service/${service}`, { headers });
             toast.success("Service deleted successfully");
             getCategoryServices();
             setIsDeleteModalOpen(!isDeleteModalOpen);

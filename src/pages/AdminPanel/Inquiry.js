@@ -36,7 +36,7 @@ const Enquiry = () => {
 
     const handleDelete = async () => {
         try {
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-enquiry/${enquiryId}`,{headers});
+            const { data } = await axios.delete(`${process.env.REACT_APP_ADMIN_API_URL}/delete-enquiry/${enquiryId}`,{headers});
             console.log(data);
             toast.success("Enquiry deleted successfully");
             getAllInquiries();
@@ -48,7 +48,7 @@ const Enquiry = () => {
 
     const getAllInquiries = async () => {
         try {
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-enquiry`,{headers});
+            const { data } = await axios.get(`${process.env.REACT_APP_ADMIN_API_URL}/get-all-enquiry`,{headers});
             console.log(data);
             setAllInquiries(data.data);
         } catch (error) {

@@ -1,25 +1,23 @@
 import React, { useEffect, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom';
-import classes from "../AdminPanel/Shared.module.css";
+import classes from "../../AdminPanel/Shared.module.css";
 import axios from 'axios';
 import parse from 'html-react-parser';
 import toast from 'react-hot-toast';
 
 
-import AddBtn from "../../assets/add-icon-nobg.png";
+import AddBtn from "../../../assets/add-icon-nobg.png";
 import { useNavigate } from 'react-router-dom';
-import SideNav from '../AdminPanel/components/SideNav'
-import Header from '../AdminPanel/components/Header'
 import serviceInfoPageClasses from "./ServiceInfoPage.module.css";
-import AddProductModal from '../../components/add-product-modal/AddProductModal';
-import ProductInfoModal from '../../components/product-info-modal/ProductInfoModal';
-import DeleteModal from '../../components/deleteModal/DeleteModal';
-import Loader from '../../components/loader/Loader';
+import AddProductModal from '../../../components/add-product-modal/AddProductModal';
+import ProductInfoModal from '../../../components/product-info-modal/ProductInfoModal';
+import DeleteModal from '../../../components/deleteModal/DeleteModal';
+import Loader from '../../../components/loader/Loader';
 
 import { MdDelete } from 'react-icons/md';
 import { FiEdit } from 'react-icons/fi';
-import AddPackageModal from '../../components/add-package-modal/AddPackageModal';
-import Wrapper from '../Wrapper';
+import AddPackageModal from '../../../components/add-package-modal/AddPackageModal';
+import Wrapper from '../../Wrapper';
 
 const ServiceInfoPage = () => {
     const navigate = useNavigate()
@@ -69,13 +67,13 @@ const ServiceInfoPage = () => {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-service-product/${params?.serviceId}`, { headers });
+            const { data } = await axios.get(`${process.env.REACT_APP_ADMIN_API_URL}/get-service-product/${params?.serviceId}`, { headers });
             console.log(data);
             setAllProducts(data.data);
         } catch (error) {
             console.log(error);
         }
-        finally{
+        finally {
             setIsProductLoading(false);
         }
     };
@@ -85,13 +83,13 @@ const ServiceInfoPage = () => {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-service-package/${params?.serviceId}`, { headers });
+            const { data } = await axios.get(`${process.env.REACT_APP_ADMIN_API_URL}/get-service-package/${params?.serviceId}`, { headers });
             console.log(data);
             setAllPackages(data.data);
         } catch (error) {
             console.log(error);
         }
-        finally{
+        finally {
             setIsPackageLoading(false);
         }
     };
@@ -107,7 +105,7 @@ const ServiceInfoPage = () => {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-product/${product}`, { headers });
+            const { data } = await axios.delete(`${process.env.REACT_APP_ADMIN_API_URL}/delete-product/${product}`, { headers });
             console.log(product);
             toast.success("Prodct deleted successfully");
             getAllProducts();
@@ -135,7 +133,7 @@ const ServiceInfoPage = () => {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-package/${singlePackage}`, { headers });
+            const { data } = await axios.delete(`${process.env.REACT_APP_ADMIN_API_URL}/delete-package/${singlePackage}`, { headers });
             console.log(data);
             toast.success("Package deleted successfully");
             getAllPackage();
@@ -231,60 +229,60 @@ const ServiceInfoPage = () => {
                 </div>
             </Wrapper >
 
-        {isInfoModalOpen && (
-          <ProductInfoModal
-            product={product}
-            setIsInfoModalOpen={setIsInfoModalOpen}
-          />
-        )}
+            {isInfoModalOpen && (
+                <ProductInfoModal
+                    product={product}
+                    setIsInfoModalOpen={setIsInfoModalOpen}
+                />
+            )}
 
-        {isPackageInfoModalOpen && (
-          <ProductInfoModal
-            isPackage
-            product={singlePackage}
-            setIsInfoModalOpen={setIsPackageInfoModalOpen}
-          />
-        )}
+            {isPackageInfoModalOpen && (
+                <ProductInfoModal
+                    isPackage
+                    product={singlePackage}
+                    setIsInfoModalOpen={setIsPackageInfoModalOpen}
+                />
+            )}
 
-        {isModalOpen && (
-          <AddProductModal
-            serviceId={params?.serviceId}
-            setIsModalOpen={setIsModalOpen}
-            getAllProducts={getAllProducts}
-          />
-        )}
+            {isModalOpen && (
+                <AddProductModal
+                    serviceId={params?.serviceId}
+                    setIsModalOpen={setIsModalOpen}
+                    getAllProducts={getAllProducts}
+                />
+            )}
 
-        {isPackageModalOpen && (
-          <AddPackageModal
-            serviceId={params?.serviceId}
-            setIsModalOpen={setIsPackageModalOpen}
-            getAllPackage={getAllPackage}
-            allProducts={allProducts}
-          />
-        )}
+            {isPackageModalOpen && (
+                <AddPackageModal
+                    serviceId={params?.serviceId}
+                    setIsModalOpen={setIsPackageModalOpen}
+                    getAllPackage={getAllPackage}
+                    allProducts={allProducts}
+                />
+            )}
 
-        {isUpdateModalOpen && (
-          <AddProductModal
-            serviceId={params?.serviceId}
-            setIsModalOpen={setIsUpdateModalOpen}
-            product={product}
-            getAllProducts={getAllProducts}
-          />
-        )}
+            {isUpdateModalOpen && (
+                <AddProductModal
+                    serviceId={params?.serviceId}
+                    setIsModalOpen={setIsUpdateModalOpen}
+                    product={product}
+                    getAllProducts={getAllProducts}
+                />
+            )}
 
-        {isDeleteModalOpen && (
-          <DeleteModal
-            setState={setIsDeleteModalOpen}
-            handleDelete={handleDelete}
-          />
-        )}
-        {isPackageDeleteModalOpen && (
-          <DeleteModal
-            setState={setIsPackageDeleteModalOpen}
-            handleDelete={handlePackageDelete}
-          />
-        )}
-      </>
+            {isDeleteModalOpen && (
+                <DeleteModal
+                    setState={setIsDeleteModalOpen}
+                    handleDelete={handleDelete}
+                />
+            )}
+            {isPackageDeleteModalOpen && (
+                <DeleteModal
+                    setState={setIsPackageDeleteModalOpen}
+                    handleDelete={handlePackageDelete}
+                />
+            )}
+        </>
     );
 }
 

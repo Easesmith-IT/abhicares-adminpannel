@@ -1,9 +1,20 @@
+.report-container{
+    width: 100%;
+}
+
+.justify{
+    /* width: 100%; */
+    padding-top: 20px;
+    padding-inline: 20px;
+}
+
+
 .container {
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
-    margin-top: 20px;
+    margin-block: 20px;
 }
 
 .helpCenter {

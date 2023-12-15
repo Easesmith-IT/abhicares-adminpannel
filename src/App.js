@@ -7,11 +7,11 @@ import CategoryDetails from "./components/CategoryPage/CategoryDetails";
 import Partners from "./pages/AdminPanel/Partners";
 import Customers from "./pages/AdminPanel/Customers";
 import Services from "./pages/AdminPanel/Services";
-import CategoryServices from "./pages/CategoryServices/CategoryServices";
+import CategoryServices from "./pages/AdminPanel/CategoryServices/CategoryServices";
 import Payments from "./pages/AdminPanel/Payments";
 import Offers from "./pages/AdminPanel/offers/Offers";
 import AdminLogin from "./pages/AdminPanel/AdminLogin";
-import ServiceInfoPage from "./pages/serviceInfoPage/ServiceInfoPage";
+import ServiceInfoPage from "./pages/AdminPanel/serviceInfoPage/ServiceInfoPage";
 
 import { Toaster } from 'react-hot-toast';
 import Enquiry from "./pages/AdminPanel/Inquiry";

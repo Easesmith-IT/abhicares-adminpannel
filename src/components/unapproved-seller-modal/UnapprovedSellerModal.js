@@ -21,7 +21,7 @@ const UnapprovedSellerModal = ({ setIsUnapprovedSellerModalOpen }) => {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/in-review-seller`, { headers });
+            const { data } = await axios.get(`${process.env.REACT_APP_ADMIN_API_URL}/in-review-seller`, { headers });
             console.log("appppp",data);
             setAllSellers(data.data);
         } catch (error) {
@@ -35,7 +35,7 @@ const UnapprovedSellerModal = ({ setIsUnapprovedSellerModalOpen }) => {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-seller-status/${id}`, { status: "active" }, { headers });
+            const { data } = await axios.patch(`${process.env.REACT_APP_ADMIN_API_URL}/update-seller-status/${id}`, { status: "active" }, { headers });
             console.log(data);
             toast.success("Seller approved");
             getAllSellers();

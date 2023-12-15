@@ -31,7 +31,7 @@ const Customers = () => {
         navigate('/');
         return
       }
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-all-user`, { headers });
+      const { data } = await axios.get(`${process.env.REACT_APP_ADMIN_API_URL}/get-all-user`, { headers });
       setAllUsers(data.data);
     } catch (error) {
       console.log(error);
@@ -51,7 +51,7 @@ const Customers = () => {
   //         navigate('/');
   //         return
   //       }
-  //       const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user-status/${id}`, { status: true }, { headers });
+  //       const { data } = await axios.patch(`${process.env.REACT_APP_ADMIN_API_URL}/update-user-status/${id}`, { status: true }, { headers });
   //       toast.success("Seller status updated");
   //       getAllUsers();
   //       console.log(data);
@@ -65,7 +65,7 @@ const Customers = () => {
   //         navigate('/');
   //         return
   //       }
-  //       const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-user-status/${id}`, { status: false }, { headers });
+  //       const { data } = await axios.patch(`${process.env.REACT_APP_ADMIN_API_URL}/update-user-status/${id}`, { status: false }, { headers });
   //       toast.success("Seller status updated");
   //       getAllUsers();
   //     } catch (error) {
@@ -90,7 +90,7 @@ const Customers = () => {
         navigate('/');
         return
       }
-      const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-user/${user}`, { headers });
+      const { data } = await axios.delete(`${process.env.REACT_APP_ADMIN_API_URL}/delete-user/${user}`, { headers });
       console.log(data);
       toast.success("User deleted successfully");
       getAllUsers();
@@ -108,7 +108,7 @@ const Customers = () => {
         navigate('/');
         return
       }
-      const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/search-user?search=${value}`, { headers });
+      const { data } = await axios.get(`${process.env.REACT_APP_ADMIN_API_URL}/search-user?search=${value}`, { headers });
       setAllUsers(data.data);
     } catch (error) {
       console.log(error);

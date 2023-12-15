@@ -35,7 +35,7 @@ const AvailableCities = () => {
                 navigate('/');
                 return
             }
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-availabe-city`, { headers });
+            const { data } = await axios.get(`${process.env.REACT_APP_ADMIN_API_URL}/get-availabe-city`, { headers });
             console.log(data);
             setAllCities(data.data);
         } catch (error) {
@@ -66,7 +66,7 @@ const AvailableCities = () => {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-availabe-city/${city}`, { headers });
+            const { data } = await axios.delete(`${process.env.REACT_APP_ADMIN_API_URL}/delete-availabe-city/${city}`, { headers });
             toast.success("City deleted successfully");
             getAllCities();
             setIsDeleteModalOpen(!isDeleteModalOpen);

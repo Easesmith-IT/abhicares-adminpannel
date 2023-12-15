@@ -15,7 +15,7 @@ const AdminLogin = () => {
     const userName = userNameRef.current.value;
     const userPassword = userPasswordRef.current.value;
 
-    const response = await axios.post(`${process.env.REACT_APP_API_URL}/login-Admin`,{
+    const response = await axios.post(`${process.env.REACT_APP_ADMIN_API_URL}/login-Admin`,{
         adminId:userName,
         password:userPassword
       })

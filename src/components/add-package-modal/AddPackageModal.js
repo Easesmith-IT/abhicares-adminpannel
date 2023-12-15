@@ -77,7 +77,7 @@ const AddPackageModal = ({ setIsModalOpen, serviceId, getAllPackage, allProducts
               navigate("/");
               return;
             }
-            const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-package`, formData,{headers});
+            const { data } = await axios.post(`${process.env.REACT_APP_ADMIN_API_URL}/create-package`, formData,{headers});
             toast.success("Package added successfully");
             getAllPackage();
             setIsModalOpen(false);

@@ -59,7 +59,7 @@ const AddProductModal = ({ setIsModalOpen, serviceId, product = "", getAllProduc
                     navigate('/');
                     return;
                   }
-                const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-product/${product._id}`, formData, {headers});
+                const { data } = await axios.patch(`${process.env.REACT_APP_ADMIN_API_URL}/update-product/${product._id}`, formData, {headers});
                 toast.success("Product updated successfully");
                 getAllProducts();
                 setIsModalOpen(false);
@@ -73,7 +73,7 @@ const AddProductModal = ({ setIsModalOpen, serviceId, product = "", getAllProduc
                     navigate('/');
                     return;
                   }
-                const { data } = await axios.post(`${process.env.REACT_APP_API_URL}/create-product`, formData,{headers});
+                const { data } = await axios.post(`${process.env.REACT_APP_ADMIN_API_URL}/create-product`, formData,{headers});
                 console.log(data);
                 toast.success("Product added successfully");
                 getAllProducts();

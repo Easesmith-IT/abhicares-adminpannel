@@ -34,7 +34,7 @@ const AddResoulationModal = ({ setIsModalOpen, id, getAllIssues }) => {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.patch(`${process.env.REACT_APP_API_URL}/update-help-list/${id}`, { ...resoulationInfo }, { headers });
+            const { data } = await axios.patch(`${process.env.REACT_APP_ADMIN_API_URL}/update-help-list/${id}`, { ...resoulationInfo }, { headers });
             console.log(data);
             toast.success("Issue resolved successfully");
             getAllIssues();

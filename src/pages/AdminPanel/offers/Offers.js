@@ -37,7 +37,7 @@ const Offers = () => {
                 navigate('/');
                 return
             }
-            const { data } = await axios.get(`${process.env.REACT_APP_API_URL}/get-coupons`, { headers });
+            const { data } = await axios.get(`${process.env.REACT_APP_ADMIN_API_URL}/get-coupons`, { headers });
             console.log(data);
             setAllOffers(data.data);
         } catch (error) {
@@ -68,7 +68,7 @@ const Offers = () => {
                 navigate('/');
                 return;
             }
-            const { data } = await axios.delete(`${process.env.REACT_APP_API_URL}/delete-coupon/${offer}`, { headers });
+            const { data } = await axios.delete(`${process.env.REACT_APP_ADMIN_API_URL}/delete-coupon/${offer}`, { headers });
             toast.success("Offer deleted successfully");
             getAllOffers();
             setIsDeleteModalOpen(!isDeleteModalOpen);

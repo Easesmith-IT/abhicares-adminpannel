@@ -5,11 +5,11 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import classes from "../../../components/add-resoulation-modal/AddResoulationModal.module.css";
 
-const EditFaqModal = ({ setIsModalOpen, faq="", getAllFaqs }) => {
+const EditFaqModal = ({ setIsModalOpen, faq, getAllFaqs }) => {
 
   const [faqInfo, setfaqInfo] = useState({
-    ques: faq.ques || "",
-    ans: faq.ans || "",
+      ques:faq.ques|| "",
+      ans:faq.ans||"",
   });
 
   const handleOnChange = (e) => {
@@ -24,44 +24,25 @@ const EditFaqModal = ({ setIsModalOpen, faq="", getAllFaqs }) => {
   };
   const handleOnSubmit = async (e) => {
     e.preventDefault();
-    if (!faqInfo.ques || !faqInfo.ans) {
+    if (!faqInfo.ques||!faq.ans) {
       return;
     }
-    if (faq) {
-      try {
-        if (!token) {
-          navigate("/");
-          return;
-        }
-        const { data } = await axios.patch(
-          `${process.env.REACT_APP_ADMIN_API_URL}/update-faq/${faq._id}`,
-          { ...faqInfo },
-          { headers }
-        );
-        toast.success("Faq updated successfully");
-        getAllFaqs();
-        setIsModalOpen(false);
-      } catch (error) {
-        console.log(error);
+    try {
+      if (!token) {
+        navigate("/");
+        return;
       }
-    }
-    else {
-      try {
-        if (!token) {
-          navigate("/");
-          return;
-        }
-        const { data } = await axios.post(
-          `${process.env.REACT_APP_ADMIN_API_URL}/create-faq`,
-          { ...faqInfo },
-          { headers }
-        );
-        toast.success("Faq created successfully");
-        getAllFaqs();
-        setIsModalOpen(false);
-      } catch (error) {
-        console.log(error);
-      }
+      const { data } = await axios.patch(
+        `${process.env.REACT_APP_ADMIN_API_URL}/update-faq/${faq._id}`,
+        { ...faqInfo },
+        { headers }
+      );
+      console.log(data);
+      toast.success("Faq updated successfully");
+      getAllFaqs();
+      setIsModalOpen(false);
+    } catch (error) {
+      console.log(error);
     }
   };
   if (!token) {
@@ -72,7 +53,7 @@ const EditFaqModal = ({ setIsModalOpen, faq="", getAllFaqs }) => {
     <div className={classes.wrapper}>
       <div className={classes.modal}>
         <div className={classes.heading_container}>
-          <h4>{faq ? "Edit" : "Create"} Faq</h4>
+          <h4>Edit Faq</h4>
           <div className={classes.d_flex}>
             <RxCross2
               onClick={() => setIsModalOpen(false)}
@@ -106,7 +87,7 @@ const EditFaqModal = ({ setIsModalOpen, faq="", getAllFaqs }) => {
           </div>
           <div className={classes.button_wrapper}>
             <button onClick={handleOnSubmit} className={classes.button}>
-              {faq ? "Update" : "Add"}
+              Update
             </button>
           </div>
         </form>
