@@ -33,7 +33,9 @@ import WebCategory from "./pages/AdminPanel/Banners/Website/Category";
 import WebHome from "./pages/AdminPanel/Banners/Website/Home";
 import WebService from "./pages/AdminPanel/Banners/Website/Service";
 import WebProduct from "./pages/AdminPanel/Banners/Website/Product";
+import HelpCenterTickets from "./pages/AdminPanel/helpCenter/HelpCenterTickets";
 import HelpCenter from "./pages/AdminPanel/helpCenter/HelpCenter";
+import HelpCenterFaqs from "./pages/AdminPanel/helpCenter/HelpCenterFaqs";
 
 function App() {
   return (
@@ -55,22 +57,48 @@ function App() {
           <Route path="/admin/banners" exact element={<Banner />} />
           <Route path="/admin/banners/app" exact element={<AppBanner />} />
           <Route path="/admin/banners/app/home" exact element={<Home />} />
-          <Route path="/admin/banners/app/category" exact element={<Category />} />
-          <Route path="/admin/banners/app/service" exact element={<Service />} />
-          <Route path="/admin/banners/app/product" exact element={<Product />} />
+          <Route
+            path="/admin/banners/app/category"
+            exact
+            element={<Category />}
+          />
+          <Route
+            path="/admin/banners/app/service"
+            exact
+            element={<Service />}
+          />
+          <Route
+            path="/admin/banners/app/product"
+            exact
+            element={<Product />}
+          />
 
           <Route path="/admin/banners/web" exact element={<WebsiteBanner />} />
           <Route path="/admin/banners/web/home" exact element={<WebHome />} />
-          <Route path="/admin/banners/web/category" exact element={<WebCategory />} />
-          <Route path="/admin/banners/web/service" exact element={<WebService />} />
-          <Route path="/admin/banners/web/product" exact element={<WebProduct />} />
-
+          <Route
+            path="/admin/banners/web/category"
+            exact
+            element={<WebCategory />}
+          />
+          <Route
+            path="/admin/banners/web/service"
+            exact
+            element={<WebService />}
+          />
+          <Route
+            path="/admin/banners/web/product"
+            exact
+            element={<WebProduct />}
+          />
 
           <Route path="/admin/cms" exact element={<Cms />} />
-          <Route path="/admin/cms/privacy-policy" exact element={<PrivacyPolicy />} />
+          <Route
+            path="/admin/cms/privacy-policy"
+            exact
+            element={<PrivacyPolicy />}
+          />
           <Route path="/admin/cms/about-us" exact element={<AboutUs />} />
           <Route path="/admin/cms/contact-us" exact element={<ContactUs />} />
-
 
           <Route
             path="/admin/banners/website"
@@ -80,7 +108,6 @@ function App() {
 
           <Route path="/admin/bookings" element={<Bookings />} />
           <Route path="/admin/bookings/:id" element={<BookingDetails />} />
-
 
           <Route path="/admin/partners" element={<Partners />} />
           <Route path="/admin/customers" element={<Customers />} />
@@ -100,6 +127,11 @@ function App() {
           <Route path="/admin/offers" element={<Offers />} />
           <Route path="/admin/available-cities" element={<AvailableCities />} />
           <Route path="/admin/help-center" element={<HelpCenter />} />
+          <Route path="/admin/help-center/faqs" element={<HelpCenterFaqs />} />
+          <Route
+            path="/admin/help-center/tickets"
+            element={<HelpCenterTickets />}
+          />
 
           <Route path="/*" element={<Error />} />
         </Routes>
