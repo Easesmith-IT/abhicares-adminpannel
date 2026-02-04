@@ -1,3 +1,5 @@
+import "leaflet/dist/leaflet.css";
+import "leaflet-draw/dist/leaflet.draw.css";
 import "./App.css";
 
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
@@ -19,6 +21,18 @@ import SellerCashoutDetails from "./pages/partners/SellerCashoutDetails";
 import Customers from "./pages/customers/Customers";
 import CustomerDetails from "./pages/customers/CustomerDetails";
 import Offers from "./pages/offers/Offers";
+import AvailableCities from "./pages/cities/AvailableCities";
+import Payments from "./pages/payments/Payments";
+import AdminHelpCenter from "./pages/help-center/HelpCenter";
+import HelpCenterTicketDetails from "./pages/help-center/HelpCenterTicketDetails";
+import Enquiry from "./pages/enquiry/Enquiry";
+import Settings from "./pages/settings/Settings";
+import MangageComision from "./pages/settings/MangageComision";
+import Reviews from "./pages/reviews/Reviews";
+import SendNotifications from "./pages/send-notifications/SendNotifications";
+import SellerCashouts from "./pages/seller-cashouts/SellerCashouts";
+import Banner from "./pages/banners/Banner";
+import AppBanner from "./pages/banners/AppBanner";
 
 function App() {
   return (
@@ -62,113 +76,39 @@ function App() {
           <Route
             path="/admin/customers/:customerId"
             element={<CustomerDetails />}
-            />
+          />
 
-            <Route path="/admin/offers" element={<Offers />} />
+          <Route path="/admin/offers" element={<Offers />} />
 
-          {/* <Route path="/admin/banners" exact element={<Banner />} /> */}
-          {/* <Route path="/admin/banners/app" exact element={<AppBanner />} /> */}
-          {/* <Route path="/admin/banners/app/home" exact element={<Home />} /> */}
-          {/* <Route
-                path="/admin/banners/app/category"
-                exact
-                element={<Category />}
-              /> */}
-          {/* <Route
-                path="/admin/banners/app/service"
-                exact
-                element={<Service />}
-              /> */}
-          {/* <Route
-                path="/admin/banners/app/product"
-                exact
-                element={<Product />}
-              /> */}
+          <Route path="/admin/available-cities" element={<AvailableCities />} />
 
-          {/* <Route
-                path="/admin/banners/web"
-                exact
-                element={<WebsiteBanner />}
-              /> */}
-          {/* <Route
-                path="/admin/banners/web/home"
-                exact
-                element={<WebHome />}
-                /> */}
-          {/* <Route
-                path="/admin/banners/web/category"
-                exact
-                element={<WebCategory />}
-                /> */}
-          {/* <Route
-                path="/admin/banners/web/service"
-                exact
-                element={<WebService />}
-              /> */}
-          {/* <Route
-                path="/admin/banners/web/product"
-                exact
-                element={<WebProduct />}
-                /> */}
+          <Route path="/admin/payments" element={<Payments />} />
 
-          {/* <Route path="/admin/cms" exact element={<Cms />} /> */}
-          {/* <Route
-                path="/admin/cms/privacy-policy"
-                exact
-                element={<AdminPrivacyPolicy />}
-                /> */}
-          {/* <Route
-                path="/admin/cms/about-us"
-                exact
-                element={<AdminAboutUs />}
-                /> */}
-          {/* <Route
-                path="/admin/cms/contact-us"
-                exact
-                element={<AdminContactUs />}
-              /> */}
+          <Route path="/admin/help-center" element={<AdminHelpCenter />} />
+          <Route
+            path="/admin/help-center/tickets/:ticketId"
+            element={<HelpCenterTicketDetails />}
+          />
 
-          {/* <Route
-                path="/admin/banners/website"
-                exact
-                element={<WebsiteBanner />}
-              /> */}
+          <Route path="/admin/enquiries" element={<Enquiry />} />
 
-          {/* <Route path="/admin/payments" element={<Payments />} /> */}
-          {/* <Route path="/admin/settings" element={<Settings />} /> */}
-          {/* <Route
-                path="/admin/settings/manage-comision"
-                element={<MangageComision />}
-                /> */}
-          {/* <Route path="/admin/reviews" element={<Reviews />} /> */}
+          <Route path="/admin/settings" element={<Settings />} />
+          <Route
+            path="/admin/settings/manage-comision"
+            element={<MangageComision />}
+          />
 
-          {/* <Route path="/admin/enquiries" element={<Enquiry />} /> */}
-          {/* <Route
-                path="/admin/available-cities"
-                element={<AvailableCities />}
-                /> */}
-          {/* <Route path="/admin/available-cities/add" element={<AddCity />} /> */}
-          {/* <Route path="/admin/help-center" element={<AdminHelpCenter />} /> */}
-          {/* <Route
-                path="/admin/help-center/faqs"
-                element={<HelpCenterFaqs />}
-                /> */}
-          {/* <Route
-                path="/admin/help-center/tickets"
-                element={<HelpCenterTickets />}
-                /> */}
-          {/* <Route
-                path="/admin/help-center/tickets/:ticketId"
-                element={<HelpCenterTicketDetails />}
-                /> */}
-          {/* <Route
-                path="/admin/send-notifications"
-                element={<SendNotifications />}
-                /> */}
-          {/* <Route
-                path="/admin/seller-cashouts"
-                element={<SellerCashouts />}
-                /> */}
+          <Route path="/admin/reviews" element={<Reviews />} />
+
+          <Route
+            path="/admin/send-notifications"
+            element={<SendNotifications />}
+          />
+
+          <Route path="/admin/seller-cashouts" element={<SellerCashouts />} />
+
+          <Route path="/admin/banners" exact element={<Banner />} />
+          <Route path="/admin/banners/app" exact element={<AppBanner />} />
         </Route>
 
         <Route path="/*" element={<NotFound />} />

@@ -118,7 +118,7 @@ const AddProductModal = ({
 
   useEffect(() => {
     if (addRes?.status === 200 || addRes?.status === 201) {
-      toast.success("Product added successfully");
+      // toast.success("Product added successfully");
       getAllProducts();
       setIsModalOpen(false);
     }
@@ -126,7 +126,7 @@ const AddProductModal = ({
 
   useEffect(() => {
     if (updateRes?.status === 200 || updateRes?.status === 201) {
-      toast.success("Product updated successfully");
+      // toast.success("Product updated successfully");
       getAllProducts();
       setIsModalOpen(false);
     }
@@ -138,7 +138,7 @@ const AddProductModal = ({
     <Dialog open onOpenChange={setIsModalOpen}>
       <DialogContent
         className="
-          max-w-3xl 
+          sm:max-w-3xl 
           w-full 
           max-h-[90vh] 
           overflow-y-auto 
@@ -197,7 +197,7 @@ const AddProductModal = ({
                 theme="snow"
                 value={description}
                 onChange={setDescription}
-                className="h-20 w-full"
+                className="h-60 w-full"
               />
             </div>
           </div>

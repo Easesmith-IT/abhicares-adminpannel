@@ -24,7 +24,7 @@ const SideNav = () => {
   const isActive = (path) => pathname.includes(path);
 
   const baseItem =
-    "flex h-[60px] w-full items-center gap-5 px-5 transition-all";
+    "flex h-[60px] w-full items-center gap-5 px-3 transition-all";
   const hoverItem = "hover:bg-[#A5D3FD] hover:text-white";
   const activeItem = "border-l-[5px] border-[#A5D3FD] bg-[#A5D3FD] text-white";
 

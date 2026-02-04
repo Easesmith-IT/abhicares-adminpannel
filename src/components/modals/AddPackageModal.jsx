@@ -126,7 +126,7 @@ const AddPackageModal = ({
 
   useEffect(() => {
     if (addRes?.status === 200 || addRes?.status === 201) {
-      toast.success("Package added successfully");
+      // toast.success("Package added successfully");
       getAllPackage();
       setIsModalOpen(false);
     }
@@ -134,7 +134,7 @@ const AddPackageModal = ({
 
   useEffect(() => {
     if (updateRes?.status === 200 || updateRes?.status === 201) {
-      toast.success("Package updated successfully");
+      // toast.success("Package updated successfully");
       getAllPackage();
       setIsModalOpen(false);
     }
@@ -142,7 +142,7 @@ const AddPackageModal = ({
 
   return (
     <Dialog open onOpenChange={setIsModalOpen}>
-      <DialogContent className="max-w-3xl">
+      <DialogContent className="sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>
             {selectedPackage ? "Update Package" : "Add Package"}

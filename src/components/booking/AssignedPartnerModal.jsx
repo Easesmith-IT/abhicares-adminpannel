@@ -60,7 +60,7 @@ const AssignedPartnerModal = ({
 
   return (
     <Dialog open onOpenChange={setIsModalOpen}>
-      <DialogContent className="w-full max-w-xl">
+      <DialogContent className="w-full sm:max-w-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Assign Partner</DialogTitle>
         </DialogHeader>

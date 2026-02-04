@@ -104,7 +104,7 @@ const SellerAssignedOrdersModal = ({
         open={isSellerAssignedModalOpen}
         onOpenChange={setIsSellerAssignedModalOpen}
       >
-        <DialogContent className="sm:max-w-5xl">
+        <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader className="flex flex-row items-center justify-between">
             <DialogTitle>Partner Assigned Orders</DialogTitle>
           </DialogHeader>

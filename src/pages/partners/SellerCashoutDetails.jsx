@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { BackLink } from "../../components/shared/back-link";
+import { H2 } from "../../components/shared/typography";
 
 const SellerCashoutDetails = () => {
   const {
@@ -75,6 +77,7 @@ const SellerCashoutDetails = () => {
   return (
     <Wrapper>
       <div className="space-y-6">
+        <BackLink href={-1}></BackLink>
         {/* ================= Seller Info ================= */}
         <Card>
           <CardHeader>

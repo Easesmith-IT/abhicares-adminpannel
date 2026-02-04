@@ -62,6 +62,19 @@ const ServiceInfoPage = () => {
   const [featureModalOpen, setFeatureModalOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteType, setDeleteType] = useState("product");
+  const [isUpdatePackageModalOpen, setIsUpdatePackageModalOpen] =
+    useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+
+  const handleUpdateModal = (product) => {
+    setSelectedProduct(product);
+    setIsUpdateModalOpen(!isUpdateModalOpen);
+  };
+
+  const handlePackageUpdateModal = (data) => {
+    setSelectedPackage(data);
+    setIsUpdatePackageModalOpen(!isUpdatePackageModalOpen);
+  };
 
   const getServiceDetails = () => {
     fetchService(`/admin/get-service-details/${serviceId}`);
@@ -251,7 +264,7 @@ const ServiceInfoPage = () => {
                         { state: { product: p, isPackage: false } },
                       )
                     }
-                    onEdit={() => setSelectedProduct(p)}
+                    onEdit={() => handleUpdateModal(p)}
                     onDelete={() => {
                       setSelectedProduct(p._id);
                       setDeleteType("product");
@@ -283,7 +296,7 @@ const ServiceInfoPage = () => {
                         { state: { product: pkg, isPackage: true } },
                       )
                     }
-                    onEdit={() => setSelectedPackage(pkg)}
+                    onEdit={() => handlePackageUpdateModal(pkg)}
                     onDelete={() => {
                       setSelectedPackage(pkg._id);
                       setDeleteType("package");
@@ -296,6 +309,25 @@ const ServiceInfoPage = () => {
           </Section>
         </div>
       </Wrapper>
+
+      {isUpdateModalOpen && (
+        <AddProductModal
+          serviceId={serviceId}
+          product={selectedProduct}
+          setIsModalOpen={setIsUpdateModalOpen}
+          getAllProducts={getServiceProducts}
+        />
+      )}
+
+      {isUpdatePackageModalOpen && (
+        <AddPackageModal
+          serviceId={serviceId}
+          selectedPackage={selectedPackage}
+          setIsModalOpen={setIsUpdatePackageModalOpen}
+          allProducts={products}
+          getAllPackage={getServicePackages}
+        />
+      )}
 
       {/* Modals */}
       {addProductOpen && (
