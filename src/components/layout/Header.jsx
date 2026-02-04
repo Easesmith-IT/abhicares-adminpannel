@@ -33,7 +33,7 @@ const Header = ({ onClick }) => {
   return (
     <>
       {/* Header */}
-      <header className="sticky top-0 z-20 flex h-[70px] w-full items-center justify-between px-[30px] shadow-md glass-header">
+      <header className="sticky top-0 z-20 flex h-[70px] w-full items-center justify-between px-[30px] shadow-md bg-white">
         {/* Left section */}
         <div className="flex items-center gap-[60px]">
           <div
