@@ -67,6 +67,7 @@ function App() {
             path="/admin/partners/:partnerId"
             element={<PartnerDetails />}
           />
+          
           <Route
             path="/admin/seller-cashouts/:cashoutId"
             element={<SellerCashoutDetails />}
