@@ -31,7 +31,7 @@ const PrivateRoute = () => {
 
     useEffect(() => {
         if (!isAdminAuthenticated || !permissions || permissions[foundValue] === "none") {
-            navigate("/admin/login");
+            navigate("/");
         }
     }, [permissions, pathname, isAdminAuthenticated, value, navigate,foundValue]);
 
