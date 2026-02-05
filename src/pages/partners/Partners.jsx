@@ -154,7 +154,7 @@ const Partners = () => {
             ) : (
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-slate-200 border-b border-white/40">
                     <TableHead>Name</TableHead>
                     <TableHead>Partner ID</TableHead>
                     <TableHead>Category</TableHead>

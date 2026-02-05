@@ -1,4 +1,14 @@
-import { Link, useLocation } from "react-router-dom";
+"use client";
+
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+} from "@/components/ui/sidebar";
+
 import {
   LayoutDashboard,
   Image,
@@ -15,219 +25,166 @@ import {
   Star,
   Bell,
   Wallet,
+  FileWarningIcon,
 } from "lucide-react";
+import logo from "../../assets/logo .png";
+import { SidebarHeader } from "../ui/sidebar";
+import { cn } from "../../lib/utils";
+
 
 const SideNav = () => {
   const permissions = JSON.parse(localStorage.getItem("perm")) || {};
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
-  const isActive = (path) => pathname.includes(path);
+  const isActive = (path) =>
+    path === "/admin/dashboard" ? pathname === path : pathname.startsWith(path);
 
-  const baseItem =
-    "flex h-[60px] w-full items-center gap-5 px-3 transition-all";
-  const hoverItem = "hover:bg-[#A5D3FD] hover:text-white";
-  const activeItem = "border-l-[5px] border-[#A5D3FD] bg-[#A5D3FD] text-white";
-
-  const iconClass = "h-6 w-6";
+  const menuItem = (to, label, Icon, allowed = true) =>
+    allowed && (
+      <SidebarMenuItem key={to}>
+        <SidebarMenuButton
+          asChild
+          isActive={isActive(to)}
+          tooltip={label}
+          className={cn("gap-x-4 h-11 px-4",isActive(to) && "bg-main! text-white!")}
+        >
+          <Link to={to}>
+            <Icon className="size-4" />
+            <span>{label}</span>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
 
   return (
-    <aside className="min-h-[91vh] w-full px-2 py-6 shadow-md glass-header">
-      <div className="flex flex-col items-center gap-6">
-        {permissions.dashboard !== "none" && (
-          <Link
-            to="/admin/dashboard"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/dashboard") && activeItem
-            }`}
-          >
-            <LayoutDashboard className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Dashboard</span>
-          </Link>
-        )}
-
-        {permissions.banners !== "none" && (
-          <Link
-            to="/admin/banners"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/banners") && activeItem
-            }`}
-          >
-            <Image className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Banners</span>
-          </Link>
-        )}
-
-        {permissions.orders !== "none" && (
-          <Link
-            to="/admin/orders"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/orders") && activeItem
-            }`}
-          >
-            <ShoppingCart className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Orders</span>
-          </Link>
-        )}
-
-        {permissions.bookings !== "none" && (
-          <Link
-            to="/admin/bookings"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/bookings") && activeItem
-            }`}
-          >
-            <CalendarCheck className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Bookings</span>
-          </Link>
-        )}
-
-        {permissions.services !== "none" && (
-          <Link
-            to="/admin/services"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/services") && activeItem
-            }`}
-          >
-            <Layers className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Categories</span>
-          </Link>
-        )}
-
-        {permissions.partners !== "none" && (
-          <Link
-            to="/admin/partners"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/partners") && activeItem
-            }`}
-          >
-            <Globe className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Partners</span>
-          </Link>
-        )}
-
-        {permissions.customers !== "none" && (
-          <Link
-            to="/admin/customers"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/customers") && activeItem
-            }`}
-          >
-            <Users className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Customers</span>
-          </Link>
-        )}
-
-        {permissions.offers !== "none" && (
-          <Link
-            to="/admin/offers"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/offers") && activeItem
-            }`}
-          >
-            <Gift className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Offers</span>
-          </Link>
-        )}
-
-        {permissions.availableCities !== "none" && (
-          <Link
-            to="/admin/available-cities"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/available-cities") && activeItem
-            }`}
-          >
-            <Globe className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Available Cities</span>
-          </Link>
-        )}
-
-        {permissions.payments !== "none" && (
-          <Link
-            to="/admin/payments"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/payments") && activeItem
-            }`}
-          >
-            <CreditCard className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Payments</span>
-          </Link>
-        )}
-
-        {permissions.helpCenter !== "none" && (
-          <Link
-            to="/admin/help-center"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/help-center") && activeItem
-            }`}
-          >
-            <LifeBuoy className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Help Center</span>
-          </Link>
-        )}
-
-        {permissions.enquiry !== "none" && (
-          <Link
-            to="/admin/enquiries"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/enquiries") && activeItem
-            }`}
-          >
-            <HelpCircle className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Enquiries</span>
-          </Link>
-        )}
-
-        {permissions.settings !== "none" && (
-          <Link
-            to="/admin/settings"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/settings") && activeItem
-            }`}
-          >
-            <Settings className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Settings</span>
-          </Link>
-        )}
-
-        {permissions.reviews !== "none" && (
-          <Link
-            to="/admin/reviews"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/reviews") && activeItem
-            }`}
-          >
-            <Star className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Reviews</span>
-          </Link>
-        )}
-
-        {permissions.notifications !== "none" && (
-          <Link
-            to="/admin/send-notifications"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/send-notifications") && activeItem
-            }`}
-          >
-            <Bell className={iconClass} />
-            <span className="text-[1.3rem] font-medium">
-              Send Notifications
-            </span>
-          </Link>
-        )}
-
-        {permissions.sellerCashout !== "none" && (
-          <Link
-            to="/admin/seller-cashouts"
-            className={`${baseItem} ${hoverItem} ${
-              isActive("/admin/seller-cashouts") && activeItem
-            }`}
-          >
-            <Wallet className={iconClass} />
-            <span className="text-[1.3rem] font-medium">Seller Cashouts</span>
-          </Link>
-        )}
-      </div>
-    </aside>
+    <Sidebar collapsible="icon" className="glass!">
+      <SidebarHeader>
+        <SidebarMenuItem>
+          <SidebarMenuButton asChild className="gap-x-4 h-10 px-4">
+            <button
+              onClick={() => navigate("/admin/dashboard")}
+              className="cursor-pointer"
+            >
+              <img
+                src={logo}
+                alt="logo"
+                className="h-[50px] w-[160px] object-contain"
+              />
+            </button>
+          </SidebarMenuButton>
+        </SidebarMenuItem>
+      </SidebarHeader>
+      <SidebarContent
+        className="
+    mt-4
+    overflow-y-auto
+    [&::-webkit-scrollbar]:hidden
+    [-ms-overflow-style:'none']
+    [scrollbar-width:'none']
+  "
+      >
+        <SidebarMenu className="px-2">
+          {menuItem(
+            "/admin/dashboard",
+            "Dashboard",
+            LayoutDashboard,
+            permissions.dashboard !== "none",
+          )}
+          {menuItem(
+            "/admin/banners",
+            "Banners",
+            Image,
+            permissions.banners !== "none",
+          )}
+          {menuItem(
+            "/admin/orders",
+            "Orders",
+            ShoppingCart,
+            permissions.orders !== "none",
+          )}
+          {menuItem(
+            "/admin/bookings",
+            "Bookings",
+            CalendarCheck,
+            permissions.bookings !== "none",
+          )}
+          {menuItem(
+            "/admin/services",
+            "Categories",
+            Layers,
+            permissions.services !== "none",
+          )}
+          {menuItem(
+            "/admin/partners",
+            "Partners",
+            Globe,
+            permissions.partners !== "none",
+          )}
+          {menuItem(
+            "/admin/customers",
+            "Customers",
+            Users,
+            permissions.customers !== "none",
+          )}
+          {menuItem(
+            "/admin/offers",
+            "Offers",
+            Gift,
+            permissions.offers !== "none",
+          )}
+          {menuItem(
+            "/admin/available-cities",
+            "Available Cities",
+            Globe,
+            permissions.availableCities !== "none",
+          )}
+          {menuItem(
+            "/admin/payments",
+            "Payments",
+            CreditCard,
+            permissions.payments !== "none",
+          )}
+          {menuItem(
+            "/admin/help-center",
+            "Help Center",
+            LifeBuoy,
+            permissions.helpCenter !== "none",
+          )}
+          {menuItem(
+            "/admin/enquiries",
+            "Enquiries",
+            HelpCircle,
+            permissions.enquiry !== "none",
+          )}
+          {menuItem(
+            "/admin/settings",
+            "Settings",
+            Settings,
+            permissions.settings !== "none",
+          )}
+          {menuItem(
+            "/admin/reviews",
+            "Reviews",
+            Star,
+            permissions.reviews !== "none",
+          )}
+          {menuItem(
+            "/admin/send-notifications",
+            "Send Notifications",
+            Bell,
+            permissions.notifications !== "none",
+          )}
+          {menuItem(
+            "/admin/seller-cashouts",
+            "Seller Cashouts",
+            Wallet,
+            permissions.sellerCashout !== "none",
+          )}
+          {menuItem("/admin/crash-report", "Crash Reports", FileWarningIcon)}
+        </SidebarMenu>
+      </SidebarContent>
+    </Sidebar>
   );
 };
 

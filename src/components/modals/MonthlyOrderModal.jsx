@@ -96,7 +96,7 @@ const MonthlyOrderModal = ({isModalOpen, setIsModalOpen }) => {
             >
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-slate-200 border-b border-white/40">
                     <TableHead>Order ID</TableHead>
                     <TableHead>Date</TableHead>
                     <TableHead>Value</TableHead>
@@ -129,7 +129,9 @@ const MonthlyOrderModal = ({isModalOpen, setIsModalOpen }) => {
 
             {/* Footer */}
             <div className="flex justify-end pt-4">
-              <Button variant="abhicares" onClick={downloadInvoice}>Download PDF</Button>
+              <Button variant="abhicares" onClick={downloadInvoice}>
+                Download PDF
+              </Button>
             </div>
           </>
         )}

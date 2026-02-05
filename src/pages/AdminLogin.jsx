@@ -1,18 +1,38 @@
+"use client";
+
 import axios from "axios";
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/logo .png";
+
 import { changeAdminStatus } from "../store/slices/userSlice";
+import logo from "../assets/logo .png";
+
 import { Button } from "../components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
+import { Input } from "../components/ui/input";
+
+import { Eye, EyeOff, Lock, Mail } from "lucide-react";
+import { Spinner } from "../components/ui/spinner";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   const userNameRef = useRef(null);
   const userPasswordRef = useRef(null);
+
   const { isAdminAuthenticated } = useSelector((state) => state.user);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isAdminAuthenticated) {
@@ -23,102 +43,127 @@ const AdminLogin = () => {
   const handleAdminLogin = async (e) => {
     e.preventDefault();
 
-    const userName = userNameRef.current.value;
-    const userPassword = userPasswordRef.current.value;
+    const adminId = userNameRef.current.value;
+    const password = userPasswordRef.current.value;
 
     try {
+      setLoading(true);
+
       const response = await axios.post(
         `${import.meta.env.VITE_APP_ADMIN_API_URL}/login-Admin`,
-        {
-          adminId: userName,
-          password: userPassword,
-        },
+        { adminId, password },
         { withCredentials: true },
       );
 
       localStorage.setItem("perm", JSON.stringify(response.data.perm));
+      localStorage.setItem("admin-status", true);
 
-      if (response?.data) {
-        dispatch(changeAdminStatus({ isAdminAuthenticated: true }));
-        localStorage.setItem("admin-status", true);
+      dispatch(changeAdminStatus({ isAdminAuthenticated: true }));
 
-        const routes = [
-          "dashboard",
-          "banners",
-          "orders",
-          "bookings",
-          "services",
-          "partners",
-          "customers",
-          "offers",
-          "availableCities",
-          "payments",
-          "enquiry",
-          "helpCenter",
-          "settings",
-        ];
+      const routes = [
+        "dashboard",
+        "banners",
+        "orders",
+        "bookings",
+        "services",
+        "partners",
+        "customers",
+        "offers",
+        "availableCities",
+        "payments",
+        "enquiry",
+        "helpCenter",
+        "settings",
+      ];
 
-        const firstAllowed = routes.find(
-          (item) => response.data.perm[item] !== "none",
-        );
+      const firstAllowed = routes.find(
+        (item) => response.data.perm[item] !== "none",
+      );
 
-        toast.success("Logged in successfully");
-        navigate(`/admin/${firstAllowed}`);
-      }
+      toast.success("Logged in successfully");
+      navigate(`/admin/${firstAllowed}`);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex h-screen w-screen items-center justify-center bg-gray-50">
-      <form
-        onSubmit={handleAdminLogin}
-        className="w-full max-w-md rounded-xl bg-white p-10 shadow-lg"
-      >
-        {/* Logo */}
-        <div className="flex justify-center">
-          <Link to="/">
-            <img src={logo} alt="logo" className="h-auto w-[200px]" />
-          </Link>
-        </div>
-
-        {/* Title */}
-        <h3 className="my-6 text-center text-2xl font-semibold text-gray-800">
-          Admin Login
-        </h3>
-
-        {/* Admin ID */}
-        <div className="mb-4">
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Admin ID
-          </label>
-          <input
-            type="text"
-            ref={userNameRef}
-            className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-            required
+    <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-main to-para-3 p-4">
+      <Card className="w-full max-w-lg rounded-xl shadow-2xl bg-white">
+        <CardHeader className="text-center space-y-2">
+          <img
+            src={logo}
+            alt="AbhiCares"
+            className="mx-auto h-14 object-contain"
           />
-        </div>
 
-        {/* Password */}
-        <div className="mb-6">
-          <label className="mb-1 block text-sm font-medium text-gray-700">
-            Password
-          </label>
-          <input
-            type="password"
-            ref={userPasswordRef}
-            className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30"
-            required
-          />
-        </div>
+          <CardTitle className="text-3xl font-bold">Admin Login</CardTitle>
 
-        {/* Submit Button */}
-        <Button variant="abhicares" type="submit" className="w-full">
-          Login
-        </Button>
-      </form>
+          <CardDescription>Access your dashboard securely</CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <form onSubmit={handleAdminLogin} className="space-y-5">
+            {/* Admin ID */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Admin ID
+              </label>
+              <div className="relative mt-1">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  ref={userNameRef}
+                  type="text"
+                  placeholder="Enter admin ID"
+                  className="pl-10 h-12"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Password */}
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Password
+              </label>
+              <div className="relative mt-1">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input
+                  ref={userPasswordRef}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter password"
+                  className="pl-10 pr-10 h-12"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* Submit */}
+            <Button
+              type="submit"
+              variant="abhicares"
+              size="lg"
+              className="w-full"
+              disabled={loading}
+            >
+              {loading ? <Spinner /> : "Login"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 };

@@ -7,7 +7,7 @@ import Wrapper from "../../components/wrappers/Wrapper";
 const AppBanner = () => {
   return (
     <Wrapper>
-      <div className="m-6 space-y-6">
+      <div className="space-y-6">
         <h1 className="text-2xl font-semibold">App Banners</h1>
 
         <Tabs defaultValue="home">

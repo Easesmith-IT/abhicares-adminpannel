@@ -176,7 +176,7 @@ const HelpCenterTickets = () => {
       <div className="table-container mt-5">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="bg-slate-200 border-b border-white/40">
               <TableHead>Ticket ID</TableHead>
               <TableHead>Raised By</TableHead>
               <TableHead>Date</TableHead>

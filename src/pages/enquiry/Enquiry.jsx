@@ -108,7 +108,7 @@ const Enquiry = () => {
   return (
     <>
       <Wrapper>
-        <div className="m-6">
+        <div>
           <div className="flex flex-row items-center justify-between">
             <H2>Enquiries</H2>
 
@@ -126,7 +126,7 @@ const Enquiry = () => {
           <div className="table-container mt-5">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-slate-200 border-b border-white/40">
                   <TableHead>Name</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>City</TableHead>
@@ -149,28 +149,29 @@ const Enquiry = () => {
                     </TableCell>
                   </TableRow>
                 )}
-                {!isLoading && allInquiries.map((inquiry) => (
-                  <TableRow key={inquiry._id}>
-                    <TableCell>{inquiry.name}</TableCell>
-                    <TableCell>{inquiry.phone}</TableCell>
-                    <TableCell>{inquiry.city}</TableCell>
-                    <TableCell>{inquiry.state}</TableCell>
-                    <TableCell>{inquiry.serviceType}</TableCell>
-                    <TableCell className="text-end">
-                      <Button
-                        onClick={() => handleDeleteModal(inquiry._id)}
-                        size="icon"
-                        variant="destructive"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {!isLoading &&
+                  allInquiries.map((inquiry) => (
+                    <TableRow key={inquiry._id}>
+                      <TableCell>{inquiry.name}</TableCell>
+                      <TableCell>{inquiry.phone}</TableCell>
+                      <TableCell>{inquiry.city}</TableCell>
+                      <TableCell>{inquiry.state}</TableCell>
+                      <TableCell>{inquiry.serviceType}</TableCell>
+                      <TableCell className="text-end">
+                        <Button
+                          onClick={() => handleDeleteModal(inquiry._id)}
+                          size="icon"
+                          variant="destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
               </TableBody>
             </Table>
           </div>
-          
+
           <PaginationComp
             page={page}
             pageCount={pageCount}

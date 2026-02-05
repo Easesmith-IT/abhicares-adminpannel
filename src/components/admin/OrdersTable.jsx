@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
+import { Eye } from "lucide-react";
 
 const getStatusClasses = (status) => {
   switch (status) {
@@ -33,7 +34,7 @@ const OrdersTable = ({ orders, isLoading }) => {
     <div className="table-container">
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="bg-slate-200 border-b border-white/40">
             <TableHead className="w-[200px]">Order ID</TableHead>
             <TableHead>Order Date</TableHead>
             <TableHead>Status</TableHead>
@@ -84,11 +85,11 @@ const OrdersTable = ({ orders, isLoading }) => {
                   <Button
                     onClick={() => navigate()}
                     className="text-primary hover:underline"
-                    variant="link"
+                    variant="outline"
                     asChild
                   >
                     <Link state={order} to={`/admin/orders/${order._id}`}>
-                      View Details
+                      <Eye className="h-4 w-4" />
                     </Link>
                   </Button>
                 </TableCell>
@@ -120,7 +121,7 @@ const TableSkeletonRow = () => {
       </TableCell>
 
       <TableCell>
-        <Skeleton className="h-4 w-[90px]" />
+        <Skeleton className="h-9 px-4 py-2 w-9" />
       </TableCell>
     </TableRow>
   );

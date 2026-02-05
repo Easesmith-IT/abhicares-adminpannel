@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "../ui/button";
+import { Eye } from "lucide-react";
 
 /* ================= Status Styles ================= */
 
@@ -37,7 +38,7 @@ const BookingsTable = ({ bookings, isLoading }) => {
     <div className="table-container">
       <Table>
         <TableHeader>
-          <TableRow>
+          <TableRow className="bg-slate-200 border-b border-white/40">
             <TableHead className="w-[200px]">Booking ID</TableHead>
             <TableHead>Delivery Date</TableHead>
             <TableHead>Booking Date</TableHead>
@@ -93,12 +94,12 @@ const BookingsTable = ({ bookings, isLoading }) => {
 
                 <TableCell>
                   <Button
-                    variant="link"
+                    variant="outline"
                     className="px-0 text-primary hover:underline"
                     asChild
                   >
                     <Link state={booking} to={`/admin/bookings/${booking._id}`}>
-                      View Details
+                      <Eye className="h-4 w-4" />
                     </Link>
                   </Button>
                 </TableCell>
@@ -136,7 +137,7 @@ const TableSkeletonRow = () => {
       </TableCell>
 
       <TableCell>
-        <Skeleton className="h-4 w-[90px]" />
+        <Skeleton className="h-9 px-4 py-2 w-9" />
       </TableCell>
     </TableRow>
   );

@@ -142,12 +142,12 @@ const AppHomeBanner = () => {
 
   return (
     <>
-      <div className="m-6 space-y-8">
+      <div className="space-y-8">
         {/* HERO BANNERS */}
         <section>
           <H4>Home Page Hero Banners</H4>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-3 mt-4">
             {heroBanners.map((item, index) => (
               <Card key={item.bannerName}>
                 <CardContent className="p-4 space-y-3">

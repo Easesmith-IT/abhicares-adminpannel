@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImagePlus } from "lucide-react";
 
 import UpdateBannerModal from "../modals/UpdateBannerModal";
+import { H4 } from "../shared/typography";
 
 const WebsiteHomeBanner = () => {
   const [banners, setBanners] = useState([
@@ -96,43 +97,43 @@ const WebsiteHomeBanner = () => {
 
   return (
     <>
-      <div className="m-6 space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Website Home – Sale Banners</CardTitle>
-          </CardHeader>
+      <div className="space-y-6">
+        <div>
+          <H4>Website Home – Sale Banners</H4>
 
-          <CardContent className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-4">
             {banners.map((banner, index) => (
-              <div key={banner.bannerName} className="space-y-3">
-                {banner.preview && (
-                  <img
-                    src={banner.preview}
-                    alt="banner"
-                    className="h-40 w-full rounded-md object-cover border"
+              <Card key={index}>
+                <CardContent className="p-4 space-y-3">
+                  {banner.preview && (
+                    <img
+                      src={banner.preview}
+                      alt="banner"
+                      className="h-40 w-full rounded-md object-cover border"
+                    />
+                  )}
+
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageChange(e, banner.bannerName)}
                   />
-                )}
 
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageChange(e, banner.bannerName)}
-                />
-
-                <Button
-                  variant="abhicares"
-                  className="w-full"
-                  onClick={() =>
-                    openUpdateModal(banner.file, `banner${index + 1}`)
-                  }
-                >
-                  <ImagePlus className="mr-2 h-4 w-4" />
-                  Update
-                </Button>
-              </div>
+                  <Button
+                    variant="abhicares"
+                    className="w-full"
+                    onClick={() =>
+                      openUpdateModal(banner.file, `banner${index + 1}`)
+                    }
+                  >
+                    <ImagePlus className="mr-2 h-4 w-4" />
+                    Update
+                  </Button>
+                </CardContent>
+              </Card>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
 
       {isModalOpen && (

@@ -101,7 +101,7 @@ const Settings = () => {
   return (
     <>
       <Wrapper>
-        <div className="m-6 space-y-6">
+        <div className="space-y-6">
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between gap-4">
             <h1 className="text-2xl font-semibold">Settings</h1>
@@ -145,7 +145,7 @@ const Settings = () => {
           <div className="table-container">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-slate-200 border-b border-white/40">
                   <TableHead>Name</TableHead>
                   <TableHead>Username</TableHead>
                   <TableHead>Role</TableHead>
@@ -199,9 +199,7 @@ const Settings = () => {
                             size="icon"
                             variant="outline"
                           >
-                            <Pencil
-                              className="h-4 w-4 cursor-pointer text-muted-foreground hover:text-primary"
-                            />
+                            <Pencil className="h-4 w-4 cursor-pointer text-muted-foreground hover:text-primary" />
                           </Button>
 
                           <Button

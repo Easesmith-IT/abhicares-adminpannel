@@ -123,7 +123,7 @@ const Customers = () => {
           <div className="table-container">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-slate-200 border-b border-white/40">
                   <TableHead>Customer Name</TableHead>
                   <TableHead>Contact Number</TableHead>
                   <TableHead className="text-right">Actions</TableHead>

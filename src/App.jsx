@@ -33,6 +33,8 @@ import SendNotifications from "./pages/send-notifications/SendNotifications";
 import SellerCashouts from "./pages/seller-cashouts/SellerCashouts";
 import Banner from "./pages/banners/Banner";
 import AppBanner from "./pages/banners/AppBanner";
+import CrashReports from "./pages/crash-report/CrashReport";
+import CrashDetailPage from "./pages/crash-report/CrashDetailPage";
 
 function App() {
   return (
@@ -67,7 +69,7 @@ function App() {
             path="/admin/partners/:partnerId"
             element={<PartnerDetails />}
           />
-          
+
           <Route
             path="/admin/seller-cashouts/:cashoutId"
             element={<SellerCashoutDetails />}
@@ -110,6 +112,13 @@ function App() {
 
           <Route path="/admin/banners" exact element={<Banner />} />
           <Route path="/admin/banners/app" exact element={<AppBanner />} />
+
+          <Route path="/admin/crash-report" exact element={<CrashReports />} />
+          <Route
+            path="/admin/crash-report/:crashId"
+            exact
+            element={<CrashDetailPage />}
+          />
         </Route>
 
         <Route path="/*" element={<NotFound />} />

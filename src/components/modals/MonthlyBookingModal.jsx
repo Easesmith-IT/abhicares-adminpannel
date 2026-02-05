@@ -79,7 +79,11 @@ const MonthlyBookingModal = ({ isModalOpen, setIsModalOpen }) => {
             className="rounded-md border px-3 py-2 text-sm"
           />
 
-          <Button variant="abhicares" onClick={handleSubmit} disabled={isLoading}>
+          <Button
+            variant="abhicares"
+            onClick={handleSubmit}
+            disabled={isLoading}
+          >
             {isLoading ? "Loading..." : "Submit"}
           </Button>
         </div>
@@ -100,7 +104,7 @@ const MonthlyBookingModal = ({ isModalOpen, setIsModalOpen }) => {
             >
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-slate-200 border-b border-white/40">
                     <TableHead>Booking ID</TableHead>
                     <TableHead>Booking Date</TableHead>
                     <TableHead>Delivery Date</TableHead>
@@ -144,7 +148,9 @@ const MonthlyBookingModal = ({ isModalOpen, setIsModalOpen }) => {
 
             {/* Footer */}
             <div className="flex justify-end pt-4">
-              <Button variant="abhicares" onClick={downloadInvoice}>Download PDF</Button>
+              <Button variant="abhicares" onClick={downloadInvoice}>
+                Download PDF
+              </Button>
             </div>
           </>
         )}

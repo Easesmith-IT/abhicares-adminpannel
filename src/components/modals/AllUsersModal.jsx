@@ -85,7 +85,7 @@ const AllUsersModal = ({ setIsModalOpen }) => {
             <div id="users-table" className="rounded-md border">
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-slate-200 border-b border-white/40">
                     <TableHead>Name</TableHead>
                     <TableHead>Phone</TableHead>
                     <TableHead>Locality</TableHead>
@@ -99,9 +99,7 @@ const AllUsersModal = ({ setIsModalOpen }) => {
                         {item?.userInfo?.name || "-"}
                       </TableCell>
 
-                      <TableCell>
-                        {item?.userInfo?.phone || "-"}
-                      </TableCell>
+                      <TableCell>{item?.userInfo?.phone || "-"}</TableCell>
 
                       <TableCell>
                         {item?.add

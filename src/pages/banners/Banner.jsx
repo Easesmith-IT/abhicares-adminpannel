@@ -18,7 +18,7 @@ import WebsiteHomeBanner from "../../components/banner/WebsiteHomeBanner";
 const Banner = () => {
   return (
     <Wrapper>
-      <div className="m-6 space-y-6">
+      <div className="space-y-6">
         <h1 className="text-2xl font-semibold">Banners</h1>
 
         {/* PRIMARY TABS */}
@@ -30,7 +30,7 @@ const Banner = () => {
 
           {/* ================= APP BANNERS ================= */}
           <TabsContent value="app">
-            <Card>
+            <Card className="glass">
               <CardContent className="p-6">
                 <Tabs defaultValue="home">
                   <TabsList className="mb-4">
@@ -62,7 +62,7 @@ const Banner = () => {
 
           {/* ================= WEBSITE BANNERS ================= */}
           <TabsContent value="website">
-            <Card>
+            <Card className="glass">
               <CardContent className="p-6">
                 <Tabs defaultValue="home">
                   <TabsList className="mb-4">

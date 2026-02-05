@@ -102,7 +102,7 @@ const UnapprovedSellerModal = ({
             <>
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="bg-slate-200 border-b border-white/40">
                     <TableHead>Name</TableHead>
                     <TableHead>Services</TableHead>
                     <TableHead>Category</TableHead>

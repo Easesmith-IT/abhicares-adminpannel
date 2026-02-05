@@ -164,7 +164,7 @@ const SellerAssignedOrdersModal = ({
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-slate-200 border-b border-white/40">
                   <TableHead>Booking ID</TableHead>
                   <TableHead>Order Value</TableHead>
                   <TableHead>Status</TableHead>

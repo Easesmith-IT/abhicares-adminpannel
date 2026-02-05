@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
-import logo from "../../assets/logo .png";
 import LogoutModal from "../modals/LogoutModal";
 import useGetApiReq from "../../hooks/useGetApiReq";
 import { changeAdminStatus } from "../../store/slices/userSlice";
 import { LogOutIcon } from "lucide-react";
 import { Button } from "../ui/button";
+import { SidebarTrigger } from "../ui/sidebar";
 
 const Header = ({ onClick }) => {
   const { res, fetchData } = useGetApiReq();
@@ -33,18 +33,12 @@ const Header = ({ onClick }) => {
   return (
     <>
       {/* Header */}
-      <header className="sticky top-0 z-20 flex h-[70px] w-full items-center justify-between px-[30px] shadow-md bg-white">
+      <header className="sticky top-0 z-20 flex h-[70px] w-full items-center justify-between px-[30px] glass shadow-sm!">
         {/* Left section */}
         <div className="flex items-center gap-[60px]">
-          <div
-            onClick={() => navigate("/admin/dashboard")}
-            className="cursor-pointer"
-          >
-            <img
-              src={logo}
-              alt="logo"
-              className="h-[50px] w-[160px] object-contain"
-            />
+          <div className="flex gap-2 items-center">
+            <SidebarTrigger />
+            
           </div>
 
           {/* Menu icon */}

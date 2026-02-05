@@ -4,11 +4,13 @@ import { axiosInstance } from "../utils/axiosInstance";
 import { useDispatch } from "react-redux";
 import { readCookie } from "../utils/readCookie";
 import { changeAdminStatus, changeUserAuthStatus } from "../store/slices/userSlice";
+import useCrashReporter from "./useCrashReporter";
 
 const useDeleteApiReq = () => {
     const [res, setRes] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
+    const { reportCrash } = useCrashReporter();
     const dispatch = useDispatch();
     const isApiCalled = useRef(false);
 
@@ -100,6 +102,13 @@ const useDeleteApiReq = () => {
     };
 
     const fetchData = async (url, config = {}) => {
+         const {
+           reportCrash: shouldReportCrash = true,
+           screenName,
+           severity = "HIGH",
+           userType = "Admin",
+         } = config;
+
         try {
             setIsLoading(true);
             const response = await axiosInstance.delete(url, config);
@@ -110,6 +119,18 @@ const useDeleteApiReq = () => {
             }
         } catch (error) {
             toast.error(error.response?.data?.message || "An error occurred.")
+            if (shouldReportCrash) {
+              reportCrash({
+                error,
+                screenName,
+                severity,
+                request: {
+                  url,
+                },
+                userId: adminInfo.id,
+                userType,
+              });
+            }
             if (error.response.status === 401) {
                 if (token?.role === "user") getStatus();
                 if (adminInfo?.role === "admin") getAdminStatus();

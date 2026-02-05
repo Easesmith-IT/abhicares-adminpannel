@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/select";
 import { Button } from "../components/ui/button";
 
-
 const AdminPage = () => {
   const navigate = useNavigate();
   const { res, fetchData, isLoading } = useGetApiReq();
@@ -30,8 +29,8 @@ const AdminPage = () => {
 
   useEffect(() => {
     if (res?.status === 200) {
-      setOrders(res.data.data);
-      setPageCount(Number(res.data.pagination.totalPages));
+      setOrders(res?.data?.data || []);
+      setPageCount(Number(res?.data?.pagination?.totalPages || 0));
     }
   }, [res]);
 

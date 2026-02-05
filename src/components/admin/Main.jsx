@@ -52,7 +52,6 @@ const Shared = () => {
           title="Total Orders"
           value={orderCount.total}
           icon={<ShoppingBag className="h-12 w-12 text-white" />}
-          bg="bg-[#A5D3FD]"
         />
 
         {/* Completed Orders */}
@@ -60,7 +59,6 @@ const Shared = () => {
           title="Completed Orders"
           value={orderCount.completed}
           icon={<CheckCircle className="h-12 w-12 text-white" />}
-          bg="bg-[#A5D3FD]"
         />
 
         {/* Pending Orders */}
@@ -68,7 +66,6 @@ const Shared = () => {
           title="Pending Orders"
           value={orderCount.pending}
           icon={<Clock className="h-12 w-12 text-white" />}
-          bg="bg-[#A5D3FD]"
         />
 
         {/* Cancelled Orders */}
@@ -76,7 +73,6 @@ const Shared = () => {
           title="Cancelled Orders"
           value={orderCount.cancelled}
           icon={<XCircle className="h-12 w-12 text-white" />}
-          bg="bg-[#A5D3FD]"
         />
       </div>
     </div>

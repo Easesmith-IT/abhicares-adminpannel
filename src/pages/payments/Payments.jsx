@@ -62,7 +62,7 @@ const Payments = () => {
         <div className="mt-6 table-container">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-slate-200 border-b border-white/40">
                 <TableHead>Payment ID</TableHead>
                 <TableHead>Order ID</TableHead>
                 <TableHead className="text-right">Amount</TableHead>

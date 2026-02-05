@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 
 const UpdatePwd = ({ setIsModalOpen, adminId }) => {
   const adminInfo = readCookie("adminInfo");
+  console.log("adminInfo", adminInfo);
+  
 
   const currentPwdRef = useRef(null);
   const updatePwdRef = useRef(null);

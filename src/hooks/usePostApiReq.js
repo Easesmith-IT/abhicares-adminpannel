@@ -7,12 +7,14 @@ import {
 } from "../store/slices/userSlice";
 import { axiosInstance } from "../utils/axiosInstance";
 import { readCookie } from "../utils/readCookie";
+import useCrashReporter from "./useCrashReporter";
 
 const usePostApiReq = () => {
   const [res, setRes] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const { reportCrash } = useCrashReporter();
   const dispatch = useDispatch();
   const isApiCalled = useRef(false);
 
@@ -118,6 +120,13 @@ const usePostApiReq = () => {
   };
 
   const fetchData = async (url, sendData, config = {}) => {
+    const {
+      reportCrash: shouldReportCrash = true,
+      screenName,
+      severity = "HIGH",
+      userType = "Admin",
+    } = config;
+
     try {
       setIsLoading(true);
       const response = await axiosInstance.post(url, sendData, {
@@ -133,6 +142,19 @@ const usePostApiReq = () => {
       setError(error);
       console.log("post api error =>", error);
       toast.error(error.response?.data?.message || "An error occurred.");
+      if (shouldReportCrash) {
+        reportCrash({
+          error,
+          screenName,
+          severity,
+          request: {
+            url,
+          },
+          userId: adminInfo.id,
+          userType,
+        });
+      }
+
       if (error.response.status === 401) {
         if (token?.role === "user") getStatus();
         if (adminInfo?.role === "admin") getAdminStatus();

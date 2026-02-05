@@ -95,7 +95,7 @@ const SellerCashouts = () => {
 
   return (
     <Wrapper>
-      <div className="m-6 space-y-6">
+      <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-wrap items-end justify-between gap-4">
           <H2>Seller Cashouts</H2>
@@ -159,7 +159,7 @@ const SellerCashouts = () => {
         <div className="table-container">
           <Table>
             <TableHeader>
-              <TableRow>
+              <TableRow className="bg-slate-200 border-b border-white/40">
                 <TableHead>Cashout ID</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Date</TableHead>

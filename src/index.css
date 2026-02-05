@@ -125,7 +125,7 @@
   }
 
   .table-container {
-    @apply border bg-white w-full;
+    @apply border bg-white w-full p-3 rounded-md;
   }
 }
 
@@ -134,20 +134,52 @@ button:not([disabled]),
   cursor: pointer;
 }
 
-.glass-header {
-  /* From https://css.glass */
-  background: rgba(255, 255, 255, 0.1);
-  /* border-radius: 16px; */
+.glass,
+.table-container {
+  /* background: rgba(255, 255, 255, 0.1); */
+  background: rgba(255, 255, 255, 0.68);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(3.2px);
   -webkit-backdrop-filter: blur(3.2px);
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
+.glass::before ,.table-container::before{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+.glass,.table-container {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 35px 65px rgba(0, 0, 0, 0.14);
+}
+
+.glass:hover,.table-container:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 35px 65px rgba(0, 0, 0, 0.14);
+}
+
+/* .glass {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 18px;
+
+  box-shadow:
+    0 25px 50px rgba(0, 0, 0, 0.12),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
+} */
+
 @layer utilities {
-  .glass {
+  /* .glass {
     @apply bg-white/10 backdrop-blur-sm border border-white/30 shadow-xl;
-  }
+  } */
 
   .scrollbar-hide {
     -ms-overflow-style: none;

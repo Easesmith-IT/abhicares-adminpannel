@@ -129,7 +129,7 @@ const SendNotifications = () => {
   return (
     <>
       <Wrapper>
-        <div className="m-6 space-y-6">
+        <div className="space-y-6">
           {/* Header */}
           <div className="flex flex-wrap items-center justify-between gap-4">
             <H2>Notifications</H2>
@@ -162,7 +162,7 @@ const SendNotifications = () => {
           <div className="table-container">
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-slate-200 border-b border-white/40">
                   <TableHead>Title</TableHead>
                   <TableHead>Message</TableHead>
                   <TableHead>Date</TableHead>

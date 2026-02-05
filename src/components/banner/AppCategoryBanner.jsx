@@ -151,7 +151,7 @@ const AppCategoryBanner = () => {
       <div className="m-6 space-y-8">
         {/* Hero Banners */}
         <section>
-          <h2 className="mb-4 text-lg font-semibold">Category Page Hero Banners</h2>
+          <H4 className="mb-4">Category Page Hero Banners</H4>
 
           <div className="grid gap-6 md:grid-cols-3">
             {heroBanners.map((item, index) => (

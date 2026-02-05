@@ -1,0 +1,206 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+
+import useGetApiReq from "@/hooks/useGetApiReq";
+
+import { BackLink } from "@/components/shared/back-link";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { InfoBox, InfoCard, InfoRow } from "../../components/crash-report";
+import Wrapper from "../../components/wrappers/Wrapper";
+
+const dummyCrashReports = [
+  {
+    _id: "64fa1c001",
+    errorId: "ERR-UI-101",
+    severity: "Critical",
+    environment: "Production",
+    resolved: false,
+
+    errorName: "TypeError",
+    errorMessage: "Cannot read properties of undefined (reading 'map')",
+    stackTrace: `TypeError: Cannot read properties of undefined
+    at CrashTable.jsx:42
+    at renderWithHooks (react-dom.development.js:16305)
+    at mountIndeterminateComponent (react-dom.development.js:20074)`,
+
+    screenName: "Crash Reports",
+    appName: "Admin Panel",
+    appVersion: "1.2.0",
+    source: "Frontend",
+    userType: "Admin",
+
+    crashAt: "2026-02-05T09:45:00.000Z",
+
+    request: {
+      method: "GET",
+      url: "/crash-report/get/64fa1c001",
+      ip: "103.21.45.12",
+      headers: {
+        "user-agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0",
+        accept: "application/json",
+      },
+    },
+
+    device: {
+      platform: "Web",
+      os: "Windows",
+      osVersion: "10",
+      deviceModel: "Desktop",
+      browser: "Chrome 121",
+    },
+  },
+];
+
+
+const CrashDetailPage = () => {
+  const { crashId } = useParams();
+
+  const { res: getCrashRes, fetchData: getCrash, isLoading } = useGetApiReq();
+
+  const [crash, setCrash] = useState(null);
+
+  // ----------------------------
+  // Fetch single crash
+  // ----------------------------
+  useEffect(() => {
+    if (crashId) {
+      getCrash(`/crash-report/get/${crashId}`);
+    }
+  }, [crashId]);
+
+  // ----------------------------
+  // Handle response
+  // ----------------------------
+  useEffect(() => {
+    if (getCrashRes?.status === 200 || getCrashRes?.status === 201) {
+    //   setCrash(getCrashRes?.data?.data || null);
+      setCrash(dummyCrashReports[0]);
+    }
+  }, [getCrashRes]);
+
+  const request = crash?.request;
+  const device = crash?.device;
+
+  // ----------------------------
+  // Loading state
+  // ----------------------------
+  if (isLoading) {
+    return <Skeleton className="h-40 w-full" />;
+  }
+
+  // ----------------------------
+  // Not found
+  // ----------------------------
+  if (!crash) {
+    return (
+      <div className="text-sm text-muted-foreground">
+        Crash report not found
+      </div>
+    );
+  }
+
+  return (
+    <Wrapper>
+      <div className="space-y-6">
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <BackLink href="/admin/crash-report" />
+          <h1 className="text-2xl font-bold">{crash.errorName}</h1>
+        </div>
+
+        {/* Meta Info */}
+        <div className="grid gap-4 md:grid-cols-3">
+          <InfoCard label="Severity">
+            <Badge>{crash.severity}</Badge>
+          </InfoCard>
+
+          <InfoCard label="Status">
+            {crash.resolved ? "Resolved" : "Open"}
+          </InfoCard>
+
+          <InfoCard label="Environment">{crash.environment || "-"}</InfoCard>
+        </div>
+
+        {/* App / User */}
+        <div className="grid grid-cols-3 gap-5">
+          <InfoBox title="Application">
+            {crash.appName} · {crash.appVersion}
+          </InfoBox>
+
+          <InfoBox title="User Type">{crash.userType || "-"}</InfoBox>
+          <InfoBox title="Source">{crash.source || "-"}</InfoBox>
+        </div>
+
+        <div className="grid grid-cols-3 gap-5">
+          <InfoBox title="Error Name">{crash.errorName || "-"}</InfoBox>
+          <InfoBox title="Screen Name">{crash.screenName || "-"}</InfoBox>
+          <InfoBox title="Error Id">{crash.errorId || "-"}</InfoBox>
+        </div>
+
+        {/* Request Info */}
+        {request && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Request Overview</CardTitle>
+            </CardHeader>
+
+            <CardContent className="grid md:grid-cols-2 gap-4">
+              <InfoRow label="Method">
+                <Badge variant="outline">{request.method}</Badge>
+              </InfoRow>
+
+              <InfoRow label="URL">{request.url}</InfoRow>
+              <InfoRow label="IP Address">{request.ip || "-"}</InfoRow>
+
+              {request.headers?.["user-agent"] && (
+                <InfoRow label="User Agent">
+                  {request.headers["user-agent"]}
+                </InfoRow>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Device Info */}
+        {device && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Device Information</CardTitle>
+            </CardHeader>
+
+            <CardContent className="grid md:grid-cols-2 gap-4">
+              <InfoBox title="Platform">
+                <Badge variant="outline">{device.platform}</Badge>
+              </InfoBox>
+
+              <InfoBox title="OS">
+                {device.os} {device.osVersion}
+              </InfoBox>
+
+              <InfoBox title="Device Model">
+                {device.deviceModel || "-"}
+              </InfoBox>
+
+              <InfoBox title="Browser">{device.browser || "-"}</InfoBox>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Error Message */}
+        <InfoBox title="Error Message">{crash.errorMessage || "-"}</InfoBox>
+
+        {/* Stack Trace */}
+        {crash.stackTrace && (
+          <div className="rounded-lg border bg-black text-green-400 p-4 font-mono text-sm overflow-auto">
+            {crash.stackTrace}
+          </div>
+        )}
+      </div>
+    </Wrapper>
+  );
+};
+
+export default CrashDetailPage;

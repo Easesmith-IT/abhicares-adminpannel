@@ -146,10 +146,7 @@ const Offers = () => {
           <h1 className="text-2xl font-semibold">Offers</h1>
 
           <div className="flex gap-3">
-            <Select
-              value={statusFilter}
-              onValueChange={setStatusFilter}
-            >
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -168,92 +165,83 @@ const Offers = () => {
         </div>
 
         {/* Table */}
-          <div className="table-container">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Coupon</TableHead>
-                  <TableHead>Discount</TableHead>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Expiry</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">
-                    Actions
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
+        <div className="table-container">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-slate-200 border-b border-white/40">
+                <TableHead>Coupon</TableHead>
+                <TableHead>Discount</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Expiry</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
 
-              <TableBody>
-                {isLoading ? (
-                  <OfferTableSkeleton />
-                ) : filteredResults.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="text-center text-muted-foreground py-10"
-                    >
-                      No offers found
+            <TableBody>
+              {isLoading ? (
+                <OfferTableSkeleton />
+              ) : filteredResults.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={6}
+                    className="text-center text-muted-foreground py-10"
+                  >
+                    No offers found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredResults.map((offer) => (
+                  <TableRow key={offer._id}>
+                    <TableCell className="font-medium">{offer.name}</TableCell>
+
+                    <TableCell>
+                      {offer.discountType === "fixed"
+                        ? `₹${offer.couponFixedValue}`
+                        : `${offer.offPercentage}%`}
+                    </TableCell>
+
+                    <TableCell className="capitalize">
+                      {offer.discountType}
+                    </TableCell>
+
+                    <TableCell>
+                      {offer.expiryDate
+                        ? format(new Date(offer.expiryDate), "dd-MM-yyyy")
+                        : "-"}
+                    </TableCell>
+
+                    <TableCell>{statusBadge(offer.status)}</TableCell>
+
+                    <TableCell className="text-right space-x-2">
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          setOffer(offer);
+                          setIsUpdateModalOpen(true);
+                        }}
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => {
+                          setOffer(offer._id);
+                          setIsDeleteModalOpen(true);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  filteredResults.map((offer) => (
-                    <TableRow key={offer._id}>
-                      <TableCell className="font-medium">
-                        {offer.name}
-                      </TableCell>
-
-                      <TableCell>
-                        {offer.discountType === "fixed"
-                          ? `₹${offer.couponFixedValue}`
-                          : `${offer.offPercentage}%`}
-                      </TableCell>
-
-                      <TableCell className="capitalize">
-                        {offer.discountType}
-                      </TableCell>
-
-                      <TableCell>
-                        {offer.expiryDate
-                          ? format(
-                              new Date(offer.expiryDate),
-                              "dd-MM-yyyy",
-                            )
-                          : "-"}
-                      </TableCell>
-
-                      <TableCell>
-                        {statusBadge(offer.status)}
-                      </TableCell>
-
-                      <TableCell className="text-right space-x-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => {
-                            setOffer(offer);
-                            setIsUpdateModalOpen(true);
-                          }}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-
-                        <Button
-                          variant="destructive"
-                          size="icon"
-                          onClick={() => {
-                            setOffer(offer._id);
-                            setIsDeleteModalOpen(true);
-                          }}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
         {/* Pagination */}
         {!isLoading && (

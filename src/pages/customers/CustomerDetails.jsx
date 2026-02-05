@@ -126,7 +126,7 @@ const CustomerDetails = () => {
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-slate-200 border-b border-white/40">
                   <TableHead>Booking ID</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Status</TableHead>

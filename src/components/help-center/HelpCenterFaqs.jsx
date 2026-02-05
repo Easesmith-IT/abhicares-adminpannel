@@ -83,7 +83,7 @@ const HelpCenterFaqs = () => {
       <div className="table-container mt-5">
         <Table>
           <TableHeader>
-            <TableRow>
+            <TableRow className="bg-slate-200 border-b border-white/40">
               <TableHead>Question</TableHead>
               <TableHead>Answer</TableHead>
               <TableHead>Created At</TableHead>
