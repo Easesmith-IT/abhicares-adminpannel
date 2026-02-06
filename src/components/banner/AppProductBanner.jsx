@@ -7,8 +7,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ImagePlus } from "lucide-react";
 
 import UpdateBannerModal from "../modals/UpdateBannerModal";
+import { readCookie } from "../../utils/readCookie";
+import useCrashReporter from "../../hooks/useCrashReporter";
 
 const AppProductBanner = () => {
+  const { reportCrash } = useCrashReporter();
+  
   const [banner, setBanner] = useState({
     file: null,
     preview: null,
@@ -21,6 +25,8 @@ const AppProductBanner = () => {
     page: "",
     section: "",
   });
+
+  const adminInfo = readCookie("adminInfo");
 
   /* ---------------- image handler ---------------- */
   const handleImageChange = (e) => {
@@ -77,6 +83,16 @@ const AppProductBanner = () => {
       });
     } catch (err) {
       console.error(err);
+      reportCrash({
+        error: err,
+        screenName: "AppProductBanner",
+        severity: "HIGH",
+        request: {
+          url: "/content/get-banners",
+        },
+        userId: adminInfo.id,
+        userType: "Admin",
+      });
     }
   };
 

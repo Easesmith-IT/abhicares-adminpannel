@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { InfoBox, InfoCard, InfoRow } from "../../components/crash-report";
 import Wrapper from "../../components/wrappers/Wrapper";
+import CrashDetailSkeleton from "../../components/crash-report/CrashDetailSkeleton";
 
 const dummyCrashReports = [
   {
@@ -76,8 +77,8 @@ const CrashDetailPage = () => {
   // ----------------------------
   useEffect(() => {
     if (getCrashRes?.status === 200 || getCrashRes?.status === 201) {
-    //   setCrash(getCrashRes?.data?.data || null);
-      setCrash(dummyCrashReports[0]);
+      setCrash(getCrashRes?.data?.data || null);
+      // setCrash(dummyCrashReports[0]);
     }
   }, [getCrashRes]);
 
@@ -87,9 +88,14 @@ const CrashDetailPage = () => {
   // ----------------------------
   // Loading state
   // ----------------------------
-  if (isLoading) {
-    return <Skeleton className="h-40 w-full" />;
-  }
+if (isLoading) {
+  return (
+    <Wrapper>
+      <CrashDetailSkeleton />
+    </Wrapper>
+  );
+}
+
 
   // ----------------------------
   // Not found

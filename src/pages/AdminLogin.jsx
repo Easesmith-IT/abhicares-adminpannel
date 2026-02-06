@@ -21,10 +21,12 @@ import { Input } from "../components/ui/input";
 
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Spinner } from "../components/ui/spinner";
+import useCrashReporter from "../hooks/useCrashReporter";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+   const { reportCrash } = useCrashReporter();
 
   const userNameRef = useRef(null);
   const userPasswordRef = useRef(null);
@@ -84,6 +86,17 @@ const AdminLogin = () => {
       navigate(`/admin/${firstAllowed}`);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Login failed");
+       reportCrash({
+         error: err,
+         screenName: "Login",
+         severity: "HIGH",
+         request: {
+           url: "/admin/login-Admin",
+         },
+         userId: null,
+         userType: "Admin",
+       });
+
     } finally {
       setLoading(false);
     }

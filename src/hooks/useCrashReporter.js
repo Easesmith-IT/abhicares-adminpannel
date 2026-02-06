@@ -24,6 +24,7 @@ const useCrashReporter = () => {
     userId,
     userType,
   }) => {
+    
     try {
       await axiosInstance.post(
         "/crash-report/create",
@@ -32,8 +33,8 @@ const useCrashReporter = () => {
           appVersion: "1.0.0",
           environment: import.meta.env.MODE,
 
-          errorName: error?.name || "UNKNOWN_ERROR",
-          errorMessage: error?.message || "Something went wrong",
+          errorName: error.response?.data?.name || "UNKNOWN_ERROR",
+          errorMessage: error.response?.data?.message || "Something went wrong",
           stackTrace: error?.stack || error.error,
 
           severity,
@@ -50,7 +51,7 @@ const useCrashReporter = () => {
           userId,
           userType,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
     } catch (e) {
       // NEVER toast, NEVER recurse

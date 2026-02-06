@@ -8,6 +8,8 @@ import { ImagePlus } from "lucide-react";
 
 import UpdateBannerModal from "../modals/UpdateBannerModal";
 import { H4 } from "../shared/typography";
+import useCrashReporter from "../../hooks/useCrashReporter";
+import { readCookie } from "../../utils/readCookie";
 
 const WebsiteHomeBanner = () => {
   const [banners, setBanners] = useState([
@@ -26,6 +28,9 @@ const WebsiteHomeBanner = () => {
     page: "",
     section: "",
   });
+
+  const { reportCrash } = useCrashReporter();
+  const adminInfo = readCookie("adminInfo");
 
   /* ---------------- image handler ---------------- */
   const handleImageChange = (e, bannerName) => {
@@ -88,6 +93,16 @@ const WebsiteHomeBanner = () => {
       );
     } catch (err) {
       console.error(err);
+       reportCrash({
+         error: err,
+         screenName: "WebsiteHomeBanner",
+         severity: "HIGH",
+         request: {
+           url: "/admin/login-Admin",
+         },
+         userId: adminInfo?.id,
+         userType: "Admin",
+       });
     }
   };
 

@@ -16,25 +16,7 @@ const useGetApiReq = () => {
     const isApiCalled = useRef(false);
 
     // Read cookies
-    const token = readCookie("userInfo");
     const adminInfo = readCookie("adminInfo");
-
-    const getStatus = async () => {
-        try {
-            const statusRes = await axiosInstance.get("/shopping/status");
-            if (statusRes?.status === 200 || statusRes?.status === 201) {
-                // dispatch(changeUserAuthStatus({ isAuthenticated: statusRes?.data?.isAuthenticated }));
-                console.log("User status response:", statusRes);
-                if (statusRes?.data?.shouldLogOut) {
-                    await handleLogout();
-                } else if (!statusRes?.data?.isAuthenticated) {
-                    await refreshToken();
-                }
-            }
-        } catch (error) {
-            console.error("Error fetching status:", error);
-        }
-    };
 
     const getAdminStatus = async () => {
         try {
@@ -50,20 +32,21 @@ const useGetApiReq = () => {
             }
         } catch (error) {
             console.error("Error fetching admin status:", error);
+            reportCrash({
+              error,
+              screenName: "",
+              severity: "HIGH",
+              request: {
+                url: "/admin/status",
+                method: "GET",
+              },
+              userType: "ADMIN",
+              userId: adminInfo?.id,
+            });
         }
     };
 
-    const refreshToken = async () => {
-        try {
-            const res1 = await axiosInstance.post("/shopping/refresh", { phone: token?.phone, role: "user" });
-            if (res1?.status === 200 || res1?.status === 201) {
-                dispatch(changeUserAuthStatus({ isAuthenticated: true }));
-                console.log("refresh response:", res1);
-            }
-        } catch (error) {
-            console.error("Error fetching refresh token:", error);
-        }
-    };
+   
     const refreshAdminToken = async () => {
         try {
             const res1 = await axiosInstance.post("/admin/refresh", { adminId: adminInfo?.id, role: "admin" });
@@ -73,22 +56,19 @@ const useGetApiReq = () => {
             }
         } catch (error) {
             console.error("Error fetching admin refresh token:", error);
+            reportCrash({
+              error,
+              screenName: "",
+              severity: "HIGH",
+              request: {
+                url: "/admin/refresh",
+                method: "POST",
+              },
+              userType: "ADMIN",
+              userId: adminInfo?.id,
+            });
         }
     };
-
-
-    const handleLogout = async () => {
-        try {
-            const logoutRes = await axiosInstance.post("/shopping/logout-all", { phone: token?.phone, role: "user" });
-            if (logoutRes?.status === 200 || logoutRes?.status === 201) {
-                console.log("Logout response:", logoutRes);
-                dispatch(changeUserAuthStatus({ isAuthenticated: false }));
-            }
-        } catch (error) {
-            console.error("Error logging out:", error);
-        }
-    };
-
 
     const handleAdminLogout = async () => {
         try {
@@ -99,6 +79,17 @@ const useGetApiReq = () => {
             }
         } catch (error) {
             console.error("Error logging out admin:", error);
+            reportCrash({
+              error,
+              screenName: "",
+              severity: "HIGH",
+              request: {
+                url: "/admin/logout-all",
+                method: "POST",
+              },
+              userType: "ADMIN",
+              userId: adminInfo?.id,
+            });
         }
     };
 
@@ -118,7 +109,7 @@ const useGetApiReq = () => {
             }
         } catch (error) {
             setError(error);
-            console.log("error", error);
+            console.log("error- get api hook", error);
             toast.error(error.response?.data?.message || "An error occurred.")
             if (shouldReportCrash) {
               reportCrash({
@@ -133,7 +124,6 @@ const useGetApiReq = () => {
               });
             }
             if (error?.response?.status === 401) {
-                if (token?.role === "user") getStatus();
                 if (adminInfo?.role === "admin") getAdminStatus();
             }
             // await dispatch(handleErrorModal({ isOpen: true, message: error.response?.data?.message || "An error occurred.", isLogoutBtn: true }));

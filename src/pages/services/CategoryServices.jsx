@@ -1,22 +1,24 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
 import parse from "html-react-parser";
+import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import useGetApiReq from "../../hooks/useGetApiReq";
 import useDeleteApiReq from "../../hooks/useDeleteApiReq";
+import useGetApiReq from "../../hooks/useGetApiReq";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-import { Plus, Trash2, Pencil } from "lucide-react";
-import Wrapper from "../../components/wrappers/Wrapper";
+import { CityFilter } from "@/components/filters/city";
+import { Pencil, Plus, Trash2 } from "lucide-react";
+import ServiceCardSkeleton from "../../components/category/ServiceCardSkeleton";
 import AddServiceModal from "../../components/modals/AddServiceModal";
 import DeleteModal from "../../components/modals/DeleteModal";
-import ServiceCardSkeleton from "../../components/category/ServiceCardSkeleton";
 import { BackLink } from "../../components/shared/back-link";
+import TooltipIconButton from "../../components/shared/TooltipIconButton";
 import { H2 } from "../../components/shared/typography";
+import Wrapper from "../../components/wrappers/Wrapper";
+import { buildQuery } from "../../utils/buildQuery";
 
 const CategoryServices = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
@@ -29,17 +31,24 @@ const CategoryServices = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
+  const [selectedCity, setSelectedCity] = useState(null);
+
   const navigate = useNavigate();
   const { state } = useLocation();
   const { categoryId } = useParams();
 
+  const handleReset = () => {
+    setSelectedCity("");
+  };
+
   const fetchServices = () => {
-    fetchData(`/admin/get-category-service/${categoryId}`);
+    const query = buildQuery({ city: selectedCity });
+    fetchData(`/admin/get-category-service/${categoryId}?${query}`);
   };
 
   useEffect(() => {
     fetchServices();
-  }, []);
+  }, [selectedCity]);
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
@@ -67,20 +76,30 @@ const CategoryServices = () => {
           <div className="flex flex-wrap items-center justify-between gap-4 pb-6">
             <div>
               <BackLink href={-1}>
-                      <H2>
-                Sub-Categories
-
-                      </H2>
-                    </BackLink>
+                <H2>Services</H2>
+              </BackLink>
               <p className="mt-2 text-sm text-muted-foreground">
                 {state?.categoryName}
               </p>
             </div>
 
-            <Button variant="abhicares" onClick={() => setIsAddOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Add Service
-            </Button>
+            <div className="flex gap-3">
+              <CityFilter
+                value={selectedCity}
+                onChange={setSelectedCity}
+              />
+              <TooltipIconButton
+                tooltip="Reset Filters"
+                onClick={handleReset}
+              />
+
+              <Button variant="abhicares" asChild>
+                <Link to={`/admin/services/${categoryId}/add-service`}>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Service
+                </Link>
+              </Button>
+            </div>
           </div>
 
           {isLoading && (
@@ -132,7 +151,10 @@ const CategoryServices = () => {
                           variant="outline"
                           onClick={() => {
                             setSelectedService(service);
-                            setIsEditOpen(true);
+                            navigate(
+                              `/admin/services/${categoryId}/update-service/${service?._id}`,
+                              { state: { service } },
+                            );
                           }}
                         >
                           <Pencil className="h-4 w-4" />

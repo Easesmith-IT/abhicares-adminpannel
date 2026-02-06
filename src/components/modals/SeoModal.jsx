@@ -22,8 +22,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import useCrashReporter from "../../hooks/useCrashReporter";
+import { readCookie } from "../../utils/readCookie";
 
 const SeoModal = ({ setIsModalOpen }) => {
+  const { reportCrash } = useCrashReporter();
+  const adminInfo = readCookie("adminInfo");
   const [info, setInfo] = useState({
     title: "",
     page: "",
@@ -48,6 +52,16 @@ const SeoModal = ({ setIsModalOpen }) => {
         desc: data.seo.seoDescription,
       }));
     } catch (error) {
+       reportCrash({
+         error,
+         screenName: "Seo",
+         severity: "HIGH",
+         request: {
+           url: "/admin/login-Admin",
+         },
+         userId: adminInfo?.id,
+         userType: "Admin",
+       });
       console.error(error);
     }
   };

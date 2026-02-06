@@ -8,6 +8,8 @@ import { ImagePlus } from "lucide-react";
 
 import UpdateBannerModal from "../modals/UpdateBannerModal";
 import { H4 } from "../shared/typography";
+import useCrashReporter from "../../hooks/useCrashReporter";
+import { readCookie } from "../../utils/readCookie";
 
 const AppHomeBanner = () => {
   const [heroBanners, setHeroBanners] = useState([
@@ -28,6 +30,9 @@ const AppHomeBanner = () => {
     page: "",
     section: "",
   });
+
+   const { reportCrash } = useCrashReporter();
+   const adminInfo = readCookie("adminInfo");
 
   /* ---------------- image handlers ---------------- */
   const updatePreview = (file, setList, bannerName) => {
@@ -133,6 +138,17 @@ const AppHomeBanner = () => {
       ]);
     } catch (err) {
       console.error(err);
+        reportCrash({
+          error: err,
+          screenName: "AppHomeBanner",
+          severity: "HIGH",
+          request: {
+            url: "/get-banners",
+            method: "GET",
+          },
+          userType: "ADMIN",
+          userId: adminInfo?.id,
+        });
     }
   };
 

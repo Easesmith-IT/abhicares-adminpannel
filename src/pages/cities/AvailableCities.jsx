@@ -1,28 +1,31 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 import useDeleteApiReq from "../../hooks/useDeleteApiReq";
 import useGetApiReq from "../../hooks/useGetApiReq";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import { Separator } from "@/components/ui/separator";
 import Wrapper from "../../components/wrappers/Wrapper";
 import AvailableCitiesSkeleton from "../../components/city/AvailableCitiesSkeleton";
 import AddCityModal from "../../components/modals/AddCityModal";
 import DeleteModal from "../../components/modals/DeleteModal";
-import { Badge } from "../../components/ui/badge";
 import { CityPolygonModal } from "../../components/city/city-polygon-modal";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Spinner } from "../../components/ui/spinner";
+import { Switch } from "../../components/ui/switch";
 
 const AvailableCities = () => {
   const {
@@ -32,9 +35,8 @@ const AvailableCities = () => {
   } = useDeleteApiReq();
 
   const { res: getCitiesRes, fetchData: getCities, isLoading } = useGetApiReq();
+  const isTogglePending = false;
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isPolygonOpen, setIsPolygonOpen] = useState(false);
 
@@ -42,6 +44,13 @@ const AvailableCities = () => {
   const [allCities, setAllCities] = useState([]);
   const [pageCount, setPageCount] = useState(1);
   const [page, setPage] = useState(1);
+  const [isActive, setIsActive] = useState(city?.isActive || false);
+
+  const navigate = useNavigate();
+
+  const toggleStatus = () => {
+    setIsActive((prev) => !prev);
+  };
 
   const getAllCities = () => {
     getCities(`/admin/get-availabe-city?page=${page}`);
@@ -58,11 +67,14 @@ const AvailableCities = () => {
     }
   }, [getCitiesRes]);
 
-  const handleUpdateModal = (city) => {
+  const handleUpdate = (city) => {
     setCity(city);
-    setIsUpdateModalOpen(true);
+    navigate(`/admin/available-cities/${city?._id || city?.id}/update`, {
+      state: city,
+    });
   };
-  const handlePolygonModal = (city) => {
+
+  const handlePolygon = (city) => {
     setCity(city);
     setIsPolygonOpen(true);
   };
@@ -91,87 +103,118 @@ const AvailableCities = () => {
           {/* Header */}
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-semibold">Available Cities</h1>
-            <Button variant="abhicares" onClick={() => setIsModalOpen(true)}>
+            <Button
+              variant="abhicares"
+              onClick={() => navigate("/admin/available-cities/add")}
+            >
               Add City
             </Button>
           </div>
 
-          <Separator />
+          <div className="table-container">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-slate-200 border-b border-white/40">
+                  <TableHead>City</TableHead>
+                  <TableHead>State</TableHead>
+                  <TableHead>Pincodes</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
 
-          {isLoading && <AvailableCitiesSkeleton />}
+              <TableBody>
+                {isLoading && <AvailableCitiesSkeleton />}
 
-          {!isLoading && allCities?.length === 0 && (
-            <p className="text-muted-foreground">No cities found</p>
-          )}
+                {!isLoading && allCities?.length === 0 && (
+                  <p className="text-muted-foreground">No cities found</p>
+                )}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {allCities?.map((city) => {
-              const hasPolygon = city?.area?.coordinates?.[0]?.length > 2;
+                {allCities.map((city) => {
+                  const hasPolygon = city?.area?.coordinates?.[0]?.length > 2;
 
-              return (
-                <Card key={city._id}>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0">
-                    <CardTitle className="text-base capitalize">
-                      {city.city}
-                    </CardTitle>
+                  return (
+                    <TableRow key={city._id}>
+                      <TableCell className="capitalize">{city.city}</TableCell>
 
-                    <div className="flex items-center gap-3">
-                      <Button
-                        size="icon"
-                        variant="outline"
-                        onClick={() => handleUpdateModal(city)}
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="destructive"
-                        onClick={() => handleDeleteModal(city._id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </CardHeader>
+                      <TableCell>{city.state}</TableCell>
 
-                  <CardContent className="space-y-1 text-sm">
-                    <p>
-                      <span className="font-medium">State:</span> {city.state}
-                    </p>
-                    <p>
-                      <span className="font-medium">Pincodes:</span>{" "}
-                      {city.pinCodes.map((item) => item?.code).join(", ") ||
-                        "NA"}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      Polygon:
-                      <Badge variant={hasPolygon ? "success" : "secondary"}>
-                        {hasPolygon ? "Added" : "Not Added"}
-                      </Badge>
-                      {hasPolygon && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handlePolygonModal(city)}
-                        >
-                          View
-                        </Button>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                      <TableCell>
+                        <div className="flex flex-col gap-1">
+                          <Badge
+                            variant={city.isActive ? "success" : "destructive"}
+                          >
+                            {isTogglePending ? (
+                              <Spinner />
+                            ) : city.isActive ? (
+                              "Active"
+                            ) : (
+                              "Inactive"
+                            )}
+                          </Badge>
+
+                          <Switch
+                            checked={isActive}
+                            onCheckedChange={toggleStatus}
+                            className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-orange-500"
+                          />
+                        </div>
+                      </TableCell>
+
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Badge variant={hasPolygon ? "success" : "secondary"}>
+                            {hasPolygon ? "Added" : "Not Added"}
+                          </Badge>
+
+                          {hasPolygon && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handlePolygon(city)}
+                            >
+                              View
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            size="icon"
+                            variant="outline"
+                            onClick={() => handleUpdate(city)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+
+                          <Button
+                            size="icon"
+                            variant="destructive"
+                            onClick={() => handleDeleteModal(city._id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
           </div>
 
           <PaginationComp
             page={page}
             pageCount={pageCount}
             setPage={setPage}
-            className="mt-8 mb-5"
+            className="mt-6 mb-5"
           />
         </div>
       </Wrapper>
 
+      {/* Modals */}
       {isPolygonOpen && (
         <CityPolygonModal
           city={city}
@@ -180,25 +223,11 @@ const AvailableCities = () => {
         />
       )}
 
-      {isModalOpen && (
-        <AddCityModal
-          setIsModalOpen={setIsModalOpen}
-          getAllCities={getAllCities}
-        />
-      )}
-
-      {isUpdateModalOpen && (
-        <AddCityModal
-          setIsModalOpen={setIsUpdateModalOpen}
-          getAllCities={getAllCities}
-          city={city}
-        />
-      )}
-
       {isDeleteModalOpen && (
         <DeleteModal
           handleDelete={handleDelete}
           setState={setIsDeleteModalOpen}
+          isLoading={deleteCityLoading}
         />
       )}
     </>

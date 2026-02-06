@@ -8,6 +8,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ImagePlus } from "lucide-react";
 import UpdateBannerModal from "../modals/UpdateBannerModal";
 import { H4 } from "../shared/typography";
+import useCrashReporter from "../../hooks/useCrashReporter";
+import { readCookie } from "../../utils/readCookie";
 
 const AppCategoryBanner = () => {
   const [heroBanners, setHeroBanners] = useState([
@@ -28,6 +30,9 @@ const AppCategoryBanner = () => {
     page: "",
     section: "",
   });
+
+   const { reportCrash } = useCrashReporter();
+   const adminInfo = readCookie("adminInfo");
 
   /* ---------------- image handlers ---------------- */
   const updatePreview = (file, list, setList, bannerName) => {
@@ -139,6 +144,17 @@ const AppCategoryBanner = () => {
       ]);
     } catch (err) {
       console.error(err);
+      reportCrash({
+        error: err,
+        screenName: "AppCategoryBanner",
+        severity: "HIGH",
+        request: {
+          url: "/get-banners",
+          method: "GET",
+        },
+        userType: "ADMIN",
+        userId: adminInfo?.id,
+      });
     }
   };
 

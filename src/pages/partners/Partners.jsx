@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, PlusIcon, Trash2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -139,7 +139,8 @@ const Partners = () => {
               className="ml-auto"
               onClick={() => setAddOpen(true)}
             >
-              + Add Partner
+               <PlusIcon />
+               Add Partner
             </Button>
           </div>
 

@@ -1,33 +1,48 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const AvailableCitiesSkeleton = ({ count = 6 }) => {
+const AvailableCitiesSkeleton = ({ rows = 6 }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {Array.from({ length: count }).map((_, i) => (
-        <Card key={i}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
-            {/* City name */}
-            <Skeleton className="h-5 w-32" />
+        <>
+          {Array.from({ length: rows }).map((_, i) => (
+            <TableRow key={i}>
+              {/* City */}
+              <TableCell>
+                <Skeleton className="h-4 w-24" />
+              </TableCell>
 
-            {/* Action icons */}
-            <div className="flex gap-3">
-              <Skeleton className="h-5 w-5 rounded-full" />
-              <Skeleton className="h-5 w-5 rounded-full" />
-            </div>
-          </CardHeader>
+              {/* State */}
+              <TableCell>
+                <Skeleton className="h-4 w-20" />
+              </TableCell>
 
-          <CardContent className="space-y-3">
-            {/* State */}
-            <Skeleton className="h-4 w-24" />
+              {/* Pincodes */}
+              <TableCell>
+                <Skeleton className="h-4 w-full max-w-[220px]" />
+              </TableCell>
 
-            {/* Pincodes */}
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+              {/* Polygon */}
+              <TableCell>
+                <Skeleton className="h-5 w-20 rounded-full" />
+              </TableCell>
+
+              {/* Actions */}
+              <TableCell className="text-right">
+                <div className="flex justify-end gap-2">
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                  <Skeleton className="h-8 w-8 rounded-md" />
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </>
   );
 };
 

@@ -1,40 +1,44 @@
-import "leaflet/dist/leaflet.css";
 import "leaflet-draw/dist/leaflet.draw.css";
+import "leaflet/dist/leaflet.css";
 import "./App.css";
 
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import PrivateRoute from "./components/protected-route/PrivateRoute";
 import AdminLogin from "./pages/AdminLogin";
-import AdminPage from "./pages/Dashboard";
-import NotFound from "./pages/ErrorPage";
-import OrderDetails from "./pages/orders/OrderDetails";
-import Orders from "./pages/orders/Orders";
-import Bookings from "./pages/bookings/Bookings";
+import AppBanner from "./pages/banners/AppBanner";
+import Banner from "./pages/banners/Banner";
 import BookingDetails from "./pages/bookings/BookingDetails";
-import Services from "./pages/services/Services";
-import CategoryServices from "./pages/services/CategoryServices";
-import ServiceInfoPage from "./pages/services/ServiceInfoPage";
-import ProductInfo from "./pages/services/ProductInfo";
-import Partners from "./pages/partners/Partners";
-import PartnerDetails from "./pages/partners/PartnerDetails";
-import SellerCashoutDetails from "./pages/partners/SellerCashoutDetails";
-import Customers from "./pages/customers/Customers";
-import CustomerDetails from "./pages/customers/CustomerDetails";
-import Offers from "./pages/offers/Offers";
+import Bookings from "./pages/bookings/Bookings";
+import AddCityPage from "./pages/cities/AddCity";
 import AvailableCities from "./pages/cities/AvailableCities";
-import Payments from "./pages/payments/Payments";
+import UpdateCityPage from "./pages/cities/UpdateCity";
+import CrashDetailPage from "./pages/crash-report/CrashDetailPage";
+import CrashReports from "./pages/crash-report/CrashReport";
+import CustomerDetails from "./pages/customers/CustomerDetails";
+import Customers from "./pages/customers/Customers";
+import AdminPage from "./pages/Dashboard";
+import Enquiry from "./pages/enquiry/Enquiry";
+import NotFound from "./pages/ErrorPage";
 import AdminHelpCenter from "./pages/help-center/HelpCenter";
 import HelpCenterTicketDetails from "./pages/help-center/HelpCenterTicketDetails";
-import Enquiry from "./pages/enquiry/Enquiry";
-import Settings from "./pages/settings/Settings";
-import MangageComision from "./pages/settings/MangageComision";
+import Offers from "./pages/offers/Offers";
+import OrderDetails from "./pages/orders/OrderDetails";
+import Orders from "./pages/orders/Orders";
+import PartnerDetails from "./pages/partners/PartnerDetails";
+import Partners from "./pages/partners/Partners";
+import SellerCashoutDetails from "./pages/partners/SellerCashoutDetails";
+import Payments from "./pages/payments/Payments";
 import Reviews from "./pages/reviews/Reviews";
-import SendNotifications from "./pages/send-notifications/SendNotifications";
 import SellerCashouts from "./pages/seller-cashouts/SellerCashouts";
-import Banner from "./pages/banners/Banner";
-import AppBanner from "./pages/banners/AppBanner";
-import CrashReports from "./pages/crash-report/CrashReport";
-import CrashDetailPage from "./pages/crash-report/CrashDetailPage";
+import SendNotifications from "./pages/send-notifications/SendNotifications";
+import CategoryServices from "./pages/services/CategoryServices";
+import ProductInfo from "./pages/services/ProductInfo";
+import ServiceInfoPage from "./pages/services/ServiceInfoPage";
+import Categories from "./pages/services/Services";
+import MangageComision from "./pages/settings/MangageComision";
+import Settings from "./pages/settings/Settings";
+import AddServicePage from "./pages/services/AddServicePage";
+import UpdateServicePage from "./pages/services/UpdateServicePage";
 
 function App() {
   return (
@@ -50,10 +54,18 @@ function App() {
           <Route path="/admin/bookings" element={<Bookings />} />
           <Route path="/admin/bookings/:id" element={<BookingDetails />} />
 
-          <Route path="/admin/services" element={<Services />} />
+          <Route path="/admin/services" element={<Categories />} />
           <Route
             path="/admin/services/:categoryId"
             element={<CategoryServices />}
+          />
+          <Route
+            path="/admin/services/:categoryId/add-service"
+            element={<AddServicePage />}
+          />
+          <Route
+            path="/admin/services/:categoryId/update-service/:serviceId"
+            element={<UpdateServicePage />}
           />
           <Route
             path="/admin/services/:categoryId/product/:serviceId"
@@ -84,6 +96,11 @@ function App() {
           <Route path="/admin/offers" element={<Offers />} />
 
           <Route path="/admin/available-cities" element={<AvailableCities />} />
+          <Route path="/admin/available-cities/add" element={<AddCityPage />} />
+          <Route
+            path="/admin/available-cities/:cityId/update"
+            element={<UpdateCityPage />}
+          />
 
           <Route path="/admin/payments" element={<Payments />} />
 

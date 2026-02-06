@@ -16,7 +16,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { Pencil, Plus, Trash2, Image as ImageIcon } from "lucide-react";
+import { Pencil, Plus, Trash2 } from "lucide-react";
+
 import Wrapper from "../../components/wrappers/Wrapper";
 import {
   Tooltip,
@@ -24,13 +25,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
 import { BackLink } from "../../components/shared/back-link";
 import { H2 } from "../../components/shared/typography";
+import { CityFilter } from "@/components/filters/city";
+import TooltipIconButton from "../../components/shared/TooltipIconButton";
+
+/* -------------------------------------------------- */
 
 const ServiceInfoPage = () => {
   const { serviceId, categoryId } = useParams();
   const navigate = useNavigate();
 
+  /* -------- City Filter -------- */
+  const [selectedCity, setSelectedCity] = useState(null);
+
+  /* -------- API hooks -------- */
   const { res: serviceRes, fetchData: fetchService } = useGetApiReq();
   const {
     res: productRes,
@@ -43,12 +53,10 @@ const ServiceInfoPage = () => {
     isLoading: packageLoading,
   } = useGetApiReq();
 
-  console.log("packageRes", packageRes);
-  console.log("productRes", productRes);
-
   const { res: deleteProductRes, fetchData: deleteProduct } = useDeleteApiReq();
   const { res: deletePackageRes, fetchData: deletePackage } = useDeleteApiReq();
 
+  /* -------- State -------- */
   const [service, setService] = useState(null);
   const [products, setProducts] = useState([]);
   const [packages, setPackages] = useState([]);
@@ -62,36 +70,30 @@ const ServiceInfoPage = () => {
   const [featureModalOpen, setFeatureModalOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteType, setDeleteType] = useState("product");
+
   const [isUpdatePackageModalOpen, setIsUpdatePackageModalOpen] =
     useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
-  const handleUpdateModal = (product) => {
-    setSelectedProduct(product);
-    setIsUpdateModalOpen(!isUpdateModalOpen);
+  const handleReset = () => {
+    setSelectedCity("");
   };
 
-  const handlePackageUpdateModal = (data) => {
-    setSelectedPackage(data);
-    setIsUpdatePackageModalOpen(!isUpdatePackageModalOpen);
-  };
-
-  const getServiceDetails = () => {
+  /* -------- Fetchers -------- */
+  const getServiceDetails = () =>
     fetchService(`/admin/get-service-details/${serviceId}`);
-  };
 
-  const getServicePackages = () => {
-    fetchPackages(`/admin/get-service-package/${serviceId}`);
-  };
-
-  const getServiceProducts = () => {
+  const getServiceProducts = () =>
     fetchProducts(`/admin/get-service-product/${serviceId}`);
-  };
 
+  const getServicePackages = () =>
+    fetchPackages(`/admin/get-service-package/${serviceId}`);
+
+  /* -------- Effects -------- */
   useEffect(() => {
     getServiceDetails();
-    getServicePackages();
     getServiceProducts();
+    getServicePackages();
   }, []);
 
   useEffect(() => {
@@ -128,6 +130,7 @@ const ServiceInfoPage = () => {
     }
   }, [deletePackageRes]);
 
+  /* -------- Delete -------- */
   const handleDelete = () => {
     if (deleteType === "product") {
       deleteProduct(`/admin/delete-product/${selectedProduct}`);
@@ -136,6 +139,17 @@ const ServiceInfoPage = () => {
     }
   };
 
+  /* -------- City filtering (client-side) -------- */
+  const filteredProducts = selectedCity
+    ? products.filter((p) => p.cityId === selectedCity._id)
+    : products;
+
+  const filteredPackages = selectedCity
+    ? packages.filter((pkg) => pkg.cityId === selectedCity._id)
+    : packages;
+
+  /* -------------------------------------------------- */
+
   return (
     <>
       <Wrapper>
@@ -143,18 +157,24 @@ const ServiceInfoPage = () => {
           <BackLink href={-1}>
             <H2>Service Details</H2>
           </BackLink>
-          {/* Service Header */}
+
+          {/* -------- City Filter Bar -------- */}
+          <div className="flex items-center justify-end gap-3">
+            <CityFilter value={selectedCity} onChange={setSelectedCity} />
+
+            <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
+          </div>
+
+          {/* -------- Service Header -------- */}
           {service ? (
             <Card>
               <CardHeader className="flex flex-row items-start justify-between gap-4">
                 <div className="flex gap-4">
-                  {/* ICON AREA */}
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
                         {service.icon ? (
                           <div className="relative">
-                            {/* MAIN ICON BUTTON */}
                             <Button
                               variant="ghost"
                               size="icon"
@@ -163,16 +183,14 @@ const ServiceInfoPage = () => {
                             >
                               <img
                                 src={`${import.meta.env.VITE_APP_IMAGE_URL}/${service.icon}`}
-                                alt="service icon"
+                                alt="icon"
                                 className="h-full w-full rounded-md object-cover"
                               />
                             </Button>
-
-                            {/* EDIT OVERLAY BUTTON */}
                             <Button
                               size="icon"
                               variant="secondary"
-                              className="absolute -right-2 -top-2 h-6 w-6 rounded-full shadow"
+                              className="absolute -right-2 -top-2 h-6 w-6"
                               onClick={() => setIconModalOpen(true)}
                             >
                               <Pencil className="h-3 w-3" />
@@ -185,18 +203,16 @@ const ServiceInfoPage = () => {
                             className="h-16 w-16 border-dashed"
                             onClick={() => setIconModalOpen(true)}
                           >
-                            <Plus className="h-6 w-6 text-muted-foreground" />
+                            <Plus />
                           </Button>
                         )}
                       </TooltipTrigger>
-
                       <TooltipContent>
                         {service.icon ? "Update icon" : "Upload icon"}
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
 
-                  {/* SERVICE INFO */}
                   <div>
                     <CardTitle className="text-xl">{service.name}</CardTitle>
                     <p className="text-sm text-muted-foreground">
@@ -218,41 +234,18 @@ const ServiceInfoPage = () => {
               </CardContent>
             </Card>
           ) : (
-            <Card>
-              <CardHeader className="flex flex-row items-start justify-between gap-4">
-                <div className="flex gap-4">
-                  {/* ICON */}
-                  <div className="relative">
-                    <Skeleton className="h-16 w-16 rounded-md" />
-                  </div>
-
-                  {/* INFO */}
-                  <div className="space-y-2">
-                    <Skeleton className="h-5 w-40" />
-                    <Skeleton className="h-4 w-32" />
-                  </div>
-                </div>
-
-                <Skeleton className="h-9 w-36 rounded-md" />
-              </CardHeader>
-
-              <CardContent className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-[90%]" />
-                <Skeleton className="h-4 w-[80%]" />
-              </CardContent>
-            </Card>
+            <Skeleton className="h-[160px] w-full rounded-xl" />
           )}
 
-          {/* Products */}
+          {/* -------- Products -------- */}
           <Section title="Products" onAdd={() => setAddProductOpen(true)}>
             {productLoading ? (
               <GridSkeleton />
-            ) : products.length === 0 ? (
+            ) : filteredProducts.length === 0 ? (
               <Empty text="No products found" />
             ) : (
               <Grid>
-                {products.map((p) => (
+                {filteredProducts.map((p) => (
                   <ItemCard
                     key={p._id}
                     title={p.name}
@@ -264,7 +257,10 @@ const ServiceInfoPage = () => {
                         { state: { product: p, isPackage: false } },
                       )
                     }
-                    onEdit={() => handleUpdateModal(p)}
+                    onEdit={() => {
+                      setSelectedProduct(p);
+                      setIsUpdateModalOpen(true);
+                    }}
                     onDelete={() => {
                       setSelectedProduct(p._id);
                       setDeleteType("product");
@@ -276,15 +272,15 @@ const ServiceInfoPage = () => {
             )}
           </Section>
 
-          {/* Packages */}
+          {/* -------- Packages -------- */}
           <Section title="Packages" onAdd={() => setAddPackageOpen(true)}>
             {packageLoading ? (
               <GridSkeleton />
-            ) : packages.length === 0 ? (
+            ) : filteredPackages.length === 0 ? (
               <Empty text="No packages found" />
             ) : (
               <Grid>
-                {packages.map((pkg) => (
+                {filteredPackages.map((pkg) => (
                   <ItemCard
                     key={pkg._id}
                     title={pkg.name}
@@ -296,7 +292,10 @@ const ServiceInfoPage = () => {
                         { state: { product: pkg, isPackage: true } },
                       )
                     }
-                    onEdit={() => handlePackageUpdateModal(pkg)}
+                    onEdit={() => {
+                      setSelectedPackage(pkg);
+                      setIsUpdatePackageModalOpen(true);
+                    }}
                     onDelete={() => {
                       setSelectedPackage(pkg._id);
                       setDeleteType("package");
@@ -309,6 +308,24 @@ const ServiceInfoPage = () => {
           </Section>
         </div>
       </Wrapper>
+
+      {/* -------- Modals -------- */}
+      {addProductOpen && (
+        <AddProductModal
+          serviceId={serviceId}
+          setIsModalOpen={setAddProductOpen}
+          getAllProducts={getServiceProducts}
+        />
+      )}
+
+      {addPackageOpen && (
+        <AddPackageModal
+          serviceId={serviceId}
+          setIsModalOpen={setAddPackageOpen}
+          allProducts={products}
+          getAllPackage={getServicePackages}
+        />
+      )}
 
       {isUpdateModalOpen && (
         <AddProductModal
@@ -324,24 +341,6 @@ const ServiceInfoPage = () => {
           serviceId={serviceId}
           selectedPackage={selectedPackage}
           setIsModalOpen={setIsUpdatePackageModalOpen}
-          allProducts={products}
-          getAllPackage={getServicePackages}
-        />
-      )}
-
-      {/* Modals */}
-      {addProductOpen && (
-        <AddProductModal
-          serviceId={serviceId}
-          setIsModalOpen={setAddProductOpen}
-          getAllProducts={getServiceProducts}
-        />
-      )}
-
-      {addPackageOpen && (
-        <AddPackageModal
-          serviceId={serviceId}
-          setIsModalOpen={setAddPackageOpen}
           allProducts={products}
           getAllPackage={getServicePackages}
         />
@@ -373,7 +372,9 @@ const ServiceInfoPage = () => {
 
 export default ServiceInfoPage;
 
-/* ---------- Helper Components ---------- */
+/* ===================================================== */
+/* ================= Helper Components ================= */
+/* ===================================================== */
 
 const Section = ({ title, onAdd, children }) => (
   <div className="space-y-4">
@@ -409,7 +410,7 @@ const ItemCard = ({ title, desc, image, onClick, onEdit, onDelete }) => (
   >
     <img
       src={`${import.meta.env.VITE_APP_IMAGE_URL}/${image}`}
-      className="aspect-video w-full h-[200px] rounded-t-xl object-cover"
+      className="aspect-video h-[200px] w-full rounded-t-xl object-cover"
     />
     <CardHeader className="flex flex-row items-center justify-between">
       <CardTitle className="text-base">{title}</CardTitle>
@@ -423,7 +424,7 @@ const ItemCard = ({ title, desc, image, onClick, onEdit, onDelete }) => (
       </div>
     </CardHeader>
     <CardContent>
-      <p className="text-muted-foreground text-sm line-clamp-3">
+      <p className="text-sm text-muted-foreground line-clamp-3">
         {desc && parse(desc)}
       </p>
     </CardContent>
@@ -432,8 +433,7 @@ const ItemCard = ({ title, desc, image, onClick, onEdit, onDelete }) => (
 
 const ItemCardSkeleton = () => (
   <Card className="pt-0">
-    <Skeleton className="aspect-video w-full h-[200px] rounded-t-xl" />
-
+    <Skeleton className="aspect-video h-[200px] w-full rounded-t-xl" />
     <CardHeader className="flex flex-row items-center justify-between">
       <Skeleton className="h-4 w-32" />
       <div className="flex gap-2">
@@ -441,7 +441,6 @@ const ItemCardSkeleton = () => (
         <Skeleton className="h-8 w-8 rounded-md" />
       </div>
     </CardHeader>
-
     <CardContent className="space-y-2">
       <Skeleton className="h-3 w-full" />
       <Skeleton className="h-3 w-[85%]" />
