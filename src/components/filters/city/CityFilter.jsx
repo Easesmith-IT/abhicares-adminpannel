@@ -27,9 +27,9 @@ const CityFilter = ({ value, onChange }) => {
         <Button
           variant="outline"
           role="combobox"
-          className="w-[220px] justify-between"
+          className="w-[220px] justify-between capitalize"
         >
-          {selectedCity ? selectedCity.city : "Filter by city"}
+          {selectedCity ? selectedCity.name : "Filter by city"}
           <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -44,11 +44,11 @@ const CityFilter = ({ value, onChange }) => {
             {cities.map((city) => (
               <CommandItem key={city._id} onSelect={() => onChange(city._id)}>
                 <Check
-                  className={`mr-2 h-4 w-4 ${
+                  className={`mr-2 h-4 w-4 capitalize ${
                     value === city._id ? "opacity-100" : "opacity-0"
                   }`}
                 />
-                {city.city}
+                {city.name}
               </CommandItem>
             ))}
           </CommandGroup>

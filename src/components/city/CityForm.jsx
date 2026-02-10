@@ -17,14 +17,22 @@ const CityForm = ({
   onSubmit,
   isLoading,
 }) => {
+  console.log("initialData", initialData);
+
   const [cityInfo, setCityInfo] = useState({
-    city: initialData.city || "",
-    state: initialData.state || "",
+    city: initialData.name || "",
   });
 
   const [latitude, setLatitude] = useState(initialData.latitude || 26.5);
   const [longitude, setLongitude] = useState(initialData.longitude || 80.3);
-  const [geoFence, setGeoFence] = useState(initialData.geoFence || []);
+  const [geoFence, setGeoFence] = useState(
+    initialData?.area?.coordinates?.[0]?.length >= 3
+      ? initialData?.area?.coordinates?.[0].map(([lng, lat]) => [lat, lng])
+      : []
+  );
+
+  console.log("geoFence", geoFence);
+  
 
   /* Auto fetch lat/long on city change */
   useEffect(() => {
@@ -49,26 +57,50 @@ const CityForm = ({
     return () => clearTimeout(timeout);
   }, [cityInfo.city]);
 
+
+  useEffect(() => {
+    if (!initialData?._id) return;
+
+    setCityInfo({ city: initialData.name || "" });
+    setLatitude(initialData.latitude);
+    setLongitude(initialData.longitude);
+
+    if (initialData?.area?.coordinates?.[0]?.length >= 3) {
+      setGeoFence(
+        initialData.area.coordinates[0].map(([lng, lat]) => [lat, lng]),
+      );
+    }
+  }, [initialData]);
+
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCityInfo((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+ const handleSubmit = (e) => {
+   e.preventDefault();
 
-    if (!cityInfo.city || !cityInfo.state) {
-      toast.error("City and State are required");
-      return;
-    }
+   if (!cityInfo.city) {
+     toast.error("City name is required");
+     return;
+   }
 
-    onSubmit({
-      ...cityInfo,
-      latitude,
-      longitude,
-      geoFence,
-    });
-  };
+   if (!geoFence || geoFence.length < 3) {
+     toast.error("Please draw a valid geo-fence");
+     return;
+   }
+
+   const payload = {
+     name: cityInfo.city,
+     latitude,
+     longitude,
+     polygon: geoFence.map(([lat, lng]) => [lng, lat]), // 🔥 IMPORTANT
+   };
+
+   onSubmit(payload);
+ };
+
 
   return (
     <div>
@@ -93,15 +125,6 @@ const CityForm = ({
                   <Input
                     name="city"
                     value={cityInfo.city}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>State</Label>
-                  <Input
-                    name="state"
-                    value={cityInfo.state}
                     onChange={handleChange}
                   />
                 </div>

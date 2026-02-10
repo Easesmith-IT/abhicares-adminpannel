@@ -31,76 +31,110 @@ import Stats from "../../components/partner/Stats";
 import { PaginationComp } from "../../components/shared/PaginationComp";
 import { H2 } from "../../components/shared/typography";
 import Wrapper from "../../components/wrappers/Wrapper";
+
 import useDeleteApiReq from "../../hooks/useDeleteApiReq";
 import useGetApiReq from "../../hooks/useGetApiReq";
+import { buildQuery } from "@/utils/buildQuery";
+import CityFilter from "../../components/filters/city/CityFilter";
+import TooltipIconButton from "../../components/shared/TooltipIconButton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+
+const STATUS_BADGE_VARIANT = {
+  APPROVED: "success",
+  "IN-REVIEW": "inprogress",
+  HOLD: "secondary",
+  REJECTED: "destructive",
+};
 
 const Partners = () => {
   const navigate = useNavigate();
 
-  const { res: getRes, fetchData: getSellers, isLoading } = useGetApiReq();
-  const { res: filterRes, fetchData: filterSellers } = useGetApiReq();
-  const { res: searchRes, fetchData: searchSellers } = useGetApiReq();
+  /* ----------------------------------
+     API hooks
+  ---------------------------------- */
+  const { res, fetchData, isLoading } = useGetApiReq();
   const { res: deleteRes, fetchData: deleteSeller } = useDeleteApiReq();
 
+  /* ----------------------------------
+     State
+  ---------------------------------- */
   const [sellers, setSellers] = useState([]);
   const [seller, setSeller] = useState(null);
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
-  const [status, setStatus] = useState("");
   const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("");
 
   const [addOpen, setAddOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [unapprovedOpen, setUnapprovedOpen] = useState(false);
+  const [cityId, setCityId] = useState("");
 
-  const fetchAll = () => {
-    getSellers(`/admin/get-all-seller?page=${page}`);
+  const handleReset = () => {
+    setCityId("");
+    setStatus("");
+    setSearch("");
   };
 
-  /* Fetch sellers */
+  /* ----------------------------------
+     Fetch sellers (single API)
+  ---------------------------------- */
+  const fetchSellers = () => {
+    const query = buildQuery({
+      page,
+      limit: 10,
+      search,
+      status,
+      cityId,
+    });
+
+    fetchData(`/sellers/get-all-seller?${query}`);
+  };
+
+  /* ----------------------------------
+     Effects
+  ---------------------------------- */
+
+  // Fetch on page / search / filter change
   useEffect(() => {
-    if (!search && !status) fetchAll();
-  }, [page]);
+    fetchSellers();
+  }, [page, search, status, cityId]);
 
-  /* Search */
+  // Reset page when search or filter changes
   useEffect(() => {
-    if (!search) return fetchAll();
-    searchSellers(`/admin/search-seller?search=${search}&page=${page}`);
-  }, [search, page]);
+    setPage(1);
+  }, [search, status]);
 
-  /* Filter */
+  // Handle API response
   useEffect(() => {
-    if (!status) return;
-    filterSellers(`/admin/filter-seller?status=${status}&page=${page}`);
-  }, [status, page]);
+    if (res?.status === 200 || res?.status === 201) {
+      console.log("partner res", res);
 
-  console.log("Partners page", totalPages);
-  /* Handle responses */
-  useEffect(() => {
-    const res = getRes || filterRes || searchRes;
-
-    console.log("Partners res", res);
-
-    if (res?.status === 200) {
       setSellers(res.data.data);
-      setTotalPages(
-        res.data?.pagination?.totalPages || res.data?.totalPage || 1,
-      );
+      setTotalPages(res.data.pagination?.totalPages || 1);
     }
-  }, [getRes, filterRes, searchRes]);
+  }, [res]);
 
-  /* Delete */
+  // Handle delete
   useEffect(() => {
     if (deleteRes?.status === 200) {
-      toast.success("Partner deleted");
       setDeleteOpen(false);
-      fetchAll();
+      fetchSellers();
     }
   }, [deleteRes]);
 
+  /* ----------------------------------
+     Render
+  ---------------------------------- */
   return (
     <>
       <Wrapper>
@@ -108,9 +142,19 @@ const Partners = () => {
 
         <div className="mt-6">
           {/* Header */}
-          <div className="mb-6 flex flex-wrap items-center gap-3">
+          <div className="flex justify-between gap-5 items-center">
             <H2>Partners</H2>
+            <Button
+              variant="abhicares"
+              className="ml-auto"
+              onClick={() => setAddOpen(true)}
+            >
+              <PlusIcon className="mr-2 h-4 w-4" />
+              Add Partner
+            </Button>
+          </div>
 
+          <div className="mb-6 flex flex-wrap items-center gap-3 mt-6">
             <Input
               placeholder="Search partners..."
               className="max-w-xs"
@@ -129,54 +173,58 @@ const Partners = () => {
                 <SelectItem value="HOLD">Hold</SelectItem>
               </SelectContent>
             </Select>
+            <CityFilter value={cityId} onChange={setCityId} />
+            <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
 
             <Button variant="secondary" onClick={() => setUnapprovedOpen(true)}>
               Unapproved Partners
             </Button>
-
-            <Button
-              variant="abhicares"
-              className="ml-auto"
-              onClick={() => setAddOpen(true)}
-            >
-               <PlusIcon />
-               Add Partner
-            </Button>
           </div>
 
+          {/* Table */}
           <div className="table-container">
-            {/* Table */}
-            {isLoading ? (
-              <PartnersTableSkeleton />
-            ) : sellers.length === 0 ? (
-              <p className="text-center text-muted-foreground">
-                No partners found
-              </p>
-            ) : (
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-slate-200 border-b border-white/40">
-                    <TableHead>Name</TableHead>
-                    <TableHead>Partner ID</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Phone</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-slate-200">
+                  <TableHead>Name</TableHead>
+                  <TableHead>Partner ID</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Phone</TableHead>
+                  <TableHead>City</TableHead>
+                  <TableHead>Availabel Status</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
 
-                <TableBody>
-                  {sellers.map((s) => (
+              <TableBody>
+                {isLoading ? (
+                  <PartnersTableSkeleton />
+                ) : sellers.length === 0 ? (
+                  <p className="text-center text-muted-foreground">
+                    No partners found
+                  </p>
+                ) : (
+                  sellers.map((s) => (
                     <TableRow key={s._id}>
                       <TableCell>{s.name}</TableCell>
                       <TableCell>{s.partnerId}</TableCell>
                       <TableCell>{s.categoryId?.name}</TableCell>
                       <TableCell>{s.phone}</TableCell>
+                      <TableCell className="capitalize">{s?.city?.cityId?.name || "-"}</TableCell>
                       <TableCell>
                         <Badge variant={s.online ? "success" : "destructive"}>
                           {s.online ? "Online" : "Offline"}
                         </Badge>
                       </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={STATUS_BADGE_VARIANT[s.status] || "default"}
+                        >
+                          {s.status}
+                        </Badge>
+                      </TableCell>
+
                       <TableCell className="flex justify-end gap-4">
                         <Button
                           size="icon"
@@ -188,6 +236,7 @@ const Partners = () => {
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
+
                         <Button
                           size="icon"
                           variant="destructive"
@@ -210,10 +259,10 @@ const Partners = () => {
                         </Button>
                       </TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
+                  ))
+                )}
+              </TableBody>
+            </Table>
           </div>
 
           {/* Pagination */}
@@ -226,15 +275,19 @@ const Partners = () => {
         </div>
       </Wrapper>
 
+      {/* Modals */}
       {addOpen && (
-        <AddSellerModal setIsModalOpen={setAddOpen} getAllSellers={fetchAll} />
+        <AddSellerModal
+          setIsModalOpen={setAddOpen}
+          getAllSellers={fetchSellers}
+        />
       )}
 
       {editOpen && (
         <AddSellerModal
           seller={seller}
           setIsModalOpen={setEditOpen}
-          getAllSellers={fetchAll}
+          getAllSellers={fetchSellers}
         />
       )}
 
@@ -249,7 +302,7 @@ const Partners = () => {
       {unapprovedOpen && (
         <UnapprovedSellerModal
           setIsUnapprovedSellerModalOpen={setUnapprovedOpen}
-          getSellers={fetchAll}
+          getSellers={fetchSellers}
         />
       )}
     </>

@@ -24,6 +24,9 @@ import AllUsersModal from "../../components/modals/AllUsersModal";
 import DeleteModal from "../../components/modals/DeleteModal";
 import { PaginationComp } from "../../components/shared/PaginationComp";
 import { CustomersTableSkeleton } from "../../components/customer/CustomersTableSkeleton";
+import { buildQuery } from "../../utils/buildQuery";
+import CityFilter from "../../components/filters/city/CityFilter";
+import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
 const Customers = () => {
   const navigate = useNavigate();
@@ -47,17 +50,35 @@ const Customers = () => {
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [cityId, setCityId] = useState("");
+
+  const handleReset = () => {
+    setCityId("");
+    setSearchQuery("");
+  };
 
   /* ---------------- API ---------------- */
 
   const getAllUsers = () => {
-    getUsers(`/admin/get-all-user?page=${page}`);
+    const query = buildQuery({
+      page,
+      limit: 10,
+      search: searchQuery,
+      cityId,
+    });
+    getUsers(`/users/get-all-user?${query}`);
   };
 
   useEffect(() => {
+    getAllUsers();
+  }, [page, searchQuery, cityId]);
+
+  useEffect(() => {
     if (getUsersRes?.status === 200 || getUsersRes?.status === 201) {
+      console.log("getUsersRes", getUsersRes);
+
       setAllUsers(getUsersRes.data.data);
-      setPageCount(getUsersRes.data.totalPage);
+      setPageCount(getUsersRes?.data?.pagination?.totalPages || 0);
     }
   }, [getUsersRes]);
 
@@ -72,24 +93,6 @@ const Customers = () => {
       setIsDeleteModalOpen(false);
     }
   }, [deleteUserRes]);
-
-  /* ---------------- SEARCH ---------------- */
-
-  useEffect(() => {
-    if (!searchQuery) {
-      getAllUsers();
-      return;
-    }
-
-    searchUser(`/admin/search-user?search=${searchQuery}&page=${page}`);
-  }, [page, searchQuery]);
-
-  useEffect(() => {
-    if (searchUserRes?.status === 200 || searchUserRes?.status === 201) {
-      setAllUsers(searchUserRes.data.data);
-      setPageCount(searchUserRes.data.pagination?.totalPages);
-    }
-  }, [searchUserRes]);
 
   /* ---------------- RENDER ---------------- */
 
@@ -111,10 +114,16 @@ const Customers = () => {
               </Button>
 
               <Input
-                placeholder="Search customers"
+                placeholder="Search customers..."
+                className="max-w-xs"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-[260px]"
+              />
+
+              <CityFilter value={cityId} onChange={setCityId} />
+              <TooltipIconButton
+                tooltip="Reset Filters"
+                onClick={handleReset}
               />
             </div>
           </div>
@@ -126,6 +135,9 @@ const Customers = () => {
                 <TableRow className="bg-slate-200 border-b border-white/40">
                   <TableHead>Customer Name</TableHead>
                   <TableHead>Contact Number</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Gender</TableHead>
+                  <TableHead>City</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -151,7 +163,10 @@ const Customers = () => {
                 {allUsers.map((u) => (
                   <TableRow key={u._id}>
                     <TableCell className="font-medium">{u.name}</TableCell>
-                    <TableCell>{u.phone}</TableCell>
+                    <TableCell>{u.phone || "-"}</TableCell>
+                    <TableCell>{u.email || "-"}</TableCell>
+                    <TableCell>{u.Gender || "-"}</TableCell>
+                    <TableCell className="capitalize">{u?.city?.name || "-"}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button

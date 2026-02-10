@@ -58,7 +58,7 @@ const AllUsersModal = ({ setIsModalOpen }) => {
 
   return (
     <Dialog open onOpenChange={setIsModalOpen}>
-      <DialogContent className="sm:max-w-4xl">
+      <DialogContent className="sm:max-w-5xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>All Users</DialogTitle>
         </DialogHeader>

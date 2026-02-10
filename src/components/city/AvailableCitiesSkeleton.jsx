@@ -23,14 +23,12 @@ const AvailableCitiesSkeleton = ({ rows = 6 }) => {
                 <Skeleton className="h-4 w-20" />
               </TableCell>
 
-              {/* Pincodes */}
-              <TableCell>
-                <Skeleton className="h-4 w-full max-w-[220px]" />
-              </TableCell>
-
-              {/* Polygon */}
               <TableCell>
                 <Skeleton className="h-5 w-20 rounded-full" />
+              </TableCell>
+
+              <TableCell>
+                <Skeleton className="h-4 w-full max-w-[220px]" />
               </TableCell>
 
               {/* Actions */}

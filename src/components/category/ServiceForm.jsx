@@ -30,6 +30,9 @@ import { BackLink } from "../shared/back-link";
 import { H2 } from "../shared/typography";
 import { useCities } from "@/components/filters/city";
 import { CityCardSkeleton } from "./CityCardSkeleton";
+import { Switch } from "../ui/switch";
+import { Badge } from "../ui/badge";
+import { Spinner } from "../ui/spinner";
 
 const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
   const fileRef = useRef(null);
@@ -37,8 +40,14 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
   /* ----------------------------------
      Cities Hook (pagination source)
   ---------------------------------- */
-  const { cities, page, totalPages, nextPage, prevPage, isLoading:cityLoading } =
-    useCities();
+  const {
+    cities,
+    page,
+    totalPages,
+    nextPage,
+    prevPage,
+    isLoading: cityLoading,
+  } = useCities();
 
   /* ----------------------------------
      Form (ALL cities live here)
@@ -54,6 +63,8 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
   });
 
   const { watch, setValue, getValues } = form;
+  console.log("getValues", getValues());
+
   const img = watch("img");
   const cityConfigs = watch("cityConfigs") || [];
 
@@ -73,9 +84,7 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
         .filter((city) => !existingIds.has(city._id))
         .map((city) => ({
           cityId: city._id,
-          cityName: city.city,
-          state: city.state,
-          country: city.country,
+          cityName: city.name,
           isActive: city.isActive,
           startingPrice: "",
           appHomepage: false,
@@ -117,6 +126,10 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
     setValue("previewImage", "");
   };
 
+  const onError = (error) => {
+    console.log("Error", error);
+  };
+
   /* ----------------------------------
      Render
   ---------------------------------- */
@@ -129,7 +142,10 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
       <Card>
         <CardContent className="space-y-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, onError)}
+              className="space-y-6"
+            >
               {/* Name */}
               <FormField
                 control={form.control}
@@ -166,9 +182,14 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
               />
 
               {/* Image */}
-              <FormItem>
+              <FormItem className="inline-block mt-10">
                 <Label>Image</Label>
-                <Input ref={fileRef} type="file" onChange={handleImage} />
+                <Input
+                  ref={fileRef}
+                  accept=".png,.jpg,.jpeg,.webp"
+                  type="file"
+                  onChange={handleImage}
+                />
 
                 {img && (
                   <div className="relative w-fit mt-2">
@@ -211,30 +232,39 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
                         (c) => c.cityId === city.cityId,
                       );
 
+                      const isActive = watch(`cityConfigs.${index}.isActive`);
+
                       return (
                         <Card key={city.cityId}>
                           <CardContent className="space-y-4">
                             {/* Header */}
-                            <div className="flex items-start justify-between">
+                            <div className="flex items-start justify-between gap-3">
                               <div>
-                                <h3 className="font-semibold">
+                                <h3 className="font-semibold uppercase">
                                   {city.cityName}
                                 </h3>
-                                <p className="text-sm text-muted-foreground">
-                                  {[city.state, city.country]
-                                    .filter(Boolean)
-                                    .join(", ")}
-                                </p>
                               </div>
-                              <span
-                                className={`text-xs px-2 py-1 rounded-full ${
-                                  city.isActive
-                                    ? "bg-green-100 text-green-700"
-                                    : "bg-red-100 text-red-700"
-                                }`}
-                              >
-                                {city.isActive ? "Active" : "Inactive"}
-                              </span>
+
+                              <FormField
+                                control={form.control}
+                                name={`cityConfigs.${index}.isActive`}
+                                render={({ field }) => (
+                                  <div className="flex items-center gap-2">
+                                    <Switch
+                                      checked={field.value}
+                                      onCheckedChange={field.onChange}
+                                      className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-orange-500"
+                                    />
+                                    <Badge
+                                      variant={
+                                        field.value ? "success" : "inprogress"
+                                      }
+                                    >
+                                      {field.value ? "Active" : "Inactive"}
+                                    </Badge>
+                                  </div>
+                                )}
+                              />
                             </div>
 
                             {/* Starting Price */}
@@ -246,9 +276,10 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
                                   <Label>Starting Price</Label>
                                   <FormControl>
                                     <Input
+                                      {...field}
                                       type="number"
                                       placeholder="Enter price"
-                                      {...field}
+                                      disabled={!isActive}
                                     />
                                   </FormControl>
                                 </FormItem>
@@ -270,6 +301,7 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
                                           : "Web Homepage"}
                                       </Label>
                                       <Select
+                                        disabled={!isActive}
                                         value={String(field.value)}
                                         onValueChange={(v) =>
                                           field.onChange(v === "true")
@@ -321,7 +353,7 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
               {/* Submit */}
               <div className="flex justify-end">
                 <Button variant="abhicares" type="submit" disabled={isLoading}>
-                  {label}
+                  {isLoading ? <Spinner /> : label}
                 </Button>
               </div>
             </form>

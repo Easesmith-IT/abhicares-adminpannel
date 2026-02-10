@@ -1,18 +1,14 @@
-import { z } from "zod";
-import toast from "react-hot-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import {
   Form,
   FormControl,
@@ -21,49 +17,74 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import usePatchApiReq from "../../hooks/usePatchApiReq";
+import usePostApiReq from "../../hooks/usePostApiReq";
+import { categorySchema } from "../../schemas/service.schema";
+import { Spinner } from "../ui/spinner";
 
-/* -------------------- */
-/* Zod Schema */
-/* -------------------- */
-const categorySchema = z.object({
-  name: z
-    .string()
-    .min(1, "Category name is required")
-    .max(50, "Max 50 characters"),
-  commission: z.number().min(0, "Must be a positive number").default(0),
-  convenience: z.number().min(0, "Must be a positive number").default(0),
-});
 
 const AddCategoryModal = ({
   isOpen,
   onClose,
-  onSubmit,
-  isLoading = false,
   initialData = null,
+  getCategories,
 }) => {
+  console.log("initialData", initialData);
+  
   const form = useForm({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name: initialData?.name || "",
-      commission: initialData?.commission ?? 0,
-      convenience: initialData?.convenience ?? 0,
+      totalServices: initialData?.totalServices || 0,
     },
   });
+  
+  const { res, fetchData, isLoading } = usePostApiReq();
+  const {
+    res: updateRes,
+    fetchData: updateCategory,
+    isLoading: isUpdateLoading,
+  } = usePatchApiReq();
 
-  /* Reset form when modal opens/closes or data changes */
+
+  
   useEffect(() => {
     if (isOpen) {
       form.reset({
         name: initialData?.name || "",
-        commission: initialData?.commission ?? 0,
-        convenience: initialData?.convenience ?? 0,
+        totalServices: initialData?.totalServices ?? 0,
       });
     }
-  }, [isOpen, initialData]);
+  }, [isOpen, initialData, form]);
+
 
   const handleSubmit = (values) => {
-    onSubmit(values);
+    console.log("values", values);
+
+    if (initialData) {
+      updateCategory(`/admin/update-category/${initialData._id}`, values);
+    } else {
+      fetchData(`/admin/create-category`, values);
+    }
   };
+
+  
+
+
+  useEffect(() => {
+    if (res?.status === 200 || res?.status === 201) {
+      onClose();
+      getCategories();
+    }
+  }, [res]);
+
+  useEffect(() => {
+    if (updateRes?.status === 200 || updateRes?.status === 201) {
+      onClose();
+      getCategories();
+    }
+  }, [updateRes]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -94,47 +115,27 @@ const AddCategoryModal = ({
               )}
             />
 
-            {/* Commission */}
-            <FormField
+            {initialData && <FormField
               control={form.control}
-              name="commission"
+              name="totalServices"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Commission (%)</FormLabel>
+                  <FormLabel>
+                    Total Services{" "}
+                    <span className="text-muted-foreground">(optional)</span>
+                  </FormLabel>
                   <FormControl>
                     <Input
                       type="number"
                       min="0"
-                      step="0.01"
+                      placeholder="e.g. 10"
                       {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
-            />
-
-            {/* Convenience */}
-            <FormField
-              control={form.control}
-              name="convenience"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Convenience Fee</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      {...field}
-                      onChange={(e) => field.onChange(Number(e.target.value))}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            />}
 
             {/* Actions */}
             <div className="flex justify-end gap-3 pt-2">
@@ -142,8 +143,12 @@ const AddCategoryModal = ({
                 Cancel
               </Button>
 
-              <Button type="submit" variant="abhicares" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save"}
+              <Button
+                type="submit"
+                variant="abhicares"
+                disabled={isLoading || isUpdateLoading}
+              >
+                {isLoading || isUpdateLoading ? <Spinner /> : "Save"}
               </Button>
             </div>
           </form>

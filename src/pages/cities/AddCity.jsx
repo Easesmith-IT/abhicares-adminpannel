@@ -9,7 +9,7 @@ const AddCityPage = () => {
   const navigate = useNavigate();
 
   const handleAddCity = (payload) => {
-    fetchData("/admin/create-availabe-city", payload);
+    fetchData("/cities/admin/cities", payload);
   };
 
   if (res?.status === 200 || res?.status === 201) {

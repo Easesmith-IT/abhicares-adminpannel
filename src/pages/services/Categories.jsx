@@ -19,25 +19,24 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
+import { Category } from "../../components/category/Category";
 
 const Categories = () => {
-
   const navigate = useNavigate();
   const { res, fetchData, isLoading } = useGetApiReq();
   const [categories, setCategories] = useState([]);
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
-  
+
   const [selectedCity, setSelectedCity] = useState(null);
   const { cities } = useCities();
 
   const handleAddCategory = () => {
     setIsAddCategoryModalOpen((prev) => !prev);
   };
-  
+
   const handleReset = () => {
     setSelectedCity("");
   };
-  
 
   const getCategories = useCallback(() => {
     const query = buildQuery({ city: selectedCity });
@@ -55,7 +54,6 @@ const Categories = () => {
     }
   }, [res]);
 
-
   return (
     <Wrapper>
       <div className="w-full font-poppins">
@@ -68,11 +66,8 @@ const Categories = () => {
               value={selectedCity}
               onChange={setSelectedCity}
             />
-            <TooltipIconButton
-                tooltip="Reset Filters"
-                onClick={handleReset}
-              />
-            
+            <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
+
             <Button onClick={handleAddCategory} variant="abhicares">
               <PlusIcon />
               Add Category
@@ -97,40 +92,11 @@ const Categories = () => {
         {!isLoading && categories.length > 0 && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {categories.map((category) => (
-              <Card
+              <Category
                 key={category._id}
-                onClick={() =>
-                  navigate(`/admin/services/${category._id}`, {
-                    state: { categoryName: category.name },
-                  })
-                }
-                className="cursor-pointer gap-3 py-3 transition-all hover:border-main hover:shadow-md"
-              >
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between text-lg">
-                    {category.name}
-                  </CardTitle>
-                </CardHeader>
-
-                <CardContent className="space-y-2 text-sm text-muted-foreground">
-                  <Badge variant="secondary">
-                    {category.totalServices} Services
-                  </Badge>
-                  <div className="flex justify-between">
-                    <span>Commission</span>
-                    <span className="font-medium text-black">
-                      {category.commission}%
-                    </span>
-                  </div>
-
-                  <div className="flex justify-between">
-                    <span>Convenience Fee</span>
-                    <span className="font-medium text-black">
-                      {category.convenience}%
-                    </span>
-                  </div>
-                </CardContent>
-              </Card>
+                category={category}
+                getCategories={getCategories}
+              />
             ))}
           </div>
         )}
@@ -139,6 +105,7 @@ const Categories = () => {
           <AddCategoryModal
             isOpen={isAddCategoryModalOpen}
             onClose={handleAddCategory}
+            getCategories={getCategories}
           />
         )}
       </div>

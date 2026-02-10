@@ -30,6 +30,8 @@ import { BackLink } from "../../components/shared/back-link";
 import { H2 } from "../../components/shared/typography";
 import { CityFilter } from "@/components/filters/city";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
+import { Badge } from "../../components/ui/badge";
+import { Label } from "../../components/ui/label";
 
 /* -------------------------------------------------- */
 
@@ -81,7 +83,7 @@ const ServiceInfoPage = () => {
 
   /* -------- Fetchers -------- */
   const getServiceDetails = () =>
-    fetchService(`/admin/get-service-details/${serviceId}`);
+    fetchService(`/services/get-service-details/${serviceId}`);
 
   const getServiceProducts = () =>
     fetchProducts(`/admin/get-service-product/${serviceId}`);
@@ -98,6 +100,8 @@ const ServiceInfoPage = () => {
 
   useEffect(() => {
     if (serviceRes?.status === 200) {
+      console.log("serviceRes", serviceRes);
+      
       setService(serviceRes.data.service);
     }
   }, [serviceRes]);
@@ -167,78 +171,131 @@ const ServiceInfoPage = () => {
 
           {/* -------- Service Header -------- */}
           {service ? (
-            <Card>
-              <CardHeader className="flex flex-row items-start justify-between gap-4">
-                <div className="flex gap-4">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        {service.icon ? (
-                          <div className="relative">
+            <>
+              <Card>
+                <CardHeader className="flex flex-row items-start justify-between gap-4">
+                  <div className="flex gap-4">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          {service.icon ? (
+                            <div className="relative">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-16 w-16 rounded-md border p-0"
+                                onClick={() => setIconModalOpen(true)}
+                              >
+                                <img
+                                  src={`${import.meta.env.VITE_APP_IMAGE_URL}/${service.icon}`}
+                                  alt="icon"
+                                  className="h-full w-full rounded-md object-cover"
+                                />
+                              </Button>
+                              <Button
+                                size="icon"
+                                variant="secondary"
+                                className="absolute -right-2 -top-2 h-6 w-6"
+                                onClick={() => setIconModalOpen(true)}
+                              >
+                                <Pencil className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          ) : (
                             <Button
-                              variant="ghost"
+                              variant="outline"
                               size="icon"
-                              className="h-16 w-16 rounded-md border p-0"
+                              className="h-16 w-16 border-dashed"
                               onClick={() => setIconModalOpen(true)}
                             >
-                              <img
-                                src={`${import.meta.env.VITE_APP_IMAGE_URL}/${service.icon}`}
-                                alt="icon"
-                                className="h-full w-full rounded-md object-cover"
-                              />
+                              <Plus />
                             </Button>
-                            <Button
-                              size="icon"
-                              variant="secondary"
-                              className="absolute -right-2 -top-2 h-6 w-6"
-                              onClick={() => setIconModalOpen(true)}
-                            >
-                              <Pencil className="h-3 w-3" />
-                            </Button>
-                          </div>
-                        ) : (
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            className="h-16 w-16 border-dashed"
-                            onClick={() => setIconModalOpen(true)}
-                          >
-                            <Plus />
-                          </Button>
-                        )}
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        {service.icon ? "Update icon" : "Upload icon"}
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                          )}
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {service.icon ? "Update icon" : "Upload icon"}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
 
-                  <div>
-                    <CardTitle className="text-xl">{service.name}</CardTitle>
-                    <p className="text-sm text-muted-foreground">
-                      Starting Price: ₹{service.startingPrice}
-                    </p>
+                    <div>
+                      <CardTitle className="text-xl">{service.name}</CardTitle>
+                      {/* <p className="text-sm text-muted-foreground">
+                        Starting Price: ₹{service.startingPrice}
+                      </p> */}
+                    </div>
                   </div>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => setFeatureModalOpen(true)}
+                  >
+                    Update Features
+                  </Button>
+                </CardHeader>
+
+                <CardContent className="text-sm text-muted-foreground">
+                  {parse(service.description || "")}
+                </CardContent>
+              </Card>
+
+              <Section title="City-wise Configuration">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {service.cityConfigs.map((cfg) => (
+                    <Card key={cfg.cityId._id}>
+                      <CardContent className="space-y-4">
+                        {/* Header */}
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <h3 className="font-semibold uppercase">
+                              {cfg.cityId.name}
+                            </h3>
+                          </div>
+
+                          <Badge
+                            variant={cfg.isActive ? "success" : "inprogress"}
+                          >
+                            {cfg.isActive ? "Active" : "Inactive"}
+                          </Badge>
+                        </div>
+
+                        {/* Starting Price */}
+                        <div>
+                          <Label>Starting Price</Label>
+                          <p className="text-sm">₹{cfg.startingPrice}</p>
+                        </div>
+
+                        {/* Homepage flags */}
+                        <div className="grid grid-cols-2 gap-3 text-sm">
+                          <div>
+                            <Label>App Homepage</Label>
+                            <p>{cfg.appHomepage ? "Yes" : "No"}</p>
+                          </div>
+
+                          <div>
+                            <Label>Web Homepage</Label>
+                            <p>{cfg.webHomepage ? "Yes" : "No"}</p>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
-
-                <Button
-                  variant="outline"
-                  onClick={() => setFeatureModalOpen(true)}
-                >
-                  Update Features
-                </Button>
-              </CardHeader>
-
-              <CardContent className="text-sm text-muted-foreground">
-                {parse(service.description || "")}
-              </CardContent>
-            </Card>
+              </Section>
+            </>
           ) : (
             <Skeleton className="h-[160px] w-full rounded-xl" />
           )}
 
           {/* -------- Products -------- */}
-          <Section title="Products" onAdd={() => setAddProductOpen(true)}>
+          <Section
+            title="Products"
+            onAdd={() =>
+              navigate(
+                `/admin/services/${categoryId}/product/${serviceId}/add-product`,
+              )
+            }
+          >
             {productLoading ? (
               <GridSkeleton />
             ) : filteredProducts.length === 0 ? (
@@ -257,10 +314,12 @@ const ServiceInfoPage = () => {
                         { state: { product: p, isPackage: false } },
                       )
                     }
-                    onEdit={() => {
-                      setSelectedProduct(p);
-                      setIsUpdateModalOpen(true);
-                    }}
+                    onEdit={() =>
+                      navigate(
+                        `/admin/services/${categoryId}/product/${serviceId}/update-product/${p?._id}`,
+                        { state: p },
+                      )
+                    }
                     onDelete={() => {
                       setSelectedProduct(p._id);
                       setDeleteType("product");
@@ -273,7 +332,15 @@ const ServiceInfoPage = () => {
           </Section>
 
           {/* -------- Packages -------- */}
-          <Section title="Packages" onAdd={() => setAddPackageOpen(true)}>
+          <Section
+            title="Packages"
+            onAdd={() =>
+              navigate(
+                `/admin/services/${categoryId}/product/${serviceId}/add-package`,
+                { state: { products } },
+              )
+            }
+          >
             {packageLoading ? (
               <GridSkeleton />
             ) : filteredPackages.length === 0 ? (
@@ -293,8 +360,10 @@ const ServiceInfoPage = () => {
                       )
                     }
                     onEdit={() => {
-                      setSelectedPackage(pkg);
-                      setIsUpdatePackageModalOpen(true);
+                      navigate(
+                        `/admin/services/${categoryId}/product/${serviceId}/update-package/${pkg?._id}`,
+                        { state: { package: pkg, products } },
+                      );
                     }}
                     onDelete={() => {
                       setSelectedPackage(pkg._id);
@@ -308,43 +377,6 @@ const ServiceInfoPage = () => {
           </Section>
         </div>
       </Wrapper>
-
-      {/* -------- Modals -------- */}
-      {addProductOpen && (
-        <AddProductModal
-          serviceId={serviceId}
-          setIsModalOpen={setAddProductOpen}
-          getAllProducts={getServiceProducts}
-        />
-      )}
-
-      {addPackageOpen && (
-        <AddPackageModal
-          serviceId={serviceId}
-          setIsModalOpen={setAddPackageOpen}
-          allProducts={products}
-          getAllPackage={getServicePackages}
-        />
-      )}
-
-      {isUpdateModalOpen && (
-        <AddProductModal
-          serviceId={serviceId}
-          product={selectedProduct}
-          setIsModalOpen={setIsUpdateModalOpen}
-          getAllProducts={getServiceProducts}
-        />
-      )}
-
-      {isUpdatePackageModalOpen && (
-        <AddPackageModal
-          serviceId={serviceId}
-          selectedPackage={selectedPackage}
-          setIsModalOpen={setIsUpdatePackageModalOpen}
-          allProducts={products}
-          getAllPackage={getServicePackages}
-        />
-      )}
 
       {iconModalOpen && (
         <AddIconModal
@@ -380,10 +412,10 @@ const Section = ({ title, onAdd, children }) => (
   <div className="space-y-4">
     <div className="flex items-center justify-between">
       <h2 className="text-lg font-semibold">{title}</h2>
-      <Button variant="abhicares" onClick={onAdd}>
+      {onAdd && <Button variant="abhicares" onClick={onAdd}>
         <Plus className="mr-2 h-4 w-4" />
         Add
-      </Button>
+      </Button>}
     </div>
     {children}
   </div>

@@ -12,14 +12,34 @@ const AddServicePage = () => {
   const { fetchData, res, isLoading } = usePostApiReq();
 
   const onSubmit = (values) => {
+
     console.log("values", values);
     
     const fd = new FormData();
-    Object.entries(values).forEach(([k, v]) => fd.append(k, v));
-    fd.append("categoryId", categoryId);
 
-    fetchData("/admin/create-service", fd);
+    // ✅ send only ACTIVE city configs
+    const activeCityConfigs = values.cityConfigs
+      .filter((c) => c.isActive)
+      .map((c) => ({
+        cityId: c.cityId,
+        isActive: c.isActive,
+        startingPrice: Number(c.startingPrice),
+        appHomepage: c.appHomepage,
+        webHomepage: c.webHomepage,
+      }));
+
+    fd.append("name", values.name);
+    fd.append("description", values.description || "");
+    fd.append("categoryId", categoryId);
+    fd.append("cityConfigs", JSON.stringify(activeCityConfigs));
+
+    if (values.img) {
+      fd.append("img", values.img);
+    }
+
+    fetchData("/services/create-service", fd);
   };
+
 
   if (res?.status === 200 || res?.status === 201) {
     toast.success("Service added");
@@ -31,11 +51,9 @@ const AddServicePage = () => {
       <ServiceForm
         defaultValues={{
           name: "",
-          startingPrice: "",
           description: "",
-          img: "",
-          appHomepage: false,
-          webHomepage: false,
+          img: null,
+          cityConfigs: [],
         }}
         onSubmit={onSubmit}
         isLoading={isLoading}

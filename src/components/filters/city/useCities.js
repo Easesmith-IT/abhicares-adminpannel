@@ -19,6 +19,14 @@ const useCities = () => {
     },
     [fetchData],
   );
+  // const fetchCities = useCallback(
+  //   ({ page = 1, search = "" } = {}) => {
+  //     fetchData(
+  //       `/cities/getAllCities?page=${page}&limit=${LIMIT}&search=${search}`,
+  //     );
+  //   },
+  //   [fetchData],
+  // );
 
   // Fetch on page / search change
   useEffect(() => {

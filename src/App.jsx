@@ -34,11 +34,15 @@ import SendNotifications from "./pages/send-notifications/SendNotifications";
 import CategoryServices from "./pages/services/CategoryServices";
 import ProductInfo from "./pages/services/ProductInfo";
 import ServiceInfoPage from "./pages/services/ServiceInfoPage";
-import Categories from "./pages/services/Services";
+import Categories from "./pages/services/Categories";
 import MangageComision from "./pages/settings/MangageComision";
 import Settings from "./pages/settings/Settings";
 import AddServicePage from "./pages/services/AddServicePage";
 import UpdateServicePage from "./pages/services/UpdateServicePage";
+import AddProductPage from "./pages/services/AddProductPage";
+import UpdateProductPage from "./pages/services/UpdateProductPage";
+import AddPackagePage from "./pages/services/AddPackagePage";
+import UpdatePackagePage from "./pages/services/UpdatePackagePage";
 
 function App() {
   return (
@@ -70,6 +74,23 @@ function App() {
           <Route
             path="/admin/services/:categoryId/product/:serviceId"
             element={<ServiceInfoPage />}
+          />
+          <Route
+            path="/admin/services/:categoryId/product/:serviceId/add-product"
+            element={<AddProductPage />}
+          />
+          <Route
+            path="/admin/services/:categoryId/product/:serviceId/update-product/:productId"
+            element={<UpdateProductPage />}
+          />
+
+          <Route
+            path="/admin/services/:categoryId/product/:serviceId/add-package"
+            element={<AddPackagePage />}
+          />
+          <Route
+            path="/admin/services/:categoryId/product/:serviceId/update-package/:packageId"
+            element={<UpdatePackagePage />}
           />
           <Route
             path="/admin/services/:categoryId/product/:serviceId/info"

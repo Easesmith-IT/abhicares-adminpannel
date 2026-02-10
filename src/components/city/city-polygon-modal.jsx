@@ -14,7 +14,7 @@ export const CityPolygonModal = ({ city, isOpen, onClose }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle className="capitalize">{city?.city} – Geo Fence</DialogTitle>
+          <DialogTitle className="capitalize">{city?.name} – Geo Fence</DialogTitle>
         </DialogHeader>
 
         <div className="h-[400px] w-full rounded-md overflow-hidden">

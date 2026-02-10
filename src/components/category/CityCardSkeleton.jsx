@@ -29,3 +29,25 @@ export const CityCardSkeleton = () => {
     </Card>
   );
 };
+
+export const CityCardProductSkeleton = () => {
+  return (
+    <Card>
+      <CardContent className="space-y-4">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-24" />
+          </div>
+          <Skeleton className="h-5 w-14 rounded-full" />
+        </div>
+
+        {/* Price */}
+        <div className="space-y-2">
+          <Skeleton className="h-3 w-24" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+};

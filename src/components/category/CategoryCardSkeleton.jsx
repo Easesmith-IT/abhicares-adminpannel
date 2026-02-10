@@ -11,6 +11,7 @@ const CategoryCardSkeleton = () => {
 
       {/* Content rows */}
       <div className="space-y-3">
+          <Skeleton className="h-4 w-24" />
         <div className="flex justify-between">
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-4 w-10" />

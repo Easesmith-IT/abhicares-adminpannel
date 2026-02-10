@@ -15,16 +15,32 @@ const UpdateServicePage = () => {
   const { fetchData, res, isLoading } = usePatchApiReq();
 
   const onSubmit = (values) => {
-    console.log("values", values);
-
     const fd = new FormData();
-    Object.entries(values).forEach(([k, v]) => fd.append(k, v));
 
-    fetchData(`/admin/update-service/${serviceId}`, fd);
+    // ✅ keep only ACTIVE city configs
+    const activeCityConfigs = values.cityConfigs
+      .filter((c) => c.isActive)
+      .map((c) => ({
+        cityId: c.cityId,
+        isActive: c.isActive,
+        startingPrice: Number(c.startingPrice),
+        appHomepage: c.appHomepage,
+        webHomepage: c.webHomepage,
+      }));
+
+    fd.append("name", values.name);
+    fd.append("description", values.description || "");
+    fd.append("categoryId", service.categoryId);
+    fd.append("cityConfigs", JSON.stringify(activeCityConfigs));
+
+    if (values.img instanceof File) {
+      fd.append("img", values.img);
+    }
+
+    fetchData(`/services/update-service/${serviceId}`, fd);
   };
 
   if (res?.status === 200 || res?.status === 201) {
-    toast.success("Service updated");
     navigate(-1);
   }
 
@@ -33,11 +49,10 @@ const UpdateServicePage = () => {
       <ServiceForm
         defaultValues={{
           name: service?.name || "",
-          startingPrice: service?.startingPrice || "",
           description: service?.description || "",
-          img: service?.imageUrl || "",
-          appHomepage: service?.appHomepage ||"",
-          webHomepage: service?.webHomepage|| "",
+          img: null, // IMPORTANT
+          previewImage: service?.imageUrl || "",
+          cityConfigs: service?.cityConfigs || [],
         }}
         onSubmit={onSubmit}
         isLoading={isLoading}
