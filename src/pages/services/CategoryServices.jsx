@@ -19,6 +19,7 @@ import TooltipIconButton from "../../components/shared/TooltipIconButton";
 import { H2 } from "../../components/shared/typography";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { buildQuery } from "../../utils/buildQuery";
+import { PaginationComp } from "../../components/shared/PaginationComp";
 
 const CategoryServices = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
@@ -32,6 +33,8 @@ const CategoryServices = () => {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const [selectedCity, setSelectedCity] = useState(null);
+  const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
 
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -43,7 +46,7 @@ const CategoryServices = () => {
 
   const fetchServices = () => {
     const query = buildQuery({ city: selectedCity });
-    fetchData(`/admin/get-category-service/${categoryId}?${query}`);
+    fetchData(`/services/get-category-service/${categoryId}?${query}`);
   };
 
   useEffect(() => {
@@ -52,7 +55,10 @@ const CategoryServices = () => {
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
+      console.log("res", res);
+      
       setServices(res.data.data || []);
+      setPageCount(res?.data?.pagination?.totalPages || 0);
     }
   }, [res]);
 
@@ -181,6 +187,8 @@ const CategoryServices = () => {
               ))}
             </div>
           )}
+
+          <PaginationComp className="mt-5" page={page} pageCount={pageCount} setPage={setPage} />
         </div>
       </Wrapper>
 

@@ -193,3 +193,17 @@ button:not([disabled]),
     /* Chrome, Safari */
   }
 }
+
+/* Fix ReactQuill height */
+.quill-editor .ql-container {
+  min-height: 160px;
+}
+
+.quill-editor .ql-editor {
+  min-height: 120px;
+}
+
+/* Error state should not collapse editor */
+.quill-editor .ql-editor.ql-blank::before {
+  color: #9ca3af;
+}

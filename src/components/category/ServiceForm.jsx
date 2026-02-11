@@ -72,28 +72,33 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
      Merge current page cities into cityConfigs
      (ACCUMULATE — Option B)
   ---------------------------------- */
-  useEffect(() => {
-    if (!cities.length) return;
+useEffect(() => {
+  if (!cities.length) return;
 
-    const existing = getValues("cityConfigs") || [];
-    const existingIds = new Set(existing.map((c) => c.cityId));
+  const existing = getValues("cityConfigs") || [];
 
-    const merged = [
-      ...existing,
-      ...cities
-        .filter((city) => !existingIds.has(city._id))
-        .map((city) => ({
-          cityId: city._id,
-          cityName: city.name,
-          isActive: city.isActive,
-          startingPrice: "",
-          appHomepage: false,
-          webHomepage: false,
-        })),
-    ];
+  const cityMap = new Map(cities.map((c) => [c._id, c.name]));
 
-    setValue("cityConfigs", merged, { shouldDirty: false });
-  }, [cities, getValues, setValue]);
+  const merged = [
+    ...existing.map((cfg) => ({
+      ...cfg,
+      cityName: cfg.cityName ?? cityMap.get(cfg.cityId) ?? "",
+    })),
+    ...cities
+      .filter((city) => !existing.some((c) => c.cityId === city._id))
+      .map((city) => ({
+        cityId: city._id,
+        cityName: city.name,
+        isActive: false,
+        startingPrice: "",
+        appHomepage: false,
+        webHomepage: false,
+      })),
+  ];
+
+  setValue("cityConfigs", merged, { shouldDirty: false });
+}, [cities]);
+
 
   /* ----------------------------------
      ONLY show current page cities (UI filter)

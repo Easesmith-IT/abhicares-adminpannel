@@ -17,11 +17,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 
 import { useCities } from "@/components/filters/city";
 import { productSchema } from "../../schemas/service.schema";
-import { CityCardProductSkeleton, CityCardSkeleton } from "./CityCardSkeleton";
+import { CityCardProductSkeleton } from "./CityCardSkeleton";
+import { Spinner } from "../ui/spinner";
 
 const ProductForm = ({
   defaultValues,
@@ -46,9 +49,6 @@ const ProductForm = ({
   const [previewImages, setPreviewImages] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
 
-  console.log("defaultValues", defaultValues);
-  
-
   /* ---------------- Form ---------------- */
   const form = useForm({
     resolver: zodResolver(productSchema),
@@ -63,32 +63,37 @@ const ProductForm = ({
   const { watch, setValue, getValues } = form;
   const cityConfigs = watch("cityConfigs") || [];
 
-  /* ---------------- Merge cities (ACCUMULATE) ---------------- */
-  useEffect(() => {
-    if (!cities.length) return;
+  console.log("cityConfigs", cityConfigs);
 
-    const existing = getValues("cityConfigs") || [];
-    const existingIds = new Set(existing.map((c) => c.cityId));
+  /* ---------------- Merge cities ---------------- */
+ useEffect(() => {
+   if (!cities.length) return;
 
-    const merged = [
-      ...existing,
-      ...cities
-        .filter((c) => !existingIds.has(c._id))
-        .map((city) => ({
-          cityId: city._id,
-          cityName: city.city,
-          state: city.state,
-          country: city.country,
-          isActive: city.isActive,
-          price: "",
-          offerPrice: "",
-        })),
-    ];
+   const existing = getValues("cityConfigs") || [];
 
-    setValue("cityConfigs", merged, { shouldDirty: false });
-  }, [cities, getValues, setValue]);
+   const cityMap = new Map(cities.map((c) => [c._id, c.name]));
 
-  /* ---------------- Visible page only ---------------- */
+   const merged = [
+     ...existing.map((cfg) => ({
+       ...cfg,
+       cityName: cfg.cityName ?? cityMap.get(cfg.cityId) ?? "",
+     })),
+     ...cities
+       .filter((city) => !existing.some((c) => c.cityId === city._id))
+       .map((city) => ({
+         cityId: city._id,
+         cityName: city.name,
+         isActive: false,
+         price: "",
+         offerPrice: "",
+       })),
+   ];
+
+   setValue("cityConfigs", merged, { shouldDirty: false });
+ }, [cities]);
+
+
+  /* ---------------- Visible cities ---------------- */
   const visibleCityIds = useMemo(
     () => new Set(cities.map((c) => c._id)),
     [cities],
@@ -130,7 +135,15 @@ const ProductForm = ({
     fd.append("name", values.name);
     fd.append("description", values.description);
     fd.append("serviceId", serviceId);
-    fd.append("cityConfigs", JSON.stringify(values.cityConfigs));
+
+    const sanitizedCityConfigs = values.cityConfigs.map((cfg) => ({
+      cityId: cfg.cityId,
+      isActive: cfg.isActive,
+      price: cfg.isActive ? Number(cfg.price) : 0,
+      offerPrice: cfg.isActive ? Number(cfg.offerPrice) : 0,
+    }));
+
+    fd.append("cityConfigs", JSON.stringify(sanitizedCityConfigs));
 
     uploadedImages.forEach((img) => {
       if (img.file) fd.append("img", img.file);
@@ -175,7 +188,7 @@ const ProductForm = ({
                       theme="snow"
                       value={field.value || ""}
                       onChange={field.onChange}
-                      className="quill-editor"
+                      className="quill-editor pb-10"
                     />
                   </FormControl>
                   <FormMessage />
@@ -184,7 +197,7 @@ const ProductForm = ({
             />
 
             {/* Images */}
-            <div className="space-y-2 mt-14.5">
+            <div className="space-y-2 mt-5">
               <FormLabel>Images (max 3)</FormLabel>
               <Input
                 ref={fileRef}
@@ -227,16 +240,36 @@ const ProductForm = ({
                       (c) => c.cityId === city.cityId,
                     );
 
+                    const isActive = watch(`cityConfigs.${index}.isActive`);
+
                     return (
                       <Card key={city.cityId}>
                         <CardContent className="space-y-4">
-                          <div>
-                            <h4 className="font-semibold">{city.cityName}</h4>
-                            <p className="text-sm text-muted-foreground">
-                              {[city.state, city.country]
-                                .filter(Boolean)
-                                .join(", ")}
-                            </p>
+                          <div className="flex justify-between">
+                            <h4 className="font-semibold uppercase">
+                              {city.cityName}
+                            </h4>
+
+                            <FormField
+                              control={form.control}
+                              name={`cityConfigs.${index}.isActive`}
+                              render={({ field }) => (
+                                <div className="flex items-center gap-2">
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={field.onChange}
+                                    className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-orange-500"
+                                  />
+                                  <Badge
+                                    variant={
+                                      field.value ? "success" : "inprogress"
+                                    }
+                                  >
+                                    {field.value ? "Active" : "Inactive"}
+                                  </Badge>
+                                </div>
+                              )}
+                            />
                           </div>
 
                           <FormField
@@ -246,8 +279,13 @@ const ProductForm = ({
                               <FormItem>
                                 <FormLabel>Price</FormLabel>
                                 <FormControl>
-                                  <Input type="number" {...field} />
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    disabled={!isActive}
+                                  />
                                 </FormControl>
+                                <FormMessage />
                               </FormItem>
                             )}
                           />
@@ -259,8 +297,13 @@ const ProductForm = ({
                               <FormItem>
                                 <FormLabel>Offer Price</FormLabel>
                                 <FormControl>
-                                  <Input type="number" {...field} />
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    disabled={!isActive}
+                                  />
                                 </FormControl>
+                                <FormMessage />
                               </FormItem>
                             )}
                           />
@@ -293,7 +336,7 @@ const ProductForm = ({
             {/* Submit */}
             <div className="flex justify-end">
               <Button variant="abhicares" type="submit" disabled={isLoading}>
-                {label}
+                {isLoading ? <Spinner /> : label}
               </Button>
             </div>
           </form>

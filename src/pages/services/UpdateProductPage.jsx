@@ -9,23 +9,21 @@ import { useEffect } from "react";
 const UpdateProductPage = () => {
   const { productId, serviceId } = useParams();
   const navigate = useNavigate();
-  const {state} = useLocation();
+  const { state } = useLocation();
   console.log("state", state);
-  
 
   const { fetchData, res, isLoading } = usePatchApiReq();
 
   const handleUpdate = (formData) => {
-    fetchData(`/admin/update-product/${productId}`, formData);
+    fetchData(`/products/update-product/${productId}`, formData);
   };
 
-useEffect(() => {
-  if (res?.status === 200 || res?.status === 201) {
-    // toast.success("Product added successfully");
-    navigate(-1);
-  }
-}, [res]);
-
+  useEffect(() => {
+    if (res?.status === 200 || res?.status === 201) {
+      // toast.success("Product added successfully");
+      navigate(-1);
+    }
+  }, [res]);
 
   return (
     <Wrapper>

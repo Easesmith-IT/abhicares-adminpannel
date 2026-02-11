@@ -1,10 +1,11 @@
 import { useNavigate, useParams } from "react-router-dom";
-import usePostApiReq from "../../hooks/usePostApiReq";
-import { H2 } from "../../components/shared/typography";
-import ProductForm from "../../components/category/ProductForm";
-import Wrapper from "../../components/wrappers/Wrapper";
-import { BackLink } from "../../components/shared/back-link";
 import { useEffect } from "react";
+
+import usePostApiReq from "../../hooks/usePostApiReq";
+import Wrapper from "../../components/wrappers/Wrapper";
+import ProductForm from "../../components/category/ProductForm";
+import { BackLink } from "../../components/shared/back-link";
+import { H2 } from "../../components/shared/typography";
 
 const AddProductPage = () => {
   const { serviceId } = useParams();
@@ -13,15 +14,14 @@ const AddProductPage = () => {
   const { fetchData, res, isLoading } = usePostApiReq();
 
   const handleAdd = (formData) => {
-    fetchData("/admin/create-product", formData);
+    fetchData("/products/create-product", formData);
   };
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      // toast.success("Product added successfully");
       navigate(-1);
     }
-  }, [res]);
+  }, [res, navigate]);
 
   return (
     <Wrapper>
@@ -34,7 +34,7 @@ const AddProductPage = () => {
           serviceId={serviceId}
           onSubmit={handleAdd}
           isLoading={isLoading}
-          submitLabel="Add Product"
+          label="Add Product"
         />
       </div>
     </Wrapper>

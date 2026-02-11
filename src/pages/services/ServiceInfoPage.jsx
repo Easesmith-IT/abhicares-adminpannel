@@ -32,6 +32,7 @@ import { CityFilter } from "@/components/filters/city";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
 import { Badge } from "../../components/ui/badge";
 import { Label } from "../../components/ui/label";
+import { PaginationComp } from "../../components/shared/PaginationComp";
 
 /* -------------------------------------------------- */
 
@@ -41,6 +42,8 @@ const ServiceInfoPage = () => {
 
   /* -------- City Filter -------- */
   const [selectedCity, setSelectedCity] = useState(null);
+  const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
 
   /* -------- API hooks -------- */
   const { res: serviceRes, fetchData: fetchService } = useGetApiReq();
@@ -66,16 +69,10 @@ const ServiceInfoPage = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedPackage, setSelectedPackage] = useState(null);
 
-  const [addProductOpen, setAddProductOpen] = useState(false);
-  const [addPackageOpen, setAddPackageOpen] = useState(false);
   const [iconModalOpen, setIconModalOpen] = useState(false);
   const [featureModalOpen, setFeatureModalOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteType, setDeleteType] = useState("product");
-
-  const [isUpdatePackageModalOpen, setIsUpdatePackageModalOpen] =
-    useState(false);
-  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
 
   const handleReset = () => {
     setSelectedCity("");
@@ -86,7 +83,7 @@ const ServiceInfoPage = () => {
     fetchService(`/services/get-service-details/${serviceId}`);
 
   const getServiceProducts = () =>
-    fetchProducts(`/admin/get-service-product/${serviceId}`);
+    fetchProducts(`/products/get-service-product/${serviceId}`);
 
   const getServicePackages = () =>
     fetchPackages(`/admin/get-service-package/${serviceId}`);
@@ -109,6 +106,7 @@ const ServiceInfoPage = () => {
   useEffect(() => {
     if (productRes?.status === 200) {
       setProducts(productRes.data.data || []);
+      setPageCount(productRes?.data?.pagination?.totalPages || 0);
     }
   }, [productRes]);
 
@@ -280,6 +278,12 @@ const ServiceInfoPage = () => {
                       </CardContent>
                     </Card>
                   ))}
+
+                  {service.cityConfigs.length === 0 && (
+                    <p className="text-muted-foreground text-sm">
+                      No config found
+                    </p>
+                  )}
                 </div>
               </Section>
             </>
@@ -310,7 +314,7 @@ const ServiceInfoPage = () => {
                     image={p.imageUrl?.[0]}
                     onClick={() =>
                       navigate(
-                        `/admin/services/${categoryId}/product/${serviceId}/info`,
+                        `/admin/services/${categoryId}/product/${serviceId}/info/${p._id}`,
                         { state: { product: p, isPackage: false } },
                       )
                     }
@@ -330,6 +334,8 @@ const ServiceInfoPage = () => {
               </Grid>
             )}
           </Section>
+
+          <PaginationComp page={page} pageCount={pageCount} setPage={setPage} />
 
           {/* -------- Packages -------- */}
           <Section

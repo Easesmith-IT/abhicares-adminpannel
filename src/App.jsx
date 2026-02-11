@@ -93,6 +93,10 @@ function App() {
             element={<UpdatePackagePage />}
           />
           <Route
+            path="/admin/services/:categoryId/product/:serviceId/info/:productId"
+            element={<ProductInfo />}
+          />
+          <Route
             path="/admin/services/:categoryId/product/:serviceId/info"
             element={<ProductInfo />}
           />
