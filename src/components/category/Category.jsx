@@ -28,7 +28,7 @@ export const Category = ({ category, getCategories }) => {
   } = useDeleteApiReq();
 
   const handleEditToggle = () => {
-    setIsEditOpen((prev) => !prev);
+    navigate(`/admin/categories/${category?._id}/update-category`);
   };
 
   const handleDeleteToggle = () => {
@@ -52,7 +52,7 @@ export const Category = ({ category, getCategories }) => {
         <CardHeader>
           <div className="mb2 flex gap-2 justify-between">
             <h3
-              onClick={() => navigate(`/admin/services/${category._id}`)}
+              onClick={() => navigate(`/admin/categories/${category._id}`)}
               className="text-lg font-semibold cursor-pointer hover:text-blue-500 hover:underline"
             >
               {category.name}
@@ -90,9 +90,9 @@ export const Category = ({ category, getCategories }) => {
             </DropdownMenu>
           </div>
         </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground">
+        <CardContent className="space-y-2 text-sm text-muted-foreground -mt-4">
           <Badge variant="secondary">{category.totalServices} Services</Badge>
-          <div className="flex justify-between">
+          {/* <div className="flex justify-between">
             <span>Commission</span>
             <span className="font-medium text-black">
               {category.commission}%
@@ -104,7 +104,7 @@ export const Category = ({ category, getCategories }) => {
             <span className="font-medium text-black">
               {category.convenience}%
             </span>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
 

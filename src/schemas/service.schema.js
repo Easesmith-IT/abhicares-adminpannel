@@ -1,15 +1,20 @@
 import { z } from "zod";
 
 export const categorySchema = z.object({
-  name: z
-    .string()
-    .min(1, "Category name is required")
-    .max(50, "Max 50 characters"),
-
-  totalServices: z.preprocess(
-    (val) => (val === "" || val === undefined ? undefined : Number(val)),
-    z.number().min(0, "Must be 0 or more").optional(),
-  ),
+  name: z.string().min(1, "Category name is required"),
+  cityConfigs: z
+    .array(
+      z.object({
+        cityId: z.string(),
+        cityName: z.string().optional(),
+        isActive: z.boolean(),
+        commission: z.coerce.number().min(0),
+        convenience: z.coerce.number().min(0),
+      }),
+    )
+    .refine((arr) => arr.some((c) => c.isActive), {
+      message: "At least one active city is required",
+    }),
 });
 
 export const cityConfigSchema = z.object({
@@ -36,7 +41,7 @@ export const serviceSchema = z.object({
     }),
 });
 
-export const productCityConfigSchema = z
+export const CityConfigSchema = z
   .object({
     cityId: z.string(),
     isActive: z.boolean(),
@@ -80,7 +85,6 @@ export const productCityConfigSchema = z
     }
   });
 
-
 export const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
@@ -89,20 +93,10 @@ export const productSchema = z.object({
   previewImage: z.string().optional(),
 
   cityConfigs: z
-    .array(productCityConfigSchema)
+    .array(CityConfigSchema)
     .refine((arr) => arr.some((c) => c.isActive), {
       message: "At least one active city is required",
     }),
-});
-
-export const cityPackageSchema = z.object({
-  cityId: z.string(),
-  cityName: z.string(),
-  state: z.string().optional(),
-  country: z.string().optional(),
-  isActive: z.boolean().optional(),
-  startingPrice: z.string().optional(),
-  price: z.string().optional(),
 });
 
 export const packageSchema = z.object({
@@ -116,5 +110,9 @@ export const packageSchema = z.object({
       }),
     )
     .min(1, "Select at least one product"),
-  cityConfigs: z.array(cityPackageSchema),
+  cityConfigs: z
+    .array(CityConfigSchema)
+    .refine((arr) => arr.some((c) => c.isActive), {
+      message: "At least one active city is required",
+    }),
 });

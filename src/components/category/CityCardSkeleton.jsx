@@ -51,3 +51,24 @@ export const CityCardProductSkeleton = () => {
     </Card>
   );
 };
+
+export const CityCardCategorySkeleton = () => {
+  return (
+    <Card>
+      <CardContent className="space-y-6">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-32" />
+          </div>
+          <Skeleton className="h-5 w-14 rounded-full" />
+        </div>
+
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-full" />
+          <Skeleton className="h-6 w-full" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+};

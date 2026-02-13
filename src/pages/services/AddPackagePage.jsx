@@ -14,7 +14,7 @@ const AddPackagePage = () => {
   const { fetchData, res, isLoading } = usePostApiReq();
 
   const handleAdd = (fd) => {
-    fetchData("/admin/create-package", fd);
+    fetchData("/packages/create-package", fd);
   };
 
   useEffect(() => {

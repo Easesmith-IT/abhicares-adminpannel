@@ -18,11 +18,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { X } from "lucide-react";
 
 import { useCities } from "@/components/filters/city";
 import { CityCardSkeleton } from "./CityCardSkeleton";
 import { packageSchema } from "../../schemas/service.schema";
+import { Spinner } from "../ui/spinner";
 
 const PackageForm = ({
   defaultValues,
@@ -54,47 +56,55 @@ const PackageForm = ({
     defaultValues: {
       name: "",
       description: "",
-      //   products: [],
       cityConfigs: [],
       ...defaultValues,
       products:
-        defaultValues?.products.map((item) => ({
+        defaultValues?.products?.map((item) => ({
           productId: item.productId._id,
           name: item.productId.name,
         })) || [],
     },
   });
 
-  const { watch, setValue, getValues } = form;
+  const {
+    watch,
+    setValue,
+    getValues,
+    clearErrors,
+    formState: { errors },
+  } = form;
+
   const cityConfigs = watch("cityConfigs") || [];
   const products = watch("products") || [];
-  console.log("products", products);
-  
 
   /* ---------------- Merge cities ---------------- */
   useEffect(() => {
     if (!cities.length) return;
 
     const existing = getValues("cityConfigs") || [];
-    const existingIds = new Set(existing.map((c) => c.cityId));
+    const cityMap = new Map(cities.map((c) => [c._id, c.city || c.name]));
 
     const merged = [
-      ...existing,
+      ...existing.map((cfg) => ({
+        ...cfg,
+        cityName: cfg.cityName ?? cityMap.get(cfg.cityId) ?? "",
+        isActive: cfg.isActive ?? false,
+        price: cfg.price ?? "",
+        offerPrice: cfg.offerPrice ?? "",
+      })),
       ...cities
-        .filter((c) => !existingIds.has(c._id))
+        .filter((city) => !existing.some((c) => c.cityId === city._id))
         .map((city) => ({
           cityId: city._id,
-          cityName: city.city,
-          state: city.state,
-          country: city.country,
-          isActive: city.isActive,
-          startingPrice: "",
+          cityName: city.city || city.name,
+          isActive: false,
           price: "",
+          offerPrice: "",
         })),
     ];
 
     setValue("cityConfigs", merged, { shouldDirty: false });
-  }, [cities, getValues, setValue]);
+  }, [cities]);
 
   const visibleCityIds = useMemo(
     () => new Set(cities.map((c) => c._id)),
@@ -151,7 +161,15 @@ const PackageForm = ({
     fd.append("description", values.description);
     fd.append("serviceId", serviceId);
     fd.append("products", JSON.stringify(values.products));
-    fd.append("cityConfigs", JSON.stringify(values.cityConfigs));
+
+    const sanitizedCityConfigs = values.cityConfigs.map((cfg) => ({
+      cityId: cfg.cityId,
+      isActive: cfg.isActive,
+      price: cfg.isActive ? Number(cfg.price) : 0,
+      offerPrice: cfg.isActive ? Number(cfg.offerPrice) : 0,
+    }));
+
+    fd.append("cityConfigs", JSON.stringify(sanitizedCityConfigs));
 
     uploadedImages.forEach((img) => img.file && fd.append("img", img.file));
 
@@ -200,63 +218,62 @@ const PackageForm = ({
             <div className="space-y-3">
               <FormLabel>Products</FormLabel>
 
-              <div className="grid grid-cols-2 gap-3">
-                {allProducts.map((product) => (
-                  <label
-                    key={product._id}
-                    className="flex items-center gap-3 border rounded-md p-2 cursor-pointer"
-                  >
-                    <Checkbox
-                      checked={products.some(
-                        (p) => p.productId === product._id,
-                      )}
-                      onCheckedChange={() => toggleProduct(product)}
-                    />
-                    {product.name}
-                  </label>
-                ))}
-              </div>
+              {/* 🔴 PRODUCTS ERROR (FIXED) */}
+              {errors.products?.message && (
+                <div className="rounded-md border border-red-300 bg-red-50 p-2">
+                  <p className="text-sm font-medium text-red-600">
+                    {errors.products.message}
+                  </p>
+                </div>
+              )}
 
-              <div className="flex flex-wrap gap-2">
-                {products.map((p) => (
-                  <Badge key={p.productId}>{p.name}</Badge>
-                ))}
-              </div>
-            </div>
+              <div
+                className={`grid grid-cols-1 md:grid-cols-2 gap-3 ${
+                  errors.products ? "ring-1 ring-red-300 rounded-md p-2" : ""
+                }`}
+              >
+                {allProducts.map((product) => {
+                  const selected = products.some(
+                    (p) => p.productId === product._id,
+                  );
 
-            {/* Images */}
-            <div className="space-y-2">
-              <FormLabel>Images (max 3)</FormLabel>
-              <Input
-                ref={fileRef}
-                type="file"
-                multiple
-                onChange={handleImages}
-              />
-
-              <div className="grid grid-cols-3 gap-3">
-                {previewImages.map((img) => (
-                  <div key={img.id} className="relative">
-                    <img
-                      src={img.preview}
-                      className="h-[120px] w-full rounded-md object-cover"
-                    />
-                    <Button
-                      type="button"
-                      size="icon"
-                      variant="destructive"
-                      className="absolute -top-2 -right-2 h-6 w-6"
-                      onClick={() => removeImage(img.id)}
+                  return (
+                    <label
+                      key={product._id}
+                      className={`flex gap-3 border rounded-md p-3 cursor-pointer ${
+                        selected ? "border-green-500 bg-green-50" : ""
+                      }`}
                     >
-                      <X size={14} />
-                    </Button>
-                  </div>
-                ))}
+                      <Checkbox
+                        checked={selected}
+                        onCheckedChange={() => toggleProduct(product)}
+                      />
+
+                      <div className="flex-1">
+                        <div className="flex justify-between">
+                          <p className="font-medium">{product.name}</p>
+                          {product.rating && <Badge>⭐ {product.rating}</Badge>}
+                        </div>
+
+                        
+                      </div>
+                    </label>
+                  );
+                })}
               </div>
             </div>
 
-            {/* City-wise pricing */}
+            {/* City-wise Pricing */}
             <h3 className="text-lg font-semibold">City-wise Pricing</h3>
+
+            {/* Array-level city error */}
+            {/* {errors.cityConfigs?.root?.message && (
+              <div className="rounded-md border border-red-300 bg-red-50 p-3">
+                <p className="text-sm font-medium text-red-600">
+                  {errors.cityConfigs.root.message}
+                </p>
+              </div>
+            )} */}
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {cityLoading
@@ -268,23 +285,67 @@ const PackageForm = ({
                       (c) => c.cityId === city.cityId,
                     );
 
-                    return (
-                      <Card key={city.cityId}>
-                        <CardContent className="space-y-4">
-                          <h4 className="font-semibold">{city.cityName}</h4>
+                    const isActive = watch(`cityConfigs.${index}.isActive`);
 
-                          <FormField
-                            control={form.control}
-                            name={`cityConfigs.${index}.startingPrice`}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Starting Price</FormLabel>
-                                <FormControl>
-                                  <Input type="number" {...field} />
-                                </FormControl>
-                              </FormItem>
-                            )}
-                          />
+                    const cityError = errors.cityConfigs?.[index];
+                    const cityErrorMessages = [];
+
+                    if (cityError?.price?.message)
+                      cityErrorMessages.push(cityError.price.message);
+                    if (cityError?.offerPrice?.message)
+                      cityErrorMessages.push(cityError.offerPrice.message);
+
+                    return (
+                      <Card
+                        key={city.cityId}
+                        className={
+                          cityError ? "border-red-500 ring-1 ring-red-300" : ""
+                        }
+                      >
+                        <CardContent className="space-y-4">
+                          <div className="flex justify-between items-center">
+                            <h4 className="font-semibold uppercase">
+                              {city.cityName}
+                            </h4>
+
+                            <FormField
+                              control={form.control}
+                              name={`cityConfigs.${index}.isActive`}
+                              render={({ field }) => (
+                                <div className="flex items-center gap-2">
+                                  <Switch
+                                    checked={field.value}
+                                    onCheckedChange={(checked) => {
+                                      field.onChange(checked);
+                                      if (!checked) {
+                                        clearErrors([
+                                          `cityConfigs.${index}.price`,
+                                          `cityConfigs.${index}.offerPrice`,
+                                        ]);
+                                      }
+                                    }}
+                                  />
+                                  <Badge
+                                    variant={
+                                      field.value ? "success" : "inprogress"
+                                    }
+                                  >
+                                    {field.value ? "Active" : "Inactive"}
+                                  </Badge>
+                                </div>
+                              )}
+                            />
+                          </div>
+
+                          {cityErrorMessages.length > 0 && (
+                            <div className="rounded-md border border-red-300 bg-red-50 p-2">
+                              <ul className="list-disc list-inside text-sm text-red-600 space-y-1">
+                                {cityErrorMessages.map((msg, i) => (
+                                  <li key={i}>{msg}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
 
                           <FormField
                             control={form.control}
@@ -293,8 +354,31 @@ const PackageForm = ({
                               <FormItem>
                                 <FormLabel>Price</FormLabel>
                                 <FormControl>
-                                  <Input type="number" {...field} />
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    disabled={!isActive}
+                                  />
                                 </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+
+                          <FormField
+                            control={form.control}
+                            name={`cityConfigs.${index}.offerPrice`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Offer Price</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type="number"
+                                    {...field}
+                                    disabled={!isActive}
+                                  />
+                                </FormControl>
+                                <FormMessage />
                               </FormItem>
                             )}
                           />
@@ -303,6 +387,10 @@ const PackageForm = ({
                     );
                   })}
             </div>
+
+            {errors.cityConfigs?.root?.message && (
+              <FormMessage>{errors.cityConfigs.root.message}</FormMessage>
+            )}
 
             {/* Pagination */}
             <div className="flex justify-end gap-4">
@@ -326,8 +414,8 @@ const PackageForm = ({
 
             {/* Submit */}
             <div className="flex justify-end">
-              <Button variant="abhicares" type="submit" disabled={isLoading}>
-                {label}
+              <Button type="submit" disabled={isLoading}>
+                {isLoading?<Spinner />:label}
               </Button>
             </div>
           </form>

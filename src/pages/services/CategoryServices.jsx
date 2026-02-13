@@ -20,6 +20,7 @@ import { H2 } from "../../components/shared/typography";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { buildQuery } from "../../utils/buildQuery";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { CategoryInfo } from "../../components/category/CategoryInfo";
 
 const CategoryServices = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
@@ -45,7 +46,7 @@ const CategoryServices = () => {
   };
 
   const fetchServices = () => {
-    const query = buildQuery({ city: selectedCity });
+    const query = buildQuery({ cityId: selectedCity });
     fetchData(`/services/get-category-service/${categoryId}?${query}`);
   };
 
@@ -90,23 +91,22 @@ const CategoryServices = () => {
             </div>
 
             <div className="flex gap-3">
-              <CityFilter
-                value={selectedCity}
-                onChange={setSelectedCity}
-              />
+              <CityFilter value={selectedCity} onChange={setSelectedCity} />
               <TooltipIconButton
                 tooltip="Reset Filters"
                 onClick={handleReset}
               />
 
               <Button variant="abhicares" asChild>
-                <Link to={`/admin/services/${categoryId}/add-service`}>
+                <Link to={`/admin/categories/${categoryId}/add-service`}>
                   <Plus className="mr-2 h-4 w-4" />
                   Add Service
                 </Link>
               </Button>
             </div>
           </div>
+
+          <CategoryInfo />
 
           {isLoading && (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -132,7 +132,7 @@ const CategoryServices = () => {
                   className="cursor-pointer transition-all hover:shadow-md"
                   onClick={() =>
                     navigate(
-                      `/admin/services/${categoryId}/product/${service._id}`,
+                      `/admin/categories/${categoryId}/product/${service._id}`,
                       { state: service },
                     )
                   }
@@ -158,7 +158,7 @@ const CategoryServices = () => {
                           onClick={() => {
                             setSelectedService(service);
                             navigate(
-                              `/admin/services/${categoryId}/update-service/${service?._id}`,
+                              `/admin/categories/${categoryId}/update-service/${service?._id}`,
                               { state: { service } },
                             );
                           }}
@@ -188,7 +188,12 @@ const CategoryServices = () => {
             </div>
           )}
 
-          <PaginationComp className="mt-5" page={page} pageCount={pageCount} setPage={setPage} />
+          <PaginationComp
+            className="mt-5"
+            page={page}
+            pageCount={pageCount}
+            setPage={setPage}
+          />
         </div>
       </Wrapper>
 

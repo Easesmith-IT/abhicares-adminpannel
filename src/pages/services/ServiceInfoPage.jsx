@@ -33,6 +33,8 @@ import TooltipIconButton from "../../components/shared/TooltipIconButton";
 import { Badge } from "../../components/ui/badge";
 import { Label } from "../../components/ui/label";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { Section } from "../../components";
+import { buildQuery } from "../../utils/buildQuery";
 
 /* -------------------------------------------------- */
 
@@ -82,8 +84,10 @@ const ServiceInfoPage = () => {
   const getServiceDetails = () =>
     fetchService(`/services/get-service-details/${serviceId}`);
 
-  const getServiceProducts = () =>
-    fetchProducts(`/products/get-service-product/${serviceId}`);
+  const getServiceProducts = () => {
+    const query = buildQuery({ cityId: selectedCity, page });
+    fetchProducts(`/products/get-service-product/${serviceId}?${query}`);
+  };
 
   const getServicePackages = () =>
     fetchPackages(`/admin/get-service-package/${serviceId}`);
@@ -91,14 +95,20 @@ const ServiceInfoPage = () => {
   /* -------- Effects -------- */
   useEffect(() => {
     getServiceDetails();
+  }, []);
+
+  useEffect(() => {
     getServiceProducts();
+  }, [page, selectedCity]);
+
+  useEffect(() => {
     getServicePackages();
   }, []);
 
   useEffect(() => {
     if (serviceRes?.status === 200) {
       console.log("serviceRes", serviceRes);
-      
+
       setService(serviceRes.data.service);
     }
   }, [serviceRes]);
@@ -296,7 +306,7 @@ const ServiceInfoPage = () => {
             title="Products"
             onAdd={() =>
               navigate(
-                `/admin/services/${categoryId}/product/${serviceId}/add-product`,
+                `/admin/categories/${categoryId}/product/${serviceId}/add-product`,
               )
             }
           >
@@ -314,13 +324,13 @@ const ServiceInfoPage = () => {
                     image={p.imageUrl?.[0]}
                     onClick={() =>
                       navigate(
-                        `/admin/services/${categoryId}/product/${serviceId}/info/${p._id}`,
+                        `/admin/categories/${categoryId}/product/${serviceId}/info/${p._id}`,
                         { state: { product: p, isPackage: false } },
                       )
                     }
                     onEdit={() =>
                       navigate(
-                        `/admin/services/${categoryId}/product/${serviceId}/update-product/${p?._id}`,
+                        `/admin/categories/${categoryId}/product/${serviceId}/update-product/${p?._id}`,
                         { state: p },
                       )
                     }
@@ -342,7 +352,7 @@ const ServiceInfoPage = () => {
             title="Packages"
             onAdd={() =>
               navigate(
-                `/admin/services/${categoryId}/product/${serviceId}/add-package`,
+                `/admin/categories/${categoryId}/product/${serviceId}/add-package`,
                 { state: { products } },
               )
             }
@@ -361,13 +371,13 @@ const ServiceInfoPage = () => {
                     image={pkg.imageUrl?.[0]}
                     onClick={() =>
                       navigate(
-                        `/admin/services/${categoryId}/product/${serviceId}/info`,
+                        `/admin/categories/${categoryId}/product/${serviceId}/info`,
                         { state: { product: pkg, isPackage: true } },
                       )
                     }
                     onEdit={() => {
                       navigate(
-                        `/admin/services/${categoryId}/product/${serviceId}/update-package/${pkg?._id}`,
+                        `/admin/categories/${categoryId}/product/${serviceId}/update-package/${pkg?._id}`,
                         { state: { package: pkg, products } },
                       );
                     }}
@@ -413,19 +423,6 @@ export default ServiceInfoPage;
 /* ===================================================== */
 /* ================= Helper Components ================= */
 /* ===================================================== */
-
-const Section = ({ title, onAdd, children }) => (
-  <div className="space-y-4">
-    <div className="flex items-center justify-between">
-      <h2 className="text-lg font-semibold">{title}</h2>
-      {onAdd && <Button variant="abhicares" onClick={onAdd}>
-        <Plus className="mr-2 h-4 w-4" />
-        Add
-      </Button>}
-    </div>
-    {children}
-  </div>
-);
 
 const Grid = ({ children }) => (
   <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

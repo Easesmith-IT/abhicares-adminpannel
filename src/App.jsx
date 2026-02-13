@@ -34,7 +34,7 @@ import SendNotifications from "./pages/send-notifications/SendNotifications";
 import CategoryServices from "./pages/services/CategoryServices";
 import ProductInfo from "./pages/services/ProductInfo";
 import ServiceInfoPage from "./pages/services/ServiceInfoPage";
-import Categories from "./pages/services/Categories";
+import Categories from "./pages/category/Categories";
 import MangageComision from "./pages/settings/MangageComision";
 import Settings from "./pages/settings/Settings";
 import AddServicePage from "./pages/services/AddServicePage";
@@ -43,6 +43,8 @@ import AddProductPage from "./pages/services/AddProductPage";
 import UpdateProductPage from "./pages/services/UpdateProductPage";
 import AddPackagePage from "./pages/services/AddPackagePage";
 import UpdatePackagePage from "./pages/services/UpdatePackagePage";
+import AddCategoryPage from "./pages/category/AddCategoryPage";
+import UpdateCategoryPage from "./pages/category/UpdateCategoryPage";
 
 function App() {
   return (
@@ -58,46 +60,54 @@ function App() {
           <Route path="/admin/bookings" element={<Bookings />} />
           <Route path="/admin/bookings/:id" element={<BookingDetails />} />
 
-          <Route path="/admin/services" element={<Categories />} />
+          <Route path="/admin/categories" element={<Categories />} />
           <Route
-            path="/admin/services/:categoryId"
+            path="/admin/categories/add-category"
+            element={<AddCategoryPage />}
+          />
+          <Route
+            path="/admin/categories/:categoryId/update-category"
+            element={<UpdateCategoryPage />}
+          />
+          <Route
+            path="/admin/categories/:categoryId"
             element={<CategoryServices />}
           />
           <Route
-            path="/admin/services/:categoryId/add-service"
+            path="/admin/categories/:categoryId/add-service"
             element={<AddServicePage />}
           />
           <Route
-            path="/admin/services/:categoryId/update-service/:serviceId"
+            path="/admin/categories/:categoryId/update-service/:serviceId"
             element={<UpdateServicePage />}
           />
           <Route
-            path="/admin/services/:categoryId/product/:serviceId"
+            path="/admin/categories/:categoryId/product/:serviceId"
             element={<ServiceInfoPage />}
           />
           <Route
-            path="/admin/services/:categoryId/product/:serviceId/add-product"
+            path="/admin/categories/:categoryId/product/:serviceId/add-product"
             element={<AddProductPage />}
           />
           <Route
-            path="/admin/services/:categoryId/product/:serviceId/update-product/:productId"
+            path="/admin/categories/:categoryId/product/:serviceId/update-product/:productId"
             element={<UpdateProductPage />}
           />
 
           <Route
-            path="/admin/services/:categoryId/product/:serviceId/add-package"
+            path="/admin/categories/:categoryId/product/:serviceId/add-package"
             element={<AddPackagePage />}
           />
           <Route
-            path="/admin/services/:categoryId/product/:serviceId/update-package/:packageId"
+            path="/admin/categories/:categoryId/product/:serviceId/update-package/:packageId"
             element={<UpdatePackagePage />}
           />
           <Route
-            path="/admin/services/:categoryId/product/:serviceId/info/:productId"
+            path="/admin/categories/:categoryId/product/:serviceId/info/:productId"
             element={<ProductInfo />}
           />
           <Route
-            path="/admin/services/:categoryId/product/:serviceId/info"
+            path="/admin/categories/:categoryId/product/:serviceId/info"
             element={<ProductInfo />}
           />
 

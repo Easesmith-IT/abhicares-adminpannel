@@ -3,23 +3,17 @@ import { useNavigate } from "react-router-dom";
 
 import useGetApiReq from "../../hooks/useGetApiReq";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusIcon, RotateCcwIcon } from "lucide-react";
+import { CityFilter, useCities } from "@/components/filters/city";
+import { PlusIcon } from "lucide-react";
+import { Category } from "../../components/category/Category";
 import CategoryCardSkeleton from "../../components/category/CategoryCardSkeleton";
+import AddCategoryModal from "../../components/modals/AddCategoryModal";
+import TooltipIconButton from "../../components/shared/TooltipIconButton";
 import { H2 } from "../../components/shared/typography";
 import { Button } from "../../components/ui/button";
 import Wrapper from "../../components/wrappers/Wrapper";
-import AddCategoryModal from "../../components/modals/AddCategoryModal";
 import { buildQuery } from "../../utils/buildQuery";
-import { CityFilter, useCities } from "@/components/filters/city";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import TooltipIconButton from "../../components/shared/TooltipIconButton";
-import { Category } from "../../components/category/Category";
+import { PaginationComp } from "../../components/shared/PaginationComp";
 
 const Categories = () => {
   const navigate = useNavigate();
@@ -28,10 +22,12 @@ const Categories = () => {
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
 
   const [selectedCity, setSelectedCity] = useState(null);
+  const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
   const { cities } = useCities();
 
   const handleAddCategory = () => {
-    setIsAddCategoryModalOpen((prev) => !prev);
+    navigate("/admin/categories/add-category");
   };
 
   const handleReset = () => {
@@ -39,10 +35,10 @@ const Categories = () => {
   };
 
   const getCategories = useCallback(() => {
-    const query = buildQuery({ city: selectedCity });
+    const query = buildQuery({ cityId: selectedCity,page });
 
-    fetchData(`/admin/get-all-category?${query}`);
-  }, [selectedCity, fetchData]);
+    fetchData(`/categories/get-categories?${query}`);
+  }, [selectedCity, fetchData,page]);
 
   useEffect(() => {
     getCategories();
@@ -50,7 +46,10 @@ const Categories = () => {
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
+      console.log("res", res);
+      
       setCategories(res.data.data || []);
+      setPageCount(res?.data?.pagination?.totalPages || 0);
     }
   }, [res]);
 
@@ -100,6 +99,13 @@ const Categories = () => {
             ))}
           </div>
         )}
+
+        <PaginationComp
+          className="mt-5"
+          page={page}
+          pageCount={pageCount}
+          setPage={setPage}
+        />
 
         {isAddCategoryModalOpen && (
           <AddCategoryModal

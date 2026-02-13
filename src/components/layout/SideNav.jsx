@@ -110,7 +110,7 @@ const SideNav = () => {
             permissions.bookings !== "none",
           )}
           {menuItem(
-            "/admin/services",
+            "/admin/categories",
             "Categories",
             Layers,
             permissions.services !== "none",
