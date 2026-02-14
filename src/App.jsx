@@ -45,6 +45,8 @@ import AddPackagePage from "./pages/services/AddPackagePage";
 import UpdatePackagePage from "./pages/services/UpdatePackagePage";
 import AddCategoryPage from "./pages/category/AddCategoryPage";
 import UpdateCategoryPage from "./pages/category/UpdateCategoryPage";
+import PackageInfo from "./pages/services/PackageInfo";
+// import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
   return (
@@ -107,9 +109,13 @@ function App() {
             element={<ProductInfo />}
           />
           <Route
+            path="/admin/categories/:categoryId/package/:serviceId/info/:packageId"
+            element={<PackageInfo />}
+          />
+          {/* <Route
             path="/admin/categories/:categoryId/product/:serviceId/info"
             element={<ProductInfo />}
-          />
+          /> */}
 
           <Route path="/admin/partners" element={<Partners />} />
           <Route

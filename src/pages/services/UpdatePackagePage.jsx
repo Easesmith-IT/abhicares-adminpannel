@@ -14,7 +14,7 @@ const UpdatePackagePage = () => {
   const { fetchData, res, isLoading } = usePatchApiReq();
 
   const handleUpdate = (fd) => {
-    fetchData(`/admin/update-package/${packageId}`, fd);
+    fetchData(`/packages/update-package/${packageId}`, fd);
   };
 
   useEffect(() => {

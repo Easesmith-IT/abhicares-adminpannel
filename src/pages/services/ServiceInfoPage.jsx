@@ -46,6 +46,8 @@ const ServiceInfoPage = () => {
   const [selectedCity, setSelectedCity] = useState(null);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
+  const [page1, setPage1] = useState(1);
+  const [pageCount1, setPageCount1] = useState(1);
 
   /* -------- API hooks -------- */
   const { res: serviceRes, fetchData: fetchService } = useGetApiReq();
@@ -89,8 +91,10 @@ const ServiceInfoPage = () => {
     fetchProducts(`/products/get-service-product/${serviceId}?${query}`);
   };
 
-  const getServicePackages = () =>
-    fetchPackages(`/admin/get-service-package/${serviceId}`);
+  const getServicePackages = () => {
+    const query = buildQuery({ cityId: selectedCity, page1, serviceId,isActive:true });
+    fetchPackages(`/packages/get-packages?${query}`);
+  };
 
   /* -------- Effects -------- */
   useEffect(() => {
@@ -103,7 +107,7 @@ const ServiceInfoPage = () => {
 
   useEffect(() => {
     getServicePackages();
-  }, []);
+  }, [selectedCity, page1]);
 
   useEffect(() => {
     if (serviceRes?.status === 200) {
@@ -123,6 +127,7 @@ const ServiceInfoPage = () => {
   useEffect(() => {
     if (packageRes?.status === 200) {
       setPackages(packageRes.data.data || []);
+      setPageCount1(packageRes?.data?.pagination?.totalPages || 0);
     }
   }, [packageRes]);
 
@@ -371,8 +376,7 @@ const ServiceInfoPage = () => {
                     image={pkg.imageUrl?.[0]}
                     onClick={() =>
                       navigate(
-                        `/admin/categories/${categoryId}/product/${serviceId}/info`,
-                        { state: { product: pkg, isPackage: true } },
+                        `/admin/categories/${categoryId}/package/${serviceId}/info/${pkg?._id}`
                       )
                     }
                     onEdit={() => {
@@ -391,6 +395,12 @@ const ServiceInfoPage = () => {
               </Grid>
             )}
           </Section>
+
+          <PaginationComp
+            page={page1}
+            pageCount={pageCount1}
+            setPage={setPage1}
+          />
         </div>
       </Wrapper>
 

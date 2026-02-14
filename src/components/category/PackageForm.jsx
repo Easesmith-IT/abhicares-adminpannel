@@ -36,6 +36,9 @@ const PackageForm = ({
 }) => {
   const fileRef = useRef(null);
 
+  console.log("allProducts", allProducts);
+  
+
   /* ---------------- Cities ---------------- */
   const {
     cities,
@@ -228,7 +231,7 @@ const PackageForm = ({
               )}
 
               <div
-                className={`grid grid-cols-1 md:grid-cols-2 gap-3 ${
+                className={`grid grid-cols-1 md:grid-cols-4 gap-3 ${
                   errors.products ? "ring-1 ring-red-300 rounded-md p-2" : ""
                 }`}
               >
@@ -247,15 +250,29 @@ const PackageForm = ({
                       <Checkbox
                         checked={selected}
                         onCheckedChange={() => toggleProduct(product)}
+                        className="sr-only"
                       />
 
                       <div className="flex-1">
-                        <div className="flex justify-between">
+                        {product?.imageUrl?.[0] ? (
+                          <img
+                            src={`${import.meta.env.VITE_APP_IMAGE_URL}/${product.imageUrl?.[0]}`}
+                            alt={product.name}
+                            onError={(e) =>
+                              (e.currentTarget.style.display = "none")
+                            }
+                            className="h-[200px] w-full rounded-lg object-cover border"
+                          />
+                        ) : (
+                          <div className="h-[200px] w-full rounded-lg border bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
+                            No Image Available
+                          </div>
+                        )}
+
+                        <div className="flex justify-between mt-2">
                           <p className="font-medium">{product.name}</p>
                           {product.rating && <Badge>⭐ {product.rating}</Badge>}
                         </div>
-
-                        
                       </div>
                     </label>
                   );
@@ -314,6 +331,7 @@ const PackageForm = ({
                               render={({ field }) => (
                                 <div className="flex items-center gap-2">
                                   <Switch
+                                    className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-orange-500"
                                     checked={field.value}
                                     onCheckedChange={(checked) => {
                                       field.onChange(checked);
@@ -414,7 +432,7 @@ const PackageForm = ({
 
             {/* Submit */}
             <div className="flex justify-end">
-              <Button type="submit" disabled={isLoading}>
+              <Button variant="abhicares" type="submit" disabled={isLoading}>
                 {isLoading?<Spinner />:label}
               </Button>
             </div>
