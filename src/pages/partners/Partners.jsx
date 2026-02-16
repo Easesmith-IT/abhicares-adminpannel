@@ -208,10 +208,12 @@ const Partners = () => {
                   sellers.map((s) => (
                     <TableRow key={s._id}>
                       <TableCell>{s.name}</TableCell>
-                      <TableCell>{s.partnerId}</TableCell>
+                      <TableCell>{s.partnerId || "-"}</TableCell>
                       <TableCell>{s.categoryId?.name}</TableCell>
                       <TableCell>{s.phone}</TableCell>
-                      <TableCell className="capitalize">{s?.city?.cityId?.name || "-"}</TableCell>
+                      <TableCell className="capitalize">
+                        {s?.city?.cityId?.name || "-"}
+                      </TableCell>
                       <TableCell>
                         <Badge variant={s.online ? "success" : "destructive"}>
                           {s.online ? "Online" : "Offline"}

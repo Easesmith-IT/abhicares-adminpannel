@@ -67,7 +67,6 @@ const CashOutReq = ({
               onClick={() => setIsUpdateModalOpen(true)}
             >
               <Pencil className="mr-1 h-4 w-4" />
-              Update
             </Button>
           </div>
         </CardContent>

@@ -46,6 +46,7 @@ import UpdatePackagePage from "./pages/services/UpdatePackagePage";
 import AddCategoryPage from "./pages/category/AddCategoryPage";
 import UpdateCategoryPage from "./pages/category/UpdateCategoryPage";
 import PackageInfo from "./pages/services/PackageInfo";
+import CashSubmission from "./pages/partners/cash-submission/CashSubmission";
 // import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
@@ -121,6 +122,10 @@ function App() {
           <Route
             path="/admin/partners/:partnerId"
             element={<PartnerDetails />}
+          />
+          <Route
+            path="/admin/partners/:partnerId/cash-submission"
+            element={<CashSubmission />}
           />
 
           <Route

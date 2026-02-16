@@ -2,7 +2,7 @@ import { format } from "date-fns";
 import { Eye, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -113,6 +113,8 @@ const PartnerDetails = () => {
     }
   }, [walletRes]);
 
+  console.log("walletRes", walletRes);
+
   useEffect(() => {
     if (cashoutRes?.status === 200) setCashouts(cashoutRes.data.cashouts);
   }, [cashoutRes]);
@@ -137,9 +139,19 @@ const PartnerDetails = () => {
     <>
       <Wrapper>
         <div className="space-y-6">
-          <BackLink href={-1}>
-            <H2>Partner Details</H2>
-          </BackLink>
+          <div className="flex justify-between gap-10 items-center">
+            <BackLink href={-1}>
+              <H2>Partner Details</H2>
+            </BackLink>
+            <Button variant="abhicares" className="w-auto px-4">
+              <Link
+                to={`/admin/partners/${partnerId}/cash-submission`}
+                state={{ walletId: wallet?._id }}
+              >
+                Cash Submissions
+              </Link>
+            </Button>
+          </div>
           {/* ================= Partner Info ================= */}
           <Card>
             {/* <CardHeader>
@@ -159,13 +171,13 @@ const PartnerDetails = () => {
                     {format(new Date(seller.createdAt), "dd/MM/yyyy")}
                   </p>
                   <p>
-                    <b>GST:</b> {seller.gstNumber}
+                    <b>GST:</b> {seller.gstNumber || "-"}
                   </p>
                   <p>
-                    <b>Phone:</b> {seller.phone}
+                    <b>Phone:</b> {seller.phone || "-"}
                   </p>
                   <p>
-                    <b>Legal Name:</b> {seller.legalName}
+                    <b>Legal Name:</b> {seller.legalName || "-"}
                   </p>
 
                   <div className="flex items-center gap-2">
@@ -197,9 +209,9 @@ const PartnerDetails = () => {
           </Card>
 
           {/* ================= Orders + Wallet ================= */}
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-5 gap-6">
             {/* Orders */}
-            <Card className="col-span-2">
+            <Card className="col-span-3">
               <CardHeader className="flex justify-between">
                 <CardTitle>Assigned Orders</CardTitle>
                 <Button
@@ -254,7 +266,7 @@ const PartnerDetails = () => {
             </Card>
 
             {/* Wallet */}
-            <Card>
+            <Card className="col-span-2">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Wallet className="h-5 w-5" /> Wallet
