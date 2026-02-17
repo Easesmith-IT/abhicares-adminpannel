@@ -35,6 +35,7 @@ import { Label } from "../../components/ui/label";
 import { PaginationComp } from "../../components/shared/PaginationComp";
 import { Section } from "../../components";
 import { buildQuery } from "../../utils/buildQuery";
+import UpdateServiceGSTModal from "../../components/globals/UpdateServiceGSTModal";
 
 /* -------------------------------------------------- */
 
@@ -48,6 +49,7 @@ const ServiceInfoPage = () => {
   const [pageCount, setPageCount] = useState(1);
   const [page1, setPage1] = useState(1);
   const [pageCount1, setPageCount1] = useState(1);
+  const [isGstUpdateModalOpen, setIsGstUpdateModalOpen] = useState(false);
 
   /* -------- API hooks -------- */
   const { res: serviceRes, fetchData: fetchService } = useGetApiReq();
@@ -92,7 +94,12 @@ const ServiceInfoPage = () => {
   };
 
   const getServicePackages = () => {
-    const query = buildQuery({ cityId: selectedCity, page1, serviceId,isActive:true });
+    const query = buildQuery({
+      cityId: selectedCity,
+      page1,
+      serviceId,
+      isActive: true,
+    });
     fetchPackages(`/packages/get-packages?${query}`);
   };
 
@@ -170,10 +177,24 @@ const ServiceInfoPage = () => {
   return (
     <>
       <Wrapper>
+        {isGstUpdateModalOpen && (
+          <UpdateServiceGSTModal
+            open={isGstUpdateModalOpen}
+            onOpenChange={setIsGstUpdateModalOpen}
+          />
+        )}
         <div className="space-y-8 font-poppins">
-          <BackLink href={-1}>
-            <H2>Service Details</H2>
-          </BackLink>
+          <div className="flex justify-between gap-5 items-center">
+            <BackLink href={-1}>
+              <H2>Service Details</H2>
+            </BackLink>
+            <Button
+              variant="abhicares"
+              onClick={() => setIsGstUpdateModalOpen(true)}
+            >
+              Update GST
+            </Button>
+          </div>
 
           {/* -------- City Filter Bar -------- */}
           <div className="flex items-center justify-end gap-3">
@@ -376,7 +397,7 @@ const ServiceInfoPage = () => {
                     image={pkg.imageUrl?.[0]}
                     onClick={() =>
                       navigate(
-                        `/admin/categories/${categoryId}/package/${serviceId}/info/${pkg?._id}`
+                        `/admin/categories/${categoryId}/package/${serviceId}/info/${pkg?._id}`,
                       )
                     }
                     onEdit={() => {

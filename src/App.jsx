@@ -47,6 +47,8 @@ import AddCategoryPage from "./pages/category/AddCategoryPage";
 import UpdateCategoryPage from "./pages/category/UpdateCategoryPage";
 import PackageInfo from "./pages/services/PackageInfo";
 import CashSubmission from "./pages/partners/cash-submission/CashSubmission";
+import Globals from "./pages/globals/Globals";
+import CreateOffer from "./pages/offers/CreateOffer";
 // import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
@@ -140,6 +142,7 @@ function App() {
           />
 
           <Route path="/admin/offers" element={<Offers />} />
+          <Route path="/admin/offers/create" element={<CreateOffer />} />
 
           <Route path="/admin/available-cities" element={<AvailableCities />} />
           <Route path="/admin/available-cities/add" element={<AddCityPage />} />
@@ -182,6 +185,8 @@ function App() {
             exact
             element={<CrashDetailPage />}
           />
+
+          <Route path="/admin/globals" exact element={<Globals />} />
         </Route>
 
         <Route path="/*" element={<NotFound />} />

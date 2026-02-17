@@ -116,7 +116,7 @@ const usePostApiReq = () => {
       console.log("res", response);
       if (response.status === 200 || response.status === 201) {
         setRes(response);
-        // toast.success(response.data.message);
+        toast.success(response.data.message);
       }
     } catch (error) {
       setError(error);

@@ -31,6 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Link } from "react-router-dom";
 
 /* ---------------- Skeleton Rows ---------------- */
 
@@ -64,8 +65,7 @@ const OfferTableSkeleton = ({ rows = 6 }) => (
 /* ---------------- Component ---------------- */
 
 const Offers = () => {
-  const { res: deleteCouponRes, fetchData: deleteCoupon } =
-    useDeleteApiReq();
+  const { res: deleteCouponRes, fetchData: deleteCoupon } = useDeleteApiReq();
   const {
     res: getCouponsRes,
     fetchData: getCoupons,
@@ -107,9 +107,7 @@ const Offers = () => {
     if (statusFilter === "all") {
       setFilteredResults(allOffers);
     } else {
-      setFilteredResults(
-        allOffers.filter((o) => o.status === statusFilter),
-      );
+      setFilteredResults(allOffers.filter((o) => o.status === statusFilter));
     }
   }, [statusFilter, allOffers]);
 
@@ -157,9 +155,11 @@ const Offers = () => {
               </SelectContent>
             </Select>
 
-            <Button variant="abhicares" onClick={() => setIsModalOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Offer
+            <Button variant="abhicares" asChild>
+              <Link to="/admin/offers/create">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Offer
+              </Link>
             </Button>
           </div>
         </div>
