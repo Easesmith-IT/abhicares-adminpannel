@@ -49,6 +49,8 @@ import PackageInfo from "./pages/services/PackageInfo";
 import CashSubmission from "./pages/partners/cash-submission/CashSubmission";
 import Globals from "./pages/globals/Globals";
 import CreateOffer from "./pages/offers/CreateOffer";
+import UpdateOffer from "./pages/offers/UpdateOffer";
+import OfferDetail from "./pages/offers/OfferDetails";
 // import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
@@ -142,7 +144,9 @@ function App() {
           />
 
           <Route path="/admin/offers" element={<Offers />} />
+          <Route path="/admin/offers/:offerId" element={<OfferDetail />} />
           <Route path="/admin/offers/create" element={<CreateOffer />} />
+          <Route path="/admin/offers/:offerId/update" element={<UpdateOffer />} />
 
           <Route path="/admin/available-cities" element={<AvailableCities />} />
           <Route path="/admin/available-cities/add" element={<AddCityPage />} />

@@ -63,8 +63,14 @@ const PackageForm = ({
       ...defaultValues,
       products:
         defaultValues?.products?.map((item) => ({
-          productId: item.productId._id,
-          name: item.productId.name,
+          productId:
+            typeof item.productId === "object"
+              ? item.productId._id
+              : item.productId,
+          name:
+            typeof item.productId === "object"
+              ? item.productId.name
+              : undefined,
         })) || [],
     },
   });
@@ -120,17 +126,20 @@ const PackageForm = ({
   );
 
   /* ---------------- Products ---------------- */
-  const toggleProduct = (product) => {
-    const exists = products.some((p) => p.productId === product._id);
+ const toggleProduct = (product) => {
+   const pid = product._id.toString();
 
-    setValue(
-      "products",
-      exists
-        ? products.filter((p) => p.productId !== product._id)
-        : [...products, { productId: product._id, name: product.name }],
-      { shouldDirty: true },
-    );
-  };
+   const exists = products.some((p) => p.productId?.toString() === pid);
+
+   setValue(
+     "products",
+     exists
+       ? products.filter((p) => p.productId?.toString() !== pid)
+       : [...products, { productId: pid, name: product.name }],
+     { shouldDirty: true },
+   );
+ };
+
 
   /* ---------------- Images ---------------- */
   const handleImages = (e) => {
@@ -179,13 +188,18 @@ const PackageForm = ({
     onSubmit(fd);
   };
 
+  const onError = (error)=> {
+    console.log("error",error);
+    
+  }
+
   /* ---------------- UI ---------------- */
   return (
     <Card>
       <CardContent className="space-y-6">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleFormSubmit)}
+            onSubmit={form.handleSubmit(handleFormSubmit,onError)}
             className="space-y-6"
           >
             {/* Name */}

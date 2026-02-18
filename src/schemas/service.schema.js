@@ -106,7 +106,7 @@ export const packageSchema = z.object({
     .array(
       z.object({
         productId: z.string(),
-        name: z.string(),
+        name: z.string().optional(),
       }),
     )
     .min(1, "Select at least one product"),
