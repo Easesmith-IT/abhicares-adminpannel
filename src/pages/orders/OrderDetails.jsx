@@ -18,6 +18,7 @@ import useGetApiReq from "../../hooks/useGetApiReq";
 import usePostApiReq from "../../hooks/usePostApiReq";
 import { BackLink } from "../../components/shared/back-link";
 import { H1, H2 } from "../../components/shared/typography";
+import RefundInfoCard from "../../components/customer/RefundInfoCard";
 
 const statusVariantMap = {
   cancelled: "destructive",
@@ -76,7 +77,7 @@ const OrderDetails = () => {
 
   return (
     <Wrapper>
-      <BackLink href={-1} >
+      <BackLink href={-1}>
         <H2>Order Details</H2>
       </BackLink>
       <div className="mt-10 grid grid-cols-1 gap-4 xl:grid-cols-3">
@@ -93,22 +94,26 @@ const OrderDetails = () => {
                 </p>
               </div>
 
-              <div>
-                <p className="text-sm font-medium mb-1">Update Status</p>
-                <Select value={status} onValueChange={handleStatusChange}>
-                  <SelectTrigger className="w-[180px]">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="OutOfDelivery">
-                      Out Of Delivery
-                    </SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
-                    <SelectItem value="Cancelled">Cancelled</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+                <div>
+                  <p className="text-sm font-medium mb-1">Update Status</p>
+                  <Select
+                    disabled={status === "Cancelled" || status === "cancelled"}
+                    value={status}
+                    onValueChange={handleStatusChange}
+                  >
+                    <SelectTrigger className="w-[180px]">
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Pending">Pending</SelectItem>
+                      <SelectItem value="OutOfDelivery">
+                        Out Of Delivery
+                      </SelectItem>
+                      <SelectItem value="Completed">Completed</SelectItem>
+                      <SelectItem value="Cancelled">Cancelled</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
             </CardHeader>
 
             <CardContent className="grid grid-cols-2 gap-4 text-sm">
@@ -274,6 +279,8 @@ const OrderDetails = () => {
               </p>
             </CardContent>
           </Card>
+
+          <RefundInfoCard order={state} />
         </div>
       </div>
     </Wrapper>

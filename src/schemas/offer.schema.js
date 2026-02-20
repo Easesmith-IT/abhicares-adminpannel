@@ -105,6 +105,6 @@ export const offerSchema = z.object({
     })
     .optional(),
 
-  priority: z.number().default(0),
+  priority: z.coerce.number().default(0),
   isActive: z.boolean().default(true),
 });

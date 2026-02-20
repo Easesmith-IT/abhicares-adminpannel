@@ -51,6 +51,7 @@ import Globals from "./pages/globals/Globals";
 import CreateOffer from "./pages/offers/CreateOffer";
 import UpdateOffer from "./pages/offers/UpdateOffer";
 import OfferDetail from "./pages/offers/OfferDetails";
+import CustomerWallet from "./pages/customers/CustomerWallet";
 // import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
@@ -141,6 +142,10 @@ function App() {
           <Route
             path="/admin/customers/:customerId"
             element={<CustomerDetails />}
+          />
+          <Route
+            path="/admin/customers/:customerId/wallet"
+            element={<CustomerWallet />}
           />
 
           <Route path="/admin/offers" element={<Offers />} />

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { format } from "date-fns";
 
 import useGetApiReq from "../../hooks/useGetApiReq";
@@ -67,9 +67,17 @@ const CustomerDetails = () => {
     <Wrapper>
       <div className="space-y-6">
         {/* Customer Info */}
-        <BackLink href={-1}>
-          <H2>Customer Details</H2>
-        </BackLink>
+        <div
+          className="flex justify-between
+        "
+        >
+          <BackLink href={-1}>
+            <H2>Customer Details</H2>
+          </BackLink>
+          <Button asChild variant="abhicares">
+            <Link to={`/admin/customers/${user?._id}/wallet`}>Wallet Info</Link>
+          </Button>
+        </div>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle></CardTitle>
