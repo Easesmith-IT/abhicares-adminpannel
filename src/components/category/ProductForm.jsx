@@ -60,7 +60,12 @@ const ProductForm = ({
     },
   });
 
-  const { watch, setValue, getValues } = form;
+  const {
+    watch,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = form;
   const cityConfigs = watch("cityConfigs") || [];
 
   console.log("cityConfigs", cityConfigs);
@@ -73,13 +78,23 @@ const ProductForm = ({
 
    const cityMap = new Map(cities.map((c) => [c._id, c.name]));
 
+   const normalizedExisting = existing.map((cfg) => ({
+     ...cfg,
+     // 🔥 FIX: always force cityId to string
+     cityId: typeof cfg.cityId === "object" ? cfg.cityId._id : cfg.cityId,
+
+     cityName:
+       cfg.cityName ??
+       cityMap.get(
+         typeof cfg.cityId === "object" ? cfg.cityId._id : cfg.cityId,
+       ) ??
+       "",
+   }));
+
    const merged = [
-     ...existing.map((cfg) => ({
-       ...cfg,
-       cityName: cfg.cityName ?? cityMap.get(cfg.cityId) ?? "",
-     })),
+     ...normalizedExisting,
      ...cities
-       .filter((city) => !existing.some((c) => c.cityId === city._id))
+       .filter((city) => !normalizedExisting.some((c) => c.cityId === city._id))
        .map((city) => ({
          cityId: city._id,
          cityName: city.name,
@@ -152,13 +167,18 @@ const ProductForm = ({
     onSubmit(fd);
   };
 
+  const onError = (error)=>{
+    console.log("error",error);
+    
+  }
+
   /* ---------------- UI ---------------- */
   return (
     <Card>
       <CardContent className="space-y-6">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleFormSubmit)}
+            onSubmit={form.handleSubmit(handleFormSubmit, onError)}
             className="space-y-6"
           >
             {/* Name */}
@@ -312,6 +332,10 @@ const ProductForm = ({
                     );
                   })}
             </div>
+
+            {errors.cityConfigs?.root?.message && (
+              <FormMessage>{errors.cityConfigs.root.message}</FormMessage>
+            )}
 
             {/* Pagination */}
             <div className="flex justify-end gap-4">
