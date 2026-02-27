@@ -35,6 +35,9 @@ const ProductForm = ({
 }) => {
   const fileRef = useRef(null);
 
+  console.log("defaultValues", defaultValues);
+  
+
   /* ---------------- Cities ---------------- */
   const {
     cities,
@@ -53,12 +56,24 @@ const ProductForm = ({
   const form = useForm({
     resolver: zodResolver(productSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      cityConfigs: [],
-      ...defaultValues,
+      name: defaultValues?.name || "",
+      description: defaultValues?.description || "",
+      cityConfigs: defaultValues?.cityConfigs || [],
+      // previewImage: defaultValues.imageUrl.map(
+      //   (image) => ({preview:`${import.meta.env.VITE_APP_IMAGE_URL}/${image}`}),
+      // ),
     },
   });
+
+  useEffect(() => {
+    setPreviewImages(
+      defaultValues.imageUrl.map((image) => ({
+        preview: `${import.meta.env.VITE_APP_IMAGE_URL}/${image}`,
+      })),
+    );
+
+  }, [defaultValues?.imageUrl])
+  
 
   const {
     watch,
@@ -67,6 +82,11 @@ const ProductForm = ({
     formState: { errors },
   } = form;
   const cityConfigs = watch("cityConfigs") || [];
+  const img = watch("img");
+  const previewImage = watch("previewImage");
+
+  console.log("getValues", getValues());
+  
 
   console.log("cityConfigs", cityConfigs);
 

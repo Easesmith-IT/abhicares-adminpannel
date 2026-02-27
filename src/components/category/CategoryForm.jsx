@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -22,6 +22,7 @@ import { BackLink } from "@/components/shared/back-link";
 import { H2 } from "@/components/shared/typography";
 import { categorySchema } from "../../schemas/service.schema";
 import { CityCardCategorySkeleton } from "./CityCardSkeleton";
+import { XIcon } from "lucide-react";
 
 const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
   const {
@@ -33,17 +34,40 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
     isLoading: cityLoading,
   } = useCities();
 
+  const fileRef = useRef(null);
+
   const form = useForm({
     resolver: zodResolver(categorySchema),
     defaultValues: {
       name: "",
       cityConfigs: [],
       ...defaultValues,
+      previewImage: defaultValues?.previewImage,
     },
   });
 
   const { watch, setValue, getValues } = form;
+
+  console.log("getValues", getValues());
+  
   const cityConfigs = watch("cityConfigs") || [];
+  const previewImage = watch("previewImage");
+  const img = watch("img");
+
+  const handleImage = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const preview = URL.createObjectURL(file);
+    setValue("img", file);
+    setValue("previewImage", preview);
+  };
+
+  const removeImage = () => {
+    if (fileRef.current) fileRef.current.value = "";
+    setValue("img", null);
+    setValue("previewImage", "");
+  };
 
   /**
    * Merge paginated cities into cityConfigs (same pattern as ServiceForm)
@@ -83,6 +107,10 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
     [cityConfigs, visibleCityIds],
   );
 
+  const onError = (error) => {
+    console.log("error", error);
+  };
+
   return (
     <div className="space-y-6">
       <BackLink href={-1}>
@@ -92,7 +120,10 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
       <Card>
         <CardContent className="space-y-6">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(onSubmit, onError)}
+              className="space-y-6"
+            >
               {/* Name */}
               <FormField
                 control={form.control}
@@ -107,6 +138,38 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
                   </FormItem>
                 )}
               />
+
+              <FormItem className="inline-block space-y-2">
+                <Label>Image</Label>
+                <Input
+                  ref={fileRef}
+                  accept=".png,.jpg,.jpeg,.webp"
+                  type="file"
+                  onChange={handleImage}
+                />
+
+                {previewImage && (
+                  <div className="relative w-fit mt-2">
+                    <img
+                      src={
+                        img
+                          ? previewImage
+                          : `${import.meta.env.VITE_APP_IMAGE_URL}/${previewImage}`
+                      }
+                      className="h-[150px] rounded-md border object-cover"
+                    />
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      className="absolute -right-2 -top-2 h-6 w-6"
+                      onClick={removeImage}
+                    >
+                      <XIcon size={14} />
+                    </Button>
+                  </div>
+                )}
+              </FormItem>
 
               {/* City Configs */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -164,6 +227,7 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
                                       {...field}
                                     />
                                   </FormControl>
+                                  <FormMessage />
                                 </FormItem>
                               )}
                             />
@@ -181,6 +245,7 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
                                       {...field}
                                     />
                                   </FormControl>
+                                  <FormMessage />
                                 </FormItem>
                               )}
                             />

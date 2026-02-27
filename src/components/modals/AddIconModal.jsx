@@ -51,7 +51,6 @@ const AddIconModal = ({ setIsModalOpen, serviceId, getServiceDetails }) => {
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      toast.success("Icon uploaded successfully");
       getServiceDetails();
       setIsModalOpen(false);
     }

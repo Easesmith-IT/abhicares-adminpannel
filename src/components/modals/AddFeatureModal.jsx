@@ -88,7 +88,6 @@ const AddFeatureModal = ({
 
   useEffect(() => {
     if (addRes?.status === 200 || addRes?.status === 201) {
-      toast.success("Feature added successfully");
       getServiceDetails();
       setIsModalOpen(false);
     }
@@ -96,7 +95,6 @@ const AddFeatureModal = ({
 
   useEffect(() => {
     if (updateRes?.status === 200 || updateRes?.status === 201) {
-      toast.success("Feature updated successfully");
       getServiceDetails();
       setIsModalOpen(false);
     }

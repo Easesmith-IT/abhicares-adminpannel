@@ -129,7 +129,7 @@ const CategoryServices = () => {
               {services.map((service) => (
                 <Card
                   key={service._id}
-                  className="cursor-pointer transition-all hover:shadow-md"
+                  className="cursor-pointer transition-all hover:shadow-md pt-0"
                   onClick={() =>
                     navigate(
                       `/admin/categories/${categoryId}/product/${service._id}`,
@@ -141,7 +141,7 @@ const CategoryServices = () => {
                   <img
                     src={`${import.meta.env.VITE_APP_IMAGE_URL}/${service.imageUrl}`}
                     alt={service.name}
-                    className="h-[150px] w-full rounded-t-xl object-cover"
+                    className="h-[200px] w-full rounded-t-xl object-cover"
                   />
 
                   <CardHeader className="pb-2">

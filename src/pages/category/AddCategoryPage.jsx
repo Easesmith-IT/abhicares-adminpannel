@@ -12,10 +12,16 @@ const AddCategoryPage = () => {
   const onSubmit = (values) => {
     const activeConfigs = values.cityConfigs.filter((c) => c.isActive);
 
-    fetchData("/categories/create-category", {
-      name: values.name,
-      cityConfigs: activeConfigs,
-    });
+    const fd = new FormData();
+
+    fd.append("name", values.name);
+    fd.append("cityConfigs", JSON.stringify(activeConfigs));
+
+    if (values.img) {
+      fd.append("img", values.img);
+    }
+
+    fetchData("/categories/create-category", fd);
   };
 
   if (res?.status === 201) {
@@ -28,7 +34,7 @@ const AddCategoryPage = () => {
       <CategoryForm
         label="Add Category"
         isLoading={isLoading}
-        defaultValues={{ name: "", cityConfigs: [] }}
+        defaultValues={{ name: "", cityConfigs: [], img: null }}
         onSubmit={onSubmit}
       />
     </Wrapper>

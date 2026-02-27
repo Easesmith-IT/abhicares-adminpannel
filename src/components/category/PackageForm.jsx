@@ -37,6 +37,7 @@ const PackageForm = ({
   const fileRef = useRef(null);
 
   console.log("allProducts", allProducts);
+  console.log("defaultValues", defaultValues);
   
 
   /* ---------------- Cities ---------------- */
@@ -57,10 +58,9 @@ const PackageForm = ({
   const form = useForm({
     resolver: zodResolver(packageSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      cityConfigs: [],
-      ...defaultValues,
+      name: defaultValues?.name || "",
+      description: defaultValues?.description || "",
+      cityConfigs:defaultValues?.cityConfigs ||  [],
       products:
         defaultValues?.products?.map((item) => ({
           productId:
@@ -85,6 +85,15 @@ const PackageForm = ({
 
   const cityConfigs = watch("cityConfigs") || [];
   const products = watch("products") || [];
+
+  useEffect(() => {
+      setPreviewImages(
+        defaultValues.imageUrl.map((image) => ({
+          preview: `${import.meta.env.VITE_APP_IMAGE_URL}/${image}`,
+        })),
+      );
+  
+    }, [defaultValues?.imageUrl])
 
   /* ---------------- Merge cities ---------------- */
   useEffect(() => {
@@ -199,7 +208,7 @@ const PackageForm = ({
       <CardContent className="space-y-6">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(handleFormSubmit,onError)}
+            onSubmit={form.handleSubmit(handleFormSubmit, onError)}
             className="space-y-6"
           >
             {/* Name */}
@@ -230,6 +239,36 @@ const PackageForm = ({
                 </FormItem>
               )}
             />
+
+            <div className="space-y-2 mt-5">
+              <FormLabel>Images (max 3)</FormLabel>
+              <Input
+                ref={fileRef}
+                type="file"
+                multiple
+                onChange={handleImages}
+              />
+
+              <div className="grid grid-cols-3 gap-3">
+                {previewImages.map((img) => (
+                  <div key={img.id} className="relative">
+                    <img
+                      src={img.preview}
+                      className="h-[120px] w-full rounded-md border object-cover"
+                    />
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      className="absolute -top-2 -right-2 h-6 w-6"
+                      onClick={() => removeImage(img.id)}
+                    >
+                      <X size={14} />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {/* Products */}
             <div className="space-y-3">
@@ -447,7 +486,7 @@ const PackageForm = ({
             {/* Submit */}
             <div className="flex justify-end">
               <Button variant="abhicares" type="submit" disabled={isLoading}>
-                {isLoading?<Spinner />:label}
+                {isLoading ? <Spinner /> : label}
               </Button>
             </div>
           </form>

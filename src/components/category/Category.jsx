@@ -1,4 +1,4 @@
-import { EllipsisVerticalIcon, Pencil, TrashIcon } from "lucide-react";
+import { EllipsisVerticalIcon, ImageOff, Pencil, TrashIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -50,7 +50,18 @@ export const Category = ({ category, getCategories }) => {
     <>
       <Card className="relative">
         <CardHeader>
-          <div className="mb2 flex gap-2 justify-between">
+          {category.imageUrl ? (
+            <img
+              src={`${import.meta.env.VITE_APP_IMAGE_URL}/${category.imageUrl}`}
+              alt={category.name}
+              className="h-[200px] w-full rounded-t-xl object-cover"
+            />
+          ) : (
+            <div className="h-[200px] flex justify-center items-center bg-gray-200 rounded-md w-full">
+              <ImageOff className="size-10" />
+            </div>
+          )}
+          <div className="mb-2 flex gap-2 justify-between">
             <h3
               onClick={() => navigate(`/admin/categories/${category._id}`)}
               className="text-lg font-semibold cursor-pointer hover:text-blue-500 hover:underline"

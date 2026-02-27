@@ -41,21 +41,31 @@ const UpdateCategoryPage = () => {
       setDefaultValues({
         name: category.name,
         cityConfigs: (category.cityConfigs || []).map((cfg) => ({
-          cityId: cfg.cityId._id,
-          cityName: cfg.cityId.name,
+          cityId: cfg?.cityId?._id,
+          cityName: cfg?.cityId?.name,
           isActive: cfg.isActive,
           commission: cfg.commission,
           convenience: cfg.convenience,
         })),
+        previewImage: category.imageUrl,
       });
     }
   }, [categoryRes]);
 
+
   const onSubmit = (values) => {
-    updateCategory(`/categories/update-category/${categoryId}`, {
-      name: values.name,
-      cityConfigs: values.cityConfigs.filter((c) => c.isActive),
-    });
+    const activeConfigs = values.cityConfigs.filter((c) => c.isActive);
+
+    const fd = new FormData();
+
+    fd.append("name", values.name);
+    fd.append("cityConfigs", JSON.stringify(activeConfigs));
+
+    if (values.img) {
+      fd.append("img", values.img);
+    }
+
+    updateCategory(`/categories/update-category/${categoryId}`, fd);
   };
 
   useEffect(() => {

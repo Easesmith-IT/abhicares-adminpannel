@@ -59,6 +59,7 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
       description: "",
       cityConfigs: [],
       ...defaultValues,
+      previewImage: defaultValues.previewImage,
     },
   });
 
@@ -66,6 +67,7 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
   console.log("getValues", getValues());
 
   const img = watch("img");
+  const previewImage = watch("previewImage");
   const cityConfigs = watch("cityConfigs") || [];
 
   /* ----------------------------------
@@ -196,10 +198,14 @@ useEffect(() => {
                   onChange={handleImage}
                 />
 
-                {img && (
+                {previewImage && (
                   <div className="relative w-fit mt-2">
                     <img
-                      src={watch("previewImage")}
+                      src={
+                        img
+                          ? previewImage
+                          : `${import.meta.env.VITE_APP_IMAGE_URL}/${previewImage}`
+                      }
                       className="h-[120px] rounded-md border object-cover"
                     />
                     <Button

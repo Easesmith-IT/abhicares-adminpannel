@@ -173,6 +173,8 @@ const PackageInfo = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {pkg.products.map(({ productId }) => {
                 if (!productId) return null;
+                console.log("productId", productId);
+                
 
                 return (
                   <Card key={productId._id}>
