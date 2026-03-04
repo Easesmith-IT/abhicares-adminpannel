@@ -21,6 +21,8 @@ const WebsiteHomeBanner = () => {
     { bannerName: "banner6", file: null, preview: null },
   ]);
 
+  console.log("WebsiteHomeBanner - banners",banners);
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalData, setModalData] = useState({
     img: "",

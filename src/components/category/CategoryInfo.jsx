@@ -8,6 +8,15 @@ import { Badge } from "../ui/badge";
 import { Label } from "../ui/label";
 import { Skeleton } from "../ui/skeleton";
 import { Section } from "..";
+import { Button } from "../ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Pencil, PlusIcon } from "lucide-react";
+import AddCategoryIconModal from "../modals/AddCategoryIconModal";
 
 export const CategoryInfo = () => {
   const params = useParams();
@@ -18,11 +27,16 @@ export const CategoryInfo = () => {
     isLoading,
   } = useGetApiReq();
 
+  const [iconModalOpen, setIconModalOpen] = useState(false);
   const [category, setCategory] = useState(null);
+
+  const getCategoryDetails = ()=> {
+    fetchCategory(`/categories/get-categories/${params.categoryId}`);
+  }
 
   useEffect(() => {
     if (params?.categoryId) {
-      fetchCategory(`/categories/get-categories/${params.categoryId}`);
+      getCategoryDetails()
     }
   }, [params?.categoryId]);
 
@@ -79,7 +93,49 @@ export const CategoryInfo = () => {
       <div className="space-y-2">
         <p>Category Info:</p>
         <Card>
-          <CardHeader className="flex flex-row items-start justify-between gap-4">
+          <CardHeader className="flex flex-row items-start gap-4">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {category?.icon ? (
+                    <div className="relative">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-16 w-16 rounded-md border p-0"
+                        onClick={() => setIconModalOpen(true)}
+                      >
+                        <img
+                          src={`${import.meta.env.VITE_APP_IMAGE_URL}/${category?.icon}`}
+                          alt="icon"
+                          className="h-full w-full rounded-md object-cover"
+                        />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="absolute -right-2 -top-2 h-6 w-6"
+                        onClick={() => setIconModalOpen(true)}
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="h-16 w-16 border-dashed"
+                      onClick={() => setIconModalOpen(true)}
+                    >
+                      <PlusIcon />
+                    </Button>
+                  )}
+                </TooltipTrigger>
+                <TooltipContent>
+                  {category?.icon ? "Update icon" : "Upload icon"}
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
             <div>
               <CardTitle className="text-xl">{category.name}</CardTitle>
               <p className="text-sm text-muted-foreground">
@@ -126,6 +182,14 @@ export const CategoryInfo = () => {
           )}
         </div>
       </Section>
+
+      {iconModalOpen && (
+        <AddCategoryIconModal
+          setIsModalOpen={setIconModalOpen}
+          categoryId={params?.categoryId}
+          getCategoryDetails={getCategoryDetails}
+        />
+      )}
     </div>
   );
 };

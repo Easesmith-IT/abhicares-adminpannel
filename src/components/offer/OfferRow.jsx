@@ -11,13 +11,19 @@ import { Badge } from "@/components/ui/badge";
 import { TableRow, TableCell } from "@/components/ui/table";
 import DeleteModal from "@/components/modals/DeleteModal";
 import { Link } from "react-router-dom";
+import useGetApiReq from "../../hooks/useGetApiReq";
+import { Switch } from "../ui/switch";
+import usePatchApiReq from "../../hooks/usePatchApiReq";
+import { Spinner } from "../ui/spinner";
 
 const OfferRow = ({ offer, refetch, onEdit }) => {
   const { fetchData: deleteOffer, res: deleteRes } = useDeleteApiReq();
   const { fetchData: updateStatus } = usePostApiReq();
+  const { res, fetchData: hideUnhideOffer, isLoading } = usePatchApiReq();
 
   const [openDelete, setOpenDelete] = useState(false);
   const [status, setStatus] = useState(offer.isActive);
+  const [isHidden, setIsHidden] = useState(offer.isHidden || false);
 
   /* ---------------- Delete ---------------- */
 
@@ -26,14 +32,11 @@ const OfferRow = ({ offer, refetch, onEdit }) => {
   };
 
   useEffect(() => {
-    
-    
-    
     if (deleteRes?.status === 200 || deleteRes?.status === 201) {
       setOpenDelete(false);
       refetch();
     }
-  }, [deleteRes])
+  }, [deleteRes]);
 
   /* ---------------- Status Toggle ---------------- */
 
@@ -49,6 +52,17 @@ const OfferRow = ({ offer, refetch, onEdit }) => {
       toast.error("Failed to update status");
     }
   };
+
+  const toggleHidden = () => {
+    setIsHidden((prev) => !prev);
+    hideUnhideOffer(`/offers/toggle-hidden/${offer?._id}`);
+  };
+
+  useEffect(() => {
+    if (res?.status === 200 || res?.status === 201) {
+      console.log("res", res);
+    }
+  }, [res]);
 
   return (
     <>
@@ -79,6 +93,21 @@ const OfferRow = ({ offer, refetch, onEdit }) => {
           >
             {status ? "Active" : "Inactive"}
           </Badge>
+        </TableCell>
+        <TableCell className="flex flex-col items-center justify-center gap-2">
+          <Badge
+            // onClick={toggleHidden}
+            className={`cursor-pointer ${
+              isHidden ? "bg-red-600" : "bg-green-600"
+            }`}
+          >
+            {isLoading ? <Spinner /> : isHidden ? "Hidden" : "Vsible"}
+          </Badge>
+          <Switch
+            checked={isHidden}
+            onCheckedChange={toggleHidden}
+            // className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-orange-500"
+          />
         </TableCell>
 
         <TableCell className="text-right space-x-2">

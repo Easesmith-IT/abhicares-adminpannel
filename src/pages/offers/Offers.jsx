@@ -1,21 +1,15 @@
-import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 import useGetApiReq from "@/hooks/useGetApiReq";
 
-import Wrapper from "@/components/wrappers/Wrapper";
-import { PaginationComp } from "@/components/shared/PaginationComp";
 import OfferRow from "@/components/offer/OfferRow";
+import { PaginationComp } from "@/components/shared/PaginationComp";
+import Wrapper from "@/components/wrappers/Wrapper";
 
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -24,7 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
 import { H2 } from "../../components/shared/typography";
 
 /* ---------------- Skeleton ---------------- */
@@ -33,6 +26,12 @@ const OfferTableSkeleton = ({ rows = 6 }) => (
   <>
     {Array.from({ length: rows }).map((_, i) => (
       <TableRow key={i}>
+        <TableCell>
+          <Skeleton className="h-4 w-32" />
+        </TableCell>
+        <TableCell>
+          <Skeleton className="h-4 w-32" />
+        </TableCell>
         <TableCell>
           <Skeleton className="h-4 w-32" />
         </TableCell>
@@ -62,8 +61,7 @@ const Offers = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
 
   const [offers, setOffers] = useState([]);
-  const [filteredOffers, setFilteredOffers] = useState([]);
-  const [statusFilter, setStatusFilter] = useState("all");
+  
 
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
@@ -136,6 +134,7 @@ const Offers = () => {
               <TableHead>Valid To</TableHead>
               <TableHead>Valid From</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead className="text-center">Hide</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>

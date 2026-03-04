@@ -36,6 +36,7 @@ const CategoryServices = () => {
   const [selectedCity, setSelectedCity] = useState(null);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
+  
 
   const navigate = useNavigate();
   const { state } = useLocation();
