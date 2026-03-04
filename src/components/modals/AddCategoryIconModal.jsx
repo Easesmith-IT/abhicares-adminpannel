@@ -65,9 +65,9 @@ const AddCategoryIconModal = ({
     <Dialog open onOpenChange={setIsModalOpen}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle>Upload Service Icon</DialogTitle>
+          <DialogTitle>Upload Category Icon</DialogTitle>
           <DialogDescription>
-            Upload an icon that represents this service.
+            Upload an icon that represents this category.
           </DialogDescription>
         </DialogHeader>
 
