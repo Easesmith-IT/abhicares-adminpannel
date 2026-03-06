@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { axiosInstance } from "../utils/axiosInstance";
 import { useDispatch } from "react-redux";
+import { changeAdminStatus } from "../store/slices/userSlice";
+import { axiosInstance } from "../utils/axiosInstance";
 import { readCookie } from "../utils/readCookie";
-import { changeAdminStatus, changeUserAuthStatus } from "../store/slices/userSlice";
 import useCrashReporter from "./useCrashReporter";
 
 const useGetApiReq = () => {

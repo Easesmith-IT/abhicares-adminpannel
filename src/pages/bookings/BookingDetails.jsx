@@ -45,6 +45,9 @@ const BookingDetails = () => {
 
   /* ================= Fetch ================= */
 
+  console.log("booking-log", booking);
+  
+
   useEffect(() => {
     getBooking(`/admin/get-booking-details/${id}`);
   }, [id]);

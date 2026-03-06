@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
-import { X } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
 
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -20,7 +17,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import useAuthorization from "../../hooks/useAuthorization";
 import usePatchApiReq from "../../hooks/usePatchApiReq";
 import { Textarea } from "../ui/textarea";
 
@@ -39,9 +35,6 @@ const AddResoulationModal = ({ setIsModalOpen, id, getTicketDetails }) => {
     ticketId: id,
     date: "",
   });
-
-  const { checkAuthorization } = useAuthorization();
-  const navigate = useNavigate();
 
   const { res: addResoulationRes, fetchData: addResoulationFetchData } =
     usePatchApiReq();

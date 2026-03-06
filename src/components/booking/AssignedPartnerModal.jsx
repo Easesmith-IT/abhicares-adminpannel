@@ -22,6 +22,8 @@ const AssignedPartnerModal = ({
   bookingId,
   getBooking,
 }) => {
+  console.log("serviceId", serviceId);
+  
   const [sellers, setSellers] = useState([]);
   const [search, setSearch] = useState("");
 

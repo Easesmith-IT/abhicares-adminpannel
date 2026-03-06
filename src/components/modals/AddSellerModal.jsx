@@ -52,8 +52,8 @@ const AddSellerModal = ({ setIsModalOpen, seller = null, getAllSellers }) => {
     categoryId: seller?.categoryId?._id || "",
     services:
       seller?.services?.map((s) => ({
-        serviceId: s.serviceId._id,
-        name: s.serviceId.name,
+        serviceId: s?.serviceId?._id,
+        name: s?.serviceId?.name,
       })) || [],
   });
 
