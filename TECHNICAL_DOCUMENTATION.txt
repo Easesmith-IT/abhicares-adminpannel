@@ -1,0 +1,705 @@
+AbhiCares Admin Panel – Technical Documentation
+
+Developer handover and collaboration guide for the AbhiCares operations/admin single-page application (SPA).
+
+------------------------------------------------------------------------------
+1. PROJECT OVERVIEW
+------------------------------------------------------------------------------
+
+1.1 Purpose
+
+The AbhiCares Admin Panel is a React-based SPA used by internal administrators and operations teams to manage the AbhiCares services platform. It provides tools to monitor and control core business entities and workflows, including:
+
+- Service catalog: categories, services, products, and packages
+- Orders and bookings: creation, monitoring, and lifecycle management
+- Partners and payouts: partner profiles, cash submissions, and seller cashouts
+- Customers: profiles, wallets, refunds, and reviews
+- Content and marketing: banners, offers, notifications, and global content/settings
+- Support and reliability: help center tickets and crash reports
+- Configuration: cities, global settings, and commissions
+
+The admin panel communicates with a backend API over HTTPS using Axios, with cookies and localStorage for authentication state and permission-based access control.
+
+1.2 Main Features
+
+- Admin authentication via credentials and secure cookies
+- Dashboard analytics and high-level KPIs (Dashboard.jsx)
+- Order and booking management (list and detail views)
+- Service catalog management (categories, services, products, packages)
+- Customer and partner management (profiles, wallets, cash submissions)
+- Role/permission-based access control (route-level gating via PrivateRoute)
+- Crash reporting and monitoring for frontend errors
+- Marketing and content management (banners, offers, notifications)
+- System configuration (cities, globals, commission settings)
+
+------------------------------------------------------------------------------
+2. TECHNOLOGY STACK
+------------------------------------------------------------------------------
+
+Application type   : SPA (React + Vite)
+Framework          : React 19 with React Router v7
+Language           : JavaScript (ES modules)
+Bundler/Dev server : Vite 7
+UI library         : Tailwind CSS 4, Radix UI, shadcn-style components
+State management   : Redux Toolkit, React-Redux
+Forms and schema   : React Hook Form, Zod
+API client         : Axios with shared axiosInstance
+Notifications      : react-hot-toast and sonner
+Maps and geo       : @react-google-maps/api, Leaflet
+Charts             : recharts
+Auth/session       : Custom JWT-like flow via backend APIs
+Crash reporting    : Custom /crash-report/create endpoint
+Build output       : Static assets (HTML, JS, CSS)
+
+------------------------------------------------------------------------------
+3. SYSTEM ARCHITECTURE
+------------------------------------------------------------------------------
+
+3.1 High-Level Architecture
+
+  AbhiCares Admin Panel (React SPA, Vite)
+          |
+          v
+  Axios HTTP client (withCredentials, axiosInstance)
+          |
+          v
+  Backend Admin API (VITE_BACKEND_URL / VITE_APP_ADMIN_API_URL)
+          |
+          v
+  Authentication, business logic, database
+
+3.2 Architecture Principles
+
+- SPA-first: single-page application with client-side routing (React Router).
+- Modular structure: features organized under src/pages and src/components.
+- Reusable UI: shared components under src/components/ui and src/components/shared.
+- API-driven: all data access via Axios and reusable hooks (usePostApiReq, usePutApiReq, usePatchApiReq).
+- Permission-aware routing: PrivateRoute checks localStorage.perm and Redux user.isAdminAuthenticated.
+- Error visibility: centralized crash reporting (useCrashReporter) and toasts for user feedback.
+
+------------------------------------------------------------------------------
+4. PROJECT FOLDER STRUCTURE
+------------------------------------------------------------------------------
+
+4.1 High-Level Structure
+
+abhicares-admin-panel/
+  package.json
+  vite.config.js
+  TECHNICAL_DOCUMENTATION_TEMPLATE.md
+  TECHNICAL_DOCUMENTATION.md
+  TECHNICAL_DOCUMENTATION.txt
+
+  src/
+    main.jsx                -> React + Redux root bootstrap
+    App.jsx                 -> React Router routes configuration
+
+    pages/                  -> Route-level pages (feature screens)
+      Dashboard.jsx
+      AdminLogin.jsx
+      bookings/
+      orders/
+      category/
+      services/
+      partners/
+      customers/
+      offers/
+      banners/
+      crash-report/
+      help-center/
+      seller-cashouts/
+      send-notifications/
+      cities/
+      globals/
+      settings/
+      payments/
+      reviews/
+      enquiry/
+
+    components/
+      layout/               -> Header, SideNav, layout wrappers
+      ui/                   -> Reusable UI primitives (buttons, inputs, cards, etc.)
+      shared/               -> Shared helpers (pagination, date picker, async selects, etc.)
+      booking/
+      category/
+      banner/
+      customer/
+      partner/
+      review/
+      help-center/
+      crash-report/
+      modals/               -> Dialogs and detail modals across features
+      protected-route/      -> PrivateRoute.jsx
+
+    store/
+      store.js              -> Redux store configuration
+      slices/
+        userSlice.js        -> Auth flags (user/admin) and IDs
+        autorizationSlice.js-> Simple UI state for authorization modal
+
+    hooks/
+      usePostApiReq.js
+      usePutApiReq.js
+      usePatchApiReq.js
+      useCrashReporter.js
+      use-mobile.js
+
+    utils/
+      axiosInstance.js      -> Shared Axios client with baseURL + credentials
+      readCookie.js         -> Cookie parsing helper
+      buildQuery.js         -> URL query helper
+      generateTimeOptions.js
+      fetchLookup.js
+
+    assets/                 -> Images, JSON, static assets
+    schemas/                -> Zod schemas (for example: walletCreditSchema)
+    index.css, App.css      -> Global styles
+
+4.2 Folder Explanation
+
+pages                      Route-level containers, each mapped from App.jsx.
+components/ui              Low-level UI primitives (buttons, inputs, cards, toasts, etc.).
+components                 Feature-related and shared React components.
+components/modals          Reusable modal/dialog components across features.
+components/layout          Admin layout shell (side nav, header, wrappers).
+components/protected-route Route guard for admin-only routes (PrivateRoute).
+store                      Redux store and slices for auth and UI state.
+hooks                      Reusable hooks for HTTP requests, crash reporting, device helpers.
+utils                      Axios instance, cookie utilities, query builders, and other helpers.
+schemas                    Zod validation schemas for forms.
+assets                     Static images, icons, and JSON data.
+
+------------------------------------------------------------------------------
+5. ENVIRONMENT SETUP
+------------------------------------------------------------------------------
+
+5.1 Clone Repository
+
+  git clone <repository-url>
+  cd abhicares-admin-panel
+
+5.2 Install Dependencies
+
+  npm install
+
+5.3 Environment Variables
+
+Create a .env or .env.local (used by Vite) in the project root:
+
+  VITE_BACKEND_URL=<base URL of main admin backend>
+  VITE_APP_ADMIN_API_URL=<base URL of admin auth API used for login>
+  VITE_APP_IMAGE_URL=<base URL for serving uploaded images>
+  VITE_APP_CMS_URL=<base URL for CMS/banner APIs>
+  VITE_GOOGLE_MAPS_KEY=<Google Maps JavaScript API key>
+
+Variable usage:
+
+- VITE_BACKEND_URL: base URL used by axiosInstance (axiosInstance.js) for most authenticated API calls (for example: /admin/status, /admin/refresh, /crash-report/create).
+- VITE_APP_ADMIN_API_URL: used by AdminLogin.jsx for admin login (/login-Admin).
+- VITE_APP_IMAGE_URL: used across services, category, and banner components to render backend-hosted images.
+- VITE_APP_CMS_URL: used by banner-related components (AppHomeBanner, AppCategoryBanner, WebsiteHomeBanner, etc.) to fetch CMS-managed banners.
+- VITE_GOOGLE_MAPS_KEY: used by MapContainer.jsx (@react-google-maps/api) for displaying booking/partner locations.
+
+Ensure these values are configured for each environment (development, staging, production) before running or deploying.
+
+------------------------------------------------------------------------------
+6. RUNNING THE PROJECT
+------------------------------------------------------------------------------
+
+6.1 Development
+
+  npm run dev
+
+This starts the Vite dev server (by default at http://localhost:5173/) with hot module reloading.
+
+6.2 Production Build and Preview
+
+  npm run build      # Build static assets
+  npm run preview    # Preview production build via Vite
+
+For real production, the dist/ directory should be served via a static host (for example: Nginx, S3 + CloudFront, or a PaaS that supports static assets).
+
+------------------------------------------------------------------------------
+7. AUTHENTICATION FLOW
+------------------------------------------------------------------------------
+
+7.1 High-Level Flow
+
+  Login page (/)
+      |
+      v
+  POST { VITE_APP_ADMIN_API_URL }/login-Admin (credentials)
+      |
+      v
+  Backend issues cookies (tokens) and permission map ("perm")
+      |
+      v
+  Store:
+    - "admin-status" in localStorage
+    - "perm" in localStorage
+    - Redux user.isAdminAuthenticated = true
+      |
+      v
+  React Router navigates to first allowed /admin/* route
+      |
+      v
+  Subsequent requests via axiosInstance with withCredentials: true
+      |
+      v
+  Token lifecycle handled via /admin/status, /admin/refresh, /admin/logout-all
+
+7.2 Details
+
+Login UI (AdminLogin.jsx)
+- Uses Axios (VITE_APP_ADMIN_API_URL) to send { adminId, password } to /login-Admin.
+- On success:
+  - Saves response.data.perm to localStorage.perm.
+  - Sets localStorage["admin-status"] = true.
+  - Dispatches changeAdminStatus({ isAdminAuthenticated: true }) to Redux.
+  - Computes the first allowed feature based on the permission map and redirects to /admin/<firstAllowed>.
+
+Session state (userSlice.js)
+- Holds:
+  - userId
+  - isAuthenticated
+  - isAdminAuthenticated
+- Persists:
+  - "user-status" in localStorage
+  - "admin-status" in localStorage
+  - "perm" (permissions object from backend)
+
+Route protection (PrivateRoute.jsx)
+- Wraps all /admin/... routes.
+- Reads isAdminAuthenticated from Redux and perm from localStorage.
+- Parses the first path segment after /admin/ and maps it to a permission key (for example: "orders" -> "orders").
+- If unauthenticated or if permission for that feature is "none", navigates back to / (login) and renders nothing.
+
+Token refresh and logout (usePostApiReq, usePutApiReq, usePatchApiReq)
+- On HTTP 401:
+  - Calls /admin/status to decide whether to:
+    - Log out via /admin/logout-all, or
+    - Refresh via /admin/refresh with { adminId, role: "admin" }.
+  - On successful refresh, Redux isAdminAuthenticated is set to true again.
+
+------------------------------------------------------------------------------
+8. DATABASE SCHEMA (FRONTEND VIEW)
+------------------------------------------------------------------------------
+
+The database and data models are owned by the backend service and are not defined directly in this frontend repository. From API usage and UI, the following entities are implied:
+
+- Admin/User: includes at least id, role, and a permissions object (perm) used for RBAC.
+- Customer: identifiers (customerId), profile, contact info, wallet balance.
+- Partner/Seller: profile, service areas, and payout-related fields (seller cashouts, cash submissions).
+- Service catalog:
+  - Category: id, name, imageUrl or icon.
+  - Service: id, name, description, imageUrl, and category linkage.
+  - Product/Package: id, name, imageUrl array, pricing fields, relations to services.
+- Orders and bookings: status, customer, partner, pricing, date/time, and service details.
+- Content entities: banners, offers, CMS pages, globals, SEO entries.
+- Crash reports: see useCrashReporter.js for the payload sent to /crash-report/create.
+
+For exact schemas, refer to the backend repository or API documentation. This frontend consumes the shapes returned by those endpoints.
+
+------------------------------------------------------------------------------
+9. PERMISSION SYSTEM
+------------------------------------------------------------------------------
+
+The admin panel uses a permission-map-based access control system delivered by the backend.
+
+9.1 Permission Data
+
+On successful login, the backend returns a "perm" object of the form:
+
+  {
+    dashboard:      "read" | "none" | ...,
+    banners:        "read" | "none" | ...,
+    orders:         "read" | "none" | ...,
+    bookings:       "read" | "none" | ...,
+    services:       "read" | "none" | ...,
+    partners:       "read" | "none" | ...,
+    customers:      "read" | "none" | ...,
+    offers:         "read" | "none" | ...,
+    availableCities:"read" | "none" | ...,
+    payments:       "read" | "none" | ...,
+    enquiry:        "read" | "none" | ...,
+    helpCenter:     "read" | "none" | ...,
+    settings:       "read" | "none" | ...,
+    reviews:        "read" | "none" | ...,
+    notifications:  "read" | "none" | ...,
+    sellerCashout:  "read" | "none" | ...
+  }
+
+This object is persisted to localStorage.perm by AdminLogin.jsx.
+
+9.2 Permission Enforcement Flow
+
+  Admin login
+     |
+     v
+  Receive "perm" object from backend
+     |
+     v
+  Persist to localStorage ("perm")
+     |
+     v
+  On each /admin/... navigation:
+     - PrivateRoute reads "perm"
+     - Maps route segment (for example: "orders") to permission key
+     - If value is "none": redirect to "/"
+     - Else: render requested page
+
+Currently, enforcement is primarily at the route level. Finer-grained checks (for example: per-button or per-action) can reuse the same "perm" object inside components.
+
+------------------------------------------------------------------------------
+10. API INTEGRATION
+------------------------------------------------------------------------------
+
+10.1 Axios Instance
+
+File: src/utils/axiosInstance.js
+- baseURL: import.meta.env.VITE_BACKEND_URL
+- withCredentials: true (sends cookies with each request)
+
+All shared HTTP requests are built on top of this instance.
+
+10.2 Custom API Hooks
+
+usePostApiReq, usePutApiReq, usePatchApiReq provide:
+- res, isLoading, error
+- fetchData(url, payload, config)
+- Toast-based success and error messaging
+- Optional crash reporting on failures
+- HTTP 401 handling (admin status checks, token refresh, and logout)
+
+Example POST pattern:
+
+  const { res, isLoading, fetchData, error } = usePostApiReq();
+
+  // Inside a component:
+  await fetchData("/admin/some-endpoint", payload, {
+    screenName: "SomeScreen",
+    severity: "MEDIUM",
+    userType: "Admin"
+  });
+
+10.3 Key API Areas
+
+- Authentication and session:
+  - /login-Admin
+  - /admin/status
+  - /admin/refresh
+  - /admin/logout-all
+
+- Orders and bookings:
+  - Consumed in Orders.jsx, OrderDetails.jsx, Bookings.jsx, BookingDetails.jsx.
+
+- Service catalog:
+  - CRUD APIs for categories, services, products, and packages (used in pages/services and components/category).
+
+- Banners and CMS:
+  - APIs at VITE_APP_CMS_URL for fetching banners and other CMS-managed assets.
+
+- Crash reports:
+  - /crash-report/create invoked from useCrashReporter.
+
+------------------------------------------------------------------------------
+11. STATE MANAGEMENT
+------------------------------------------------------------------------------
+
+11.1 Redux Store
+
+File: src/store/store.js
+- Reducers:
+  - user: userSlice.js
+  - auth: autorizationSlice.js
+
+userSlice.js
+- Manages:
+  - userId
+  - isAuthenticated
+  - isAdminAuthenticated
+- Synchronizes:
+  - "user-status" in localStorage
+  - "admin-status" in localStorage
+
+autorizationSlice.js
+- Holds UI state:
+  - isOpen (boolean), used for authorization-related modals or prompts.
+
+11.2 Other State
+
+- Component-local state:
+  - Managed with React hooks (useState, useEffect) for form fields, filters, pagination, etc.
+
+- Form state:
+  - Many complex forms (for example: wallet credits, service/product/package forms) use React Hook Form and Zod schemas (walletCreditSchema and similar).
+
+------------------------------------------------------------------------------
+12. UI DESIGN SYSTEM
+------------------------------------------------------------------------------
+
+12.1 Color and Layout
+
+- Tailwind CSS:
+  - Custom theme classes (for example: "from-main", "to-para-3" in AdminLogin.jsx) define brand colors.
+  - Layouts are responsive using Tailwind flex and grid utilities.
+
+- Radix UI and shadcn-style components (under components/ui):
+  - Buttons, cards, inputs, selects, dialogs, dropdowns, navigation menus, tabs, accordion, etc.
+  - Provide consistent spacing, typography, and interaction patterns.
+
+12.2 Typography
+
+- Font families and sizes are configured via global CSS and Tailwind classes.
+- Components like CardTitle wrap common heading/body styles.
+
+------------------------------------------------------------------------------
+13. ROUTING STRUCTURE
+------------------------------------------------------------------------------
+
+Routing is defined in src/App.jsx using react-router-dom.
+
+Public route:
+- /                           -> AdminLogin (login screen)
+
+Admin routes (all behind PrivateRoute):
+
+- /admin/dashboard            -> Dashboard (overview and stats)
+- /admin/orders               -> Orders (orders list)
+- /admin/orders/:id           -> OrderDetails (order detail)
+- /admin/bookings             -> Bookings (bookings list)
+- /admin/bookings/:id         -> BookingDetails
+
+- /admin/categories                               -> Categories
+- /admin/categories/add-category                  -> AddCategoryPage
+- /admin/categories/:categoryId/update-category   -> UpdateCategoryPage
+- /admin/categories/:categoryId                   -> CategoryServices
+- /admin/categories/:categoryId/add-service       -> AddServicePage
+- /admin/categories/:categoryId/update-service/:serviceId
+                                                  -> UpdateServicePage
+- /admin/categories/:categoryId/product/:serviceId
+                                                  -> ServiceInfoPage
+- /admin/categories/:categoryId/product/:serviceId/add-product
+                                                  -> AddProductPage
+- /admin/categories/:categoryId/product/:serviceId/update-product/:productId
+                                                  -> UpdateProductPage
+- /admin/categories/:categoryId/product/:serviceId/add-package
+                                                  -> AddPackagePage
+- /admin/categories/:categoryId/product/:serviceId/update-package/:packageId
+                                                  -> UpdatePackagePage
+- /admin/categories/:categoryId/product/:serviceId/info/:productId
+                                                  -> ProductInfo
+- /admin/categories/:categoryId/package/:serviceId/info/:packageId
+                                                  -> PackageInfo
+
+- /admin/partners                   -> Partners
+- /admin/partners/:partnerId       -> PartnerDetails
+- /admin/partners/:partnerId/cash-submission
+                                    -> CashSubmission
+
+- /admin/seller-cashouts           -> SellerCashouts
+- /admin/seller-cashouts/:cashoutId
+                                    -> SellerCashoutDetails
+
+- /admin/customers                 -> Customers
+- /admin/customers/:customerId    -> CustomerDetails
+- /admin/customers/:customerId/wallet
+                                    -> CustomerWallet
+
+- /admin/offers                    -> Offers
+- /admin/offers/create             -> CreateOffer
+- /admin/offers/:offerId          -> OfferDetails
+- /admin/offers/:offerId/update   -> UpdateOffer
+
+- /admin/available-cities          -> AvailableCities
+- /admin/available-cities/add      -> AddCityPage
+- /admin/available-cities/:cityId/update
+                                    -> UpdateCityPage
+
+- /admin/payments                  -> Payments
+
+- /admin/help-center               -> HelpCenter
+- /admin/help-center/tickets/:ticketId
+                                    -> HelpCenterTicketDetails
+
+- /admin/enquiries                 -> Enquiry
+
+- /admin/settings                  -> Settings
+- /admin/settings/manage-comision -> MangageComision
+
+- /admin/reviews                   -> Reviews
+
+- /admin/send-notifications        -> SendNotifications
+
+- /admin/banners                   -> Banner
+- /admin/banners/app               -> AppBanner
+
+- /admin/crash-report              -> CrashReports
+- /admin/crash-report/:crashId    -> CrashDetailPage
+
+- /admin/globals                   -> Globals
+
+Fallback:
+- /*                               -> ErrorPage
+
+All /admin/... routes are guarded by PrivateRoute.
+
+------------------------------------------------------------------------------
+14. HOW TO ADD A NEW MODULE
+------------------------------------------------------------------------------
+
+Step 1: Add route and page
+- Create a new folder and page under src/pages/<feature>/, for example:
+  - src/pages/reports/Reports.jsx
+- Register the route in App.jsx within the PrivateRoute block:
+
+  import Reports from "./pages/reports/Reports";
+  ...
+  <Route path="/admin/reports" element={<Reports />} />
+
+Step 2: Wire API calls (if needed)
+- Use axiosInstance directly or via usePostApiReq / usePutApiReq / usePatchApiReq.
+- Pass screenName and userType in config for consistent crash reporting.
+
+Step 3: Permissions
+- Extend the perm mapping in PrivateRoute.jsx to include your new route segment:
+
+  const perm = {
+    // existing keys ...
+    reports: "reports"
+  };
+
+- Ensure the backend returns the appropriate perm.reports value.
+
+Step 4: Navigation
+- Add a navigation item (for example: in SideNav.jsx) pointing to /admin/reports.
+
+------------------------------------------------------------------------------
+15. ERROR HANDLING
+------------------------------------------------------------------------------
+
+Toast notifications
+- react-hot-toast and sonner (components/ui/sonner.jsx) show success and error messages.
+- Custom HTTP hooks show backend-provided messages where available, or a generic "An error occurred." message.
+
+HTTP error handling
+- 4xx/5xx responses:
+  - Errors are captured in hook state where relevant.
+  - Messages from error.response.data.message are used where possible.
+- 401 Unauthorized:
+  - Triggers admin status checks via getAdminStatus, refreshAdminToken, or handleAdminLogout.
+
+Crash reporting
+- See section 16 for details on useCrashReporter and /crash-report/create.
+
+------------------------------------------------------------------------------
+16. LOGGING AND MONITORING
+------------------------------------------------------------------------------
+
+Custom crash reporter (useCrashReporter.js)
+- Sends structured crash reports to /crash-report/create via axiosInstance:
+  - appName, appVersion
+  - environment (import.meta.env.MODE)
+  - errorName, errorMessage, stackTrace
+  - severity (default HIGH)
+  - screenName
+  - request metadata (URL, method)
+  - device information: platform, browser user agent, operating system
+  - userId, userType
+- All API hooks can call reportCrash when reportCrash is enabled in config.
+
+Additional logging
+- Key flows such as admin status, refresh, and logout log to the console in development to aid debugging.
+
+------------------------------------------------------------------------------
+17. DEPLOYMENT
+------------------------------------------------------------------------------
+
+Build and artifacts
+
+- Build:
+    npm run build
+
+- Output:
+  - Static files in dist/ (HTML, JS, CSS, assets).
+
+Typical deployment flow
+
+1. Build artifacts using CI/CD or locally.
+2. Upload dist/ to a static hosting provider (for example: Nginx, S3 + CloudFront, Netlify, Vercel static).
+3. Configure environment variables (VITE_*) at build time (and/or via .env in CI).
+4. Point a production domain such as https://admin.abhicares.com to the app.
+
+Ensure:
+- The backend API is reachable from the deployed domain.
+- CORS is configured to allow the admin domain and cookies (credentials).
+
+------------------------------------------------------------------------------
+18. DEVELOPMENT WORKFLOW
+------------------------------------------------------------------------------
+
+Recommended branching strategy
+
+  main        -> production-ready branch
+  develop     -> integration/staging branch
+  feature/*   -> new features
+  bugfix/*    -> bug fixes
+  hotfix/*    -> urgent production fixes
+
+Examples:
+
+  feature/crash-reporting-ui
+  feature/customer-wallet-enhancements
+  bugfix/orders-pagination
+
+Recommended practices
+
+- Keep feature branches short-lived and focused on one logical change set.
+- Use pull requests and code review for non-trivial changes.
+- Run npm run lint and ensure the app builds before merging to main.
+
+------------------------------------------------------------------------------
+19. CODING STANDARDS
+------------------------------------------------------------------------------
+
+General rules
+
+- Prefer functional components with React hooks.
+- Use Redux Toolkit for shared state; avoid manual Redux boilerplate.
+- Centralize data fetching logic in custom hooks or clearly named utilities.
+- Separate presentation and data-fetching concerns where practical.
+- Prefer composition over very large monolithic components; leverage components/ui and components/shared.
+
+Naming conventions
+
+- Components      : PascalCase
+- Hooks           : useSomething
+- Functions       : camelCase
+- Variables       : camelCase
+- Redux slices    : somethingSlice.js
+- Files (components): PascalCase.jsx
+- Files (utilities): camelCase.js
+
+------------------------------------------------------------------------------
+20. KNOWN ISSUES / CONSIDERATIONS
+------------------------------------------------------------------------------
+
+This section should be maintained by the team. Examples of current considerations:
+
+- Permission checks are mainly enforced at route level; some flows may still need fine-grained, action-level guards.
+- Error handling depends on backend response shapes (error.response.data.message, name); inconsistent responses can degrade UX.
+- Image-heavy pages (services, products, banners) rely on VITE_APP_IMAGE_URL and will break if this value is misconfigured.
+- Various helpers log to the console; this should be reviewed before enabling verbose logging in production.
+
+------------------------------------------------------------------------------
+21. FUTURE IMPROVEMENTS
+------------------------------------------------------------------------------
+
+Possible roadmap items:
+
+- Centralized RBAC utility to encapsulate permissions logic and avoid repeated localStorage access.
+- More extensive unit and integration tests for components and hooks.
+- Enhanced analytics and dashboards (for example: real-time updates using WebSockets).
+- Improved accessibility (ARIA attributes, keyboard navigation across all flows).
+- Configurable feature flags for gradual rollout of new modules.
+
