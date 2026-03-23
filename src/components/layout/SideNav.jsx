@@ -27,6 +27,7 @@ import {
   Wallet,
   FileWarningIcon,
   Globe2Icon,
+  WalletIcon,
 } from "lucide-react";
 import logo from "../../assets/logo .png";
 import { SidebarHeader } from "../ui/sidebar";
@@ -184,6 +185,8 @@ const SideNav = () => {
           )}
           {menuItem("/admin/crash-report", "Crash Reports", FileWarningIcon)}
           {menuItem("/admin/globals", "Globals", Globe2Icon)}
+          {menuItem("/admin/notifications", "Notifications", Bell)}
+          {menuItem("/admin/cash-management", "Cash Management", WalletIcon)}
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>

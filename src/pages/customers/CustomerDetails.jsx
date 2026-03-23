@@ -74,9 +74,15 @@ const CustomerDetails = () => {
           <BackLink href={-1}>
             <H2>Customer Details</H2>
           </BackLink>
+          <div className="flex items-center gap-5">
+
           <Button asChild variant="abhicares">
             <Link to={`/admin/customers/${user?._id}/wallet`}>Wallet Info</Link>
           </Button>
+          <Button asChild variant="abhicares">
+            <Link to={`/admin/customers/${user?._id}/reward-points`} state={user}>Reward Points Info</Link>
+          </Button>
+          </div>
         </div>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">

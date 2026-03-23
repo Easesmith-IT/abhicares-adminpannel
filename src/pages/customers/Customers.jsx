@@ -152,7 +152,7 @@ const Customers = () => {
                   allUsers.length === 0 && (
                     <TableRow>
                       <TableCell
-                        colSpan={3}
+                        colSpan={4}
                         className="py-6 text-center text-sm text-muted-foreground"
                       >
                         No users found

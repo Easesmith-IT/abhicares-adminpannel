@@ -52,11 +52,19 @@ import CreateOffer from "./pages/offers/CreateOffer";
 import UpdateOffer from "./pages/offers/UpdateOffer";
 import OfferDetail from "./pages/offers/OfferDetails";
 import CustomerWallet from "./pages/customers/CustomerWallet";
+import CustomerRewardPoints from "./pages/customers/CustomerRewardPoints";
+import CampaignList from "./pages/notifications/CampaignList";
+import CreateCampaign from "./pages/notifications/CreateCampaign";
+import EditCampaign from "./pages/notifications/EditCampaign";
+import { Toaster } from "sonner";
+import CampaignDetail from "./pages/notifications/CampaignDetail";
+import CashManagement from "./pages/cash-management/CashManagement";
 // import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
   return (
     <Router>
+      <Toaster />
       <Routes>
         <Route path="/" element={<AdminLogin />} />
         <Route element={<PrivateRoute />}>
@@ -144,6 +152,10 @@ function App() {
             element={<CustomerDetails />}
           />
           <Route
+            path="/admin/customers/:customerId/reward-points"
+            element={<CustomerRewardPoints />}
+          />
+          <Route
             path="/admin/customers/:customerId/wallet"
             element={<CustomerWallet />}
           />
@@ -151,7 +163,10 @@ function App() {
           <Route path="/admin/offers" element={<Offers />} />
           <Route path="/admin/offers/:offerId" element={<OfferDetail />} />
           <Route path="/admin/offers/create" element={<CreateOffer />} />
-          <Route path="/admin/offers/:offerId/update" element={<UpdateOffer />} />
+          <Route
+            path="/admin/offers/:offerId/update"
+            element={<UpdateOffer />}
+          />
 
           <Route path="/admin/available-cities" element={<AvailableCities />} />
           <Route path="/admin/available-cities/add" element={<AddCityPage />} />
@@ -196,6 +211,27 @@ function App() {
           />
 
           <Route path="/admin/globals" exact element={<Globals />} />
+          <Route path="/admin/notifications" exact element={<CampaignList />} />
+          <Route
+            path="/admin/notifications/create"
+            exact
+            element={<CreateCampaign />}
+          />
+          <Route
+            path="/admin/notifications/:id/edit"
+            exact
+            element={<EditCampaign />}
+          />
+          <Route
+            path="/admin/notifications/:id"
+            exact
+            element={<CampaignDetail />}
+          />
+          <Route
+            path="/admin/cash-management"
+            exact
+            element={<CashManagement />}
+          />
         </Route>
 
         <Route path="/*" element={<NotFound />} />

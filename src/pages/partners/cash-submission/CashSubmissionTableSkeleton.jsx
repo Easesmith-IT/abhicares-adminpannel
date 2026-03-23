@@ -1,12 +1,11 @@
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const ROWS = 6;
 
-export const CashSubmissionTableSkeleton = () => {
+export const CashSubmissionTableSkeleton = ({rows=6}) => {
   return (
     <TableBody>
-      {Array.from({ length: ROWS }).map((_, i) => (
+      {Array.from({ length: rows }).map((_, i) => (
         <TableRow key={i}>
           <TableCell>
             <Skeleton className="h-4 w-28" />

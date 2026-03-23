@@ -1,17 +1,17 @@
 import DataNotFound from "@/components/shared/DataNotFound";
 import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
+    Table,
+    TableBody,
+    TableHead,
+    TableHeader,
+    TableRow,
 } from "@/components/ui/table";
-import Submission from "./Submission";
 import { PaginationComp } from "../../../components/shared/PaginationComp";
+import CashManagementRow from "./CashManagementRow";
 import { CashSubmissionTableSkeleton } from "./CashSubmissionTableSkeleton";
 
-export const CashSubmissionTable = ({
-  submissions,
+export const CashManagementTable = ({
+  submissions =[],
   isLoading,
   getCashSubmissions,
   setPage,
@@ -24,21 +24,22 @@ export const CashSubmissionTable = ({
         <TableHeader>
           <TableRow className="bg-slate-200 border-b border-white/40">
             <TableHead>Cashout Id</TableHead>
+            <TableHead>Partner Name</TableHead>
             <TableHead className="whitespace-nowrap">Amount (₹)</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="whitespace-nowrap">Submitted On</TableHead>
             <TableHead>Remarks</TableHead>
-            <TableHead>Admin Remarks</TableHead>
+            {/* <TableHead>Admin Remarks</TableHead> */}
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
 
         {isLoading ? (
-          <CashSubmissionTableSkeleton />
+          <CashSubmissionTableSkeleton rows={8} />
         ) : (
           <TableBody>
             {submissions.map((submission) => (
-              <Submission
+              <CashManagementRow
                 key={submission._id}
                 submission={submission}
                 getData={getCashSubmissions}
