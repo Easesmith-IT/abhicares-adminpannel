@@ -112,23 +112,30 @@ const AppHomeBanner = () => {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("img", file);
-    formData.append("type", type);
-    formData.append("page", "home");
-    formData.append("section", "app-hero-banner");
+      setModalData({
+        img: file,
+        type,
+        page: "home",
+        section: "app-hero-banner",
+      });
 
-    fetchData("/content/upload-banners", formData);
+    // const formData = new FormData();
+    // formData.append("img", file);
+    // formData.append("type", type);
+    // formData.append("page", "home");
+    // formData.append("section", "app-hero-banner");
 
-    //  setIsModalOpen(true);
+    // fetchData("/content/upload-banners", formData);
+
+     setIsModalOpen(true);
   };
 
-  useEffect(() => {
-    if (res?.status === 200 || res?.status === 201) {
-      //  toast.success("Banner updated successfully");
-      getBannersFromServer();
-    }
-  }, [res]);
+  // useEffect(() => {
+  //   if (res?.status === 200 || res?.status === 201) {
+  //     //  toast.success("Banner updated successfully");
+  //     getBannersFromServer();
+  //   }
+  // }, [res]);
 
   const openUpdateModal2 = (file, type) => {
     if (!file) {
@@ -199,7 +206,7 @@ const AppHomeBanner = () => {
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
       //  toast.success("Banner updated successfully");
-      getBannersFromServer();
+      // getBannersFromServer();
       getVideoFromServer();
     }
   }, [res]);
@@ -235,37 +242,37 @@ const AppHomeBanner = () => {
       );
 
       // OTHER BANNERS
-      const [banner1, banner2] = await Promise.all([
-        axios.get(`${import.meta.env.VITE_APP_CMS_URL}/get-banners`, {
-          params: {
-            type: "banner1",
-            page: "home-banners",
-            section: "app-homepage",
-          },
-          withCredentials: true,
-        }),
-        axios.get(`${import.meta.env.VITE_APP_CMS_URL}/get-banners`, {
-          params: {
-            type: "banner2",
-            page: "home-banners",
-            section: "app-homepage",
-          },
-          withCredentials: true,
-        }),
-      ]);
+      // const [banner1, banner2] = await Promise.all([
+      //   axios.get(`${import.meta.env.VITE_APP_CMS_URL}/get-banners`, {
+      //     params: {
+      //       type: "banner1",
+      //       page: "home-banners",
+      //       section: "app-homepage",
+      //     },
+      //     withCredentials: true,
+      //   }),
+      //   axios.get(`${import.meta.env.VITE_APP_CMS_URL}/get-banners`, {
+      //     params: {
+      //       type: "banner2",
+      //       page: "home-banners",
+      //       section: "app-homepage",
+      //     },
+      //     withCredentials: true,
+      //   }),
+      // ]);
 
-      setBanners([
-        {
-          bannerName: "banner4",
-          file: null,
-          preview: `${import.meta.env.VITE_APP_IMAGE_URL}/${banner1.data.banners.image}`,
-        },
-        {
-          bannerName: "banner5",
-          file: null,
-          preview: `${import.meta.env.VITE_APP_IMAGE_URL}/${banner2.data.banners.image}`,
-        },
-      ]);
+      // setBanners([
+      //   {
+      //     bannerName: "banner4",
+      //     file: null,
+      //     preview: `${import.meta.env.VITE_APP_IMAGE_URL}/${banner1.data.banners.image}`,
+      //   },
+      //   {
+      //     bannerName: "banner5",
+      //     file: null,
+      //     preview: `${import.meta.env.VITE_APP_IMAGE_URL}/${banner2.data.banners.image}`,
+      //   },
+      // ]);
     } catch (err) {
       console.error(err);
       reportCrash({

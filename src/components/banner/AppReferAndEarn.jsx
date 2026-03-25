@@ -111,21 +111,28 @@ const AppReferAndEarn = () => {
       return;
     }
 
+     setModalData({
+       img: banner.file,
+       type: "refer-banner",
+       page: "refer",
+       section: "app-refer-banner",
+     });
+
     const formData = new FormData();
     formData.append("img", banner.file);
     formData.append("type", "refer-banner");
     formData.append("page", "refer");
     formData.append("section", "app-refer-banner");
 
-    fetchData("/content/upload-banners", formData);
+    // fetchData("/content/upload-banners", formData);
   };
 
-  useEffect(() => {
-    if (res?.status === 200 || res?.status === 201) {
-      // toast.success("Banner updated successfully");
-      getBannersFromServer();
-    }
-  }, [res]);
+  // useEffect(() => {
+  //   if (res?.status === 200 || res?.status === 201) {
+  //     // toast.success("Banner updated successfully");
+  //     getBannersFromServer();
+  //   }
+  // }, [res]);
 
   return (
     <>

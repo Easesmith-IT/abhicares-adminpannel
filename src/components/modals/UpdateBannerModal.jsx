@@ -82,7 +82,7 @@ const UpdateBannerModal = ({ setIsModalOpen, getBannersFromServer, data }) => {
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      toast.success("Banner updated successfully");
+      // toast.success("Banner updated successfully");
       setIsModalOpen(false);
       getBannersFromServer();
     }

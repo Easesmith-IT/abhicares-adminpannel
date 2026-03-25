@@ -351,7 +351,10 @@ const PartnerDetails = () => {
         <AddCashoutReqModal
           walletId={wallet?._id}
           setIsUpdateModalOpen={setAddCashout}
-          getCashOutRequests={() => fetchCashouts(wallet?._id)}
+          getCashOutRequests={() => {
+            fetchCashouts(wallet?._id);
+            fetchWallet();
+          }}
         />
       )}
     </>

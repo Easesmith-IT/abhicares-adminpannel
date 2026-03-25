@@ -100,23 +100,23 @@ const AppOffersAndDiscount = () => {
       section: "app-offer-banner",
     });
 
-    const formData = new FormData();
-    formData.append("img", banner.file);
-    formData.append("type", "offer-banner");
-    formData.append("page", "offer");
-    formData.append("section", "app-offer-banner");
+    // const formData = new FormData();
+    // formData.append("img", banner.file);
+    // formData.append("type", "offer-banner");
+    // formData.append("page", "offer");
+    // formData.append("section", "app-offer-banner");
 
-    fetchData("/content/upload-banners", formData);
+    // fetchData("/content/upload-banners", formData);
 
-    //  setIsModalOpen(true);
+     setIsModalOpen(true);
   };
 
-  useEffect(() => {
-    if (res?.status === 200 || res?.status === 201) {
-      // toast.success("Banner updated successfully");
-      getBannersFromServer();
-    }
-  }, [res]);
+  // useEffect(() => {
+  //   if (res?.status === 200 || res?.status === 201) {
+  //     // toast.success("Banner updated successfully");
+  //     getBannersFromServer();
+  //   }
+  // }, [res]);
 
   return (
     <>

@@ -54,7 +54,7 @@ const AddCashoutReqModal = ({
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      toast.success("Cashout request added");
+      // toast.success("Cashout request added");
       setIsUpdateModalOpen(false);
       getCashOutRequests(walletId);
     }
