@@ -28,6 +28,7 @@ const AppHomeBanner = () => {
     { bannerName: "review1", file: null, preview: null },
     { bannerName: "review2", file: null, preview: null },
     { bannerName: "review3", file: null, preview: null },
+    { bannerName: "review4", file: null, preview: null },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -336,7 +337,7 @@ const AppHomeBanner = () => {
         <section>
           <H4>Review Videos</H4>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-4">
             {videos.map((item, index) => (
               <Card key={item.bannerName}>
                 <CardContent className="p-4 space-y-3">
@@ -344,7 +345,7 @@ const AppHomeBanner = () => {
 
                   <video
                     src={item.preview}
-                    className="h-40 w-full rounded-md object-cover border"
+                    className="h-80 w-full rounded-md object-cover border"
                     controls
                   />
 
