@@ -33,16 +33,19 @@ const AddServicePage = () => {
     fd.append("categoryId", categoryId);
     fd.append("cityConfigs", JSON.stringify(activeCityConfigs));
 
-    if (values.img) {
-      fd.append("img", values.img);
-    }
+     if (values.img) {
+       fd.append("serviceImage", values.img);
+     }
+     if (values.bannerFile) {
+       fd.append("serviceBanner", values.bannerFile);
+     }
 
     fetchData("/services/create-service", fd);
   };
 
 
   if (res?.status === 200 || res?.status === 201) {
-    toast.success("Service added");
+    // toast.success("Service added");
     navigate(-1);
   }
 

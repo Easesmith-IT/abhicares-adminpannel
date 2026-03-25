@@ -43,13 +43,37 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
       cityConfigs: [],
       ...defaultValues,
       previewImage: defaultValues?.previewImage,
+      // bannerFile: defaultValues?.banner || "",
+      bannerPreview: defaultValues?.bannerPreview || "",
     },
   });
 
   const { watch, setValue, getValues } = form;
 
+  const bannerRef = useRef(null);
+
+  const bannerPreview = watch("bannerPreview");
+  const bannerFile = watch("bannerFile");
+
+  const handleBanner = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const preview = URL.createObjectURL(file);
+
+    setValue("bannerFile", file);
+    setValue("bannerPreview", preview);
+  };
+
+  const removeBanner = () => {
+    if (bannerRef.current) bannerRef.current.value = "";
+
+    setValue("bannerFile", null);
+    setValue("bannerPreview", "");
+  };
+
   console.log("getValues", getValues());
-  
+
   const cityConfigs = watch("cityConfigs") || [];
   const previewImage = watch("previewImage");
   const img = watch("img");
@@ -124,6 +148,40 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
               onSubmit={form.handleSubmit(onSubmit, onError)}
               className="space-y-6"
             >
+              <FormItem className="inline-block space-y-2">
+                <Label>Category Banner</Label>
+
+                <Input
+                  ref={bannerRef}
+                  accept=".png,.jpg,.jpeg,.webp"
+                  type="file"
+                  onChange={handleBanner}
+                />
+
+                {bannerPreview && (
+                  <div className="relative w-fit mt-2">
+                    <img
+                      src={
+                        bannerFile
+                          ? bannerPreview
+                          : `${import.meta.env.VITE_APP_IMAGE_URL}/${bannerPreview}`
+                      }
+                      className="h-[150px] w-[300px] rounded-md border object-cover"
+                    />
+
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      className="absolute -right-2 -top-2 h-6 w-6"
+                      onClick={removeBanner}
+                    >
+                      <XIcon size={14} />
+                    </Button>
+                  </div>
+                )}
+              </FormItem>
+
               {/* Name */}
               <FormField
                 control={form.control}

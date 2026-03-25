@@ -36,6 +36,7 @@ import { PaginationComp } from "../../components/shared/PaginationComp";
 import { Section } from "../../components";
 import { buildQuery } from "../../utils/buildQuery";
 import UpdateServiceGSTModal from "../../components/globals/UpdateServiceGSTModal";
+import { CardDescription } from "../../components/ui/card";
 
 /* -------------------------------------------------- */
 
@@ -207,7 +208,16 @@ const ServiceInfoPage = () => {
           {service ? (
             <>
               <Card>
-                <CardHeader className="flex flex-row items-start justify-between gap-4">
+                {service?.bannerUrl && (
+                  <CardHeader>
+                    <img
+                      src={`${import.meta.env.VITE_APP_IMAGE_URL}/${service?.bannerUrl}`}
+                      alt="banner"
+                      className="h-full w-[50%] rounded-md object-cover"
+                    />
+                  </CardHeader>
+                )}
+                <CardContent className="flex flex-row items-start justify-between gap-4">
                   <div className="flex gap-4">
                     <TooltipProvider>
                       <Tooltip>
@@ -266,11 +276,11 @@ const ServiceInfoPage = () => {
                   >
                     Update Features
                   </Button>
-                </CardHeader>
-
-                <CardContent className="text-sm text-muted-foreground">
-                  {parse(service.description || "")}
                 </CardContent>
+
+                <CardDescription className="text-sm text-muted-foreground px-4">
+                  {parse(service.description || "")}
+                </CardDescription>
               </Card>
 
               <Section title="City-wise Configuration">

@@ -35,9 +35,13 @@ const UpdateServicePage = () => {
     fd.append("categoryId", service.categoryId);
     fd.append("cityConfigs", JSON.stringify(activeCityConfigs));
 
-    if (values.img instanceof File) {
-      fd.append("img", values.img);
-    }
+   
+     if (values.img) {
+       fd.append("serviceImage", values.img);
+     }
+     if (values.bannerFile) {
+       fd.append("serviceBanner", values.bannerFile);
+     }
 
     fetchData(`/services/update-service/${serviceId}`, fd);
   };
@@ -54,6 +58,7 @@ const UpdateServicePage = () => {
           description: service?.description || "",
           img: null, // IMPORTANT
           previewImage: service?.imageUrl || "",
+          bannerPreview: service?.bannerUrl || "",
           cityConfigs: service?.cityConfigs || [],
         }}
         onSubmit={onSubmit}

@@ -30,13 +30,13 @@ export const CategoryInfo = () => {
   const [iconModalOpen, setIconModalOpen] = useState(false);
   const [category, setCategory] = useState(null);
 
-  const getCategoryDetails = ()=> {
+  const getCategoryDetails = () => {
     fetchCategory(`/categories/get-categories/${params.categoryId}`);
-  }
+  };
 
   useEffect(() => {
     if (params?.categoryId) {
-      getCategoryDetails()
+      getCategoryDetails();
     }
   }, [params?.categoryId]);
 
@@ -93,7 +93,14 @@ export const CategoryInfo = () => {
       <div className="space-y-2">
         <p>Category Info:</p>
         <Card>
-          <CardHeader className="flex flex-row items-start gap-4">
+         {category?.bannerUrl &&  <CardHeader>
+            <img
+              src={`${import.meta.env.VITE_APP_IMAGE_URL}/${category?.bannerUrl}`}
+              alt="icon"
+              className="h-full w-[50%] rounded-md object-cover"
+            />
+          </CardHeader>}
+          <CardContent className="flex flex-row items-start gap-4">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -142,7 +149,7 @@ export const CategoryInfo = () => {
                 Total Services: {category.totalServices}
               </p>
             </div>
-          </CardHeader>
+          </CardContent>
         </Card>
       </div>
 

@@ -3,6 +3,7 @@ import { z } from "zod";
 export const categorySchema = z.object({
   name: z.string().min(1, "Category name is required"),
   img: z.any().optional(),
+  bannerFile: z.any().optional(),
   previewImage: z.string().optional(),
   cityConfigs: z
     .array(
@@ -34,6 +35,7 @@ export const serviceSchema = z.object({
   description: z.string().optional(),
 
   img: z.any().optional(),
+  bannerFile: z.any().optional(),
   previewImage: z.string().optional(),
 
   cityConfigs: z

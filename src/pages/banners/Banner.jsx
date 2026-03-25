@@ -7,6 +7,8 @@ import AppCategoryBanner from "../../components/banner/AppCategoryBanner";
 import AppServiceBanner from "../../components/banner/AppServiceBanner";
 import AppProductBanner from "../../components/banner/AppProductBanner";
 import WebsiteHomeBanner from "../../components/banner/WebsiteHomeBanner";
+import AppOffersAndDiscount from "../../components/banner/AppOffersAndDiscount";
+import AppReferAndEarn from "../../components/banner/AppReferAndEarn";
 
 /**
  * Replace these placeholders with your actual banner components:
@@ -35,9 +37,11 @@ const Banner = () => {
                 <Tabs defaultValue="home">
                   <TabsList className="mb-4">
                     <TabsTrigger value="home">Home</TabsTrigger>
-                    <TabsTrigger value="category">Category</TabsTrigger>
-                    <TabsTrigger value="service">Service</TabsTrigger>
-                    <TabsTrigger value="product">Product</TabsTrigger>
+                    {/* <TabsTrigger value="category">Category</TabsTrigger> */}
+                    {/* <TabsTrigger value="service">Service</TabsTrigger> */}
+                    {/* <TabsTrigger value="product">Product</TabsTrigger> */}
+                    <TabsTrigger value="offer">Offer</TabsTrigger>
+                    <TabsTrigger value="refer">Refer</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="home">
@@ -54,6 +58,12 @@ const Banner = () => {
 
                   <TabsContent value="product">
                     <AppProductBanner />
+                  </TabsContent>
+                  <TabsContent value="offer">
+                    <AppOffersAndDiscount />
+                  </TabsContent>
+                  <TabsContent value="refer">
+                    <AppReferAndEarn />
                   </TabsContent>
                 </Tabs>
               </CardContent>

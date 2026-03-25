@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { X } from "lucide-react";
+import { X, XIcon } from "lucide-react";
 import { serviceSchema } from "../../schemas/service.schema";
 import { BackLink } from "../shared/back-link";
 import { H2 } from "../shared/typography";
@@ -60,10 +60,33 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
       cityConfigs: [],
       ...defaultValues,
       previewImage: defaultValues.previewImage,
+      bannerPreview: defaultValues?.bannerPreview || "",
     },
   });
 
   const { watch, setValue, getValues } = form;
+   const bannerRef = useRef(null);
+
+   const bannerPreview = watch("bannerPreview");
+   const bannerFile = watch("bannerFile");
+
+   const handleBanner = (e) => {
+     const file = e.target.files?.[0];
+     if (!file) return;
+
+     const preview = URL.createObjectURL(file);
+
+     setValue("bannerFile", file);
+     setValue("bannerPreview", preview);
+   };
+
+   const removeBanner = () => {
+     if (bannerRef.current) bannerRef.current.value = "";
+
+     setValue("bannerFile", null);
+     setValue("bannerPreview", "");
+   };
+
   console.log("getValues", getValues());
 
   const img = watch("img");
@@ -153,6 +176,39 @@ useEffect(() => {
               onSubmit={form.handleSubmit(onSubmit, onError)}
               className="space-y-6"
             >
+              <FormItem className="inline-block space-y-2">
+                <Label>Service Banner</Label>
+
+                <Input
+                  ref={bannerRef}
+                  accept=".png,.jpg,.jpeg,.webp"
+                  type="file"
+                  onChange={handleBanner}
+                />
+
+                {bannerPreview && (
+                  <div className="relative w-fit mt-2">
+                    <img
+                      src={
+                        bannerFile
+                          ? bannerPreview
+                          : `${import.meta.env.VITE_APP_IMAGE_URL}/${bannerPreview}`
+                      }
+                      className="h-[150px] w-[300px] rounded-md border object-cover"
+                    />
+
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant="destructive"
+                      className="absolute -right-2 -top-2 h-6 w-6"
+                      onClick={removeBanner}
+                    >
+                      <XIcon size={14} />
+                    </Button>
+                  </div>
+                )}
+              </FormItem>
               {/* Name */}
               <FormField
                 control={form.control}

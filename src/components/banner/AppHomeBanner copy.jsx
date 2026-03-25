@@ -10,7 +10,6 @@ import UpdateBannerModal from "../modals/UpdateBannerModal";
 import { H4 } from "../shared/typography";
 import useCrashReporter from "../../hooks/useCrashReporter";
 import { readCookie } from "../../utils/readCookie";
-import usePostApiReq from "../../hooks/usePostApiReq";
 
 const AppHomeBanner = () => {
   const [heroBanners, setHeroBanners] = useState([
@@ -20,14 +19,8 @@ const AppHomeBanner = () => {
   ]);
 
   const [banners, setBanners] = useState([
-    { bannerName: "review1", file: null, preview: null },
-    { bannerName: "review2", file: null, preview: null },
-    { bannerName: "review3", file: null, preview: null },
-  ]);
-  const [videos, setVideos] = useState([
-    { bannerName: "review1", file: null, preview: null },
-    { bannerName: "review2", file: null, preview: null },
-    { bannerName: "review3", file: null, preview: null },
+    { bannerName: "banner4", file: null, preview: null },
+    { bannerName: "banner5", file: null, preview: null },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -38,8 +31,8 @@ const AppHomeBanner = () => {
     section: "",
   });
 
-  const { reportCrash } = useCrashReporter();
-  const adminInfo = readCookie("adminInfo");
+   const { reportCrash } = useCrashReporter();
+   const adminInfo = readCookie("adminInfo");
 
   /* ---------------- image handlers ---------------- */
   const updatePreview = (file, setList, bannerName) => {
@@ -62,150 +55,30 @@ const AppHomeBanner = () => {
     updatePreview(file, setHeroBanners, bannerName);
   };
 
-  // const handleBannerChange = (e, bannerName) => {
-  //   const file = e.target.files?.[0];
-  //   if (!file) return;
-  //   updatePreview(file, setBanners, bannerName);
-  // };
-
   const handleBannerChange = (e, bannerName) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
-
-    // Optional: validate video type
-    if (!file.type.startsWith("video/")) {
-      toast.success("Please upload a valid video");
-      return;
-    }
-
-    const preview = URL.createObjectURL(file);
-
-    setVideos((prev) =>
-      prev.map((b) =>
-        b.bannerName === bannerName ? { ...b, file, preview } : b,
-      ),
-    );
+    updatePreview(file, setBanners, bannerName);
   };
 
   /* ---------------- open modal ---------------- */
-  // const openUpdateModal = (file, type) => {
-  //   if (!file) {
-  //     toast.error("Please select an image");
-  //     return;
-  //   }
-
-  //   setModalData({
-  //     img: file,
-  //     type,
-  //     page: type.startsWith("hero") ? "home-hero-banners" : "home-banners",
-  //     section: "app-homepage",
-  //   });
-
-  //   setIsModalOpen(true);
-  // };
-
-  const { res, fetchData, isLoading } = usePostApiReq();
-
   const openUpdateModal = (file, type) => {
     if (!file) {
       toast.error("Please select an image");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("img", file);
-    formData.append("type", type);
-    formData.append("page", "home");
-    formData.append("section", "app-hero-banner");
-
-    fetchData("/content/upload-banners", formData);
-
-    //  setIsModalOpen(true);
-  };
-
-  useEffect(() => {
-    if (res?.status === 200 || res?.status === 201) {
-      //  toast.success("Banner updated successfully");
-      getBannersFromServer();
-    }
-  }, [res]);
-
-  const openUpdateModal2 = (file, type) => {
-    if (!file) {
-      toast.error("Please select a video");
-      return;
-    }
-
     setModalData({
-      video: file,
+      img: file,
       type,
-      // page: type.startsWith("hero") ? "home-hero-banners" : "home-banners",
-      page: "home",
-      section: "app-review-video",
+      page: type.startsWith("hero") ? "home-hero-banners" : "home-banners",
+      section: "app-homepage",
     });
 
-    const formData = new FormData();
-    formData.append("video", file);
-    formData.append("type", type);
-    formData.append("page", "home");
-    formData.append("section", "app-review-video");
-
-    fetchData("/content/upload-video", formData);
+    setIsModalOpen(true);
   };
 
-   const getVideoFromServer = async () => {
-     try {
-       const videoRes = await axios.get(
-         `${import.meta.env.VITE_APP_CMS_URL}/get-videos`,
-         {
-           params: {
-             reviewVideos: true,
-             type: "video",
-             page: "home",
-             section: "app-review-video",
-           },
-           withCredentials: true,
-         },
-       );
-
-       console.log("videoRes", videoRes);
-       
-
-       setVideos((prev) =>
-         prev.map((v, i) => ({
-           ...v,
-           preview: videoRes.data?.videos?.[i]
-             ? `${import.meta.env.VITE_APP_IMAGE_URL}/${videoRes.data.videos[i].video}`
-             : null,
-           file: null,
-         })),
-       );
-     } catch (err) {
-       console.error(err);
-       reportCrash({
-         error: err,
-         screenName: "AppHomeBanner",
-         severity: "HIGH",
-         request: {
-           url: "/get-banners",
-           method: "GET",
-         },
-         userType: "ADMIN",
-         userId: adminInfo?.id,
-       });
-     }
-   };
-
-  useEffect(() => {
-    if (res?.status === 200 || res?.status === 201) {
-      //  toast.success("Banner updated successfully");
-      getBannersFromServer();
-      getVideoFromServer();
-    }
-  }, [res]);
-
-
-
+  /* ---------------- fetch banners ---------------- */
   const getBannersFromServer = async () => {
     try {
       // HERO BANNERS
@@ -214,15 +87,12 @@ const AppHomeBanner = () => {
         {
           params: {
             heroBanners: true,
-            type: "hero-banner",
-            page: "home",
-            section: "app-hero-banner",
+            page: "home-hero-banners",
+            section: "app-homepage",
           },
           withCredentials: true,
         },
       );
-
-      console.log("heroRes", heroRes);
 
       setHeroBanners((prev) =>
         prev.map((b, i) => ({
@@ -268,23 +138,22 @@ const AppHomeBanner = () => {
       ]);
     } catch (err) {
       console.error(err);
-      reportCrash({
-        error: err,
-        screenName: "AppHomeBanner",
-        severity: "HIGH",
-        request: {
-          url: "/get-banners",
-          method: "GET",
-        },
-        userType: "ADMIN",
-        userId: adminInfo?.id,
-      });
+        reportCrash({
+          error: err,
+          screenName: "AppHomeBanner",
+          severity: "HIGH",
+          request: {
+            url: "/get-banners",
+            method: "GET",
+          },
+          userType: "ADMIN",
+          userId: adminInfo?.id,
+        });
     }
   };
 
   useEffect(() => {
     getBannersFromServer();
-    getVideoFromServer();
   }, []);
 
   return (
@@ -326,24 +195,25 @@ const AppHomeBanner = () => {
           </div>
         </section>
 
-        <section>
-          <H4>Review Videos</H4>
+        {/* OTHER BANNERS */}
+        <section className="hidden">
+          <H4>Other Banners</H4>
 
-          <div className="grid gap-6 md:grid-cols-3">
-            {videos.map((item, index) => (
+          <div className="grid gap-6 md:grid-cols-2">
+            {banners.map((item, index) => (
               <Card key={item.bannerName}>
                 <CardContent className="p-4 space-y-3">
-                  <h4 className="font-medium">Video {index + 1}</h4>
+                  <h4 className="font-medium">Banner {index + 1}</h4>
 
-                  <video
+                  <img
                     src={item.preview}
+                    alt=""
                     className="h-40 w-full rounded-md object-cover border"
-                    controls
                   />
 
                   <input
                     type="file"
-                    accept="video/*"
+                    accept="image/*"
                     onChange={(e) => handleBannerChange(e, item.bannerName)}
                   />
 
@@ -351,11 +221,11 @@ const AppHomeBanner = () => {
                     size="sm"
                     variant="abhicares"
                     onClick={() =>
-                      openUpdateModal2(item.file, `video${index + 1}`)
+                      openUpdateModal(item.file, `banner${index + 1}`)
                     }
                   >
                     <ImagePlus className="mr-2 h-4 w-4" />
-                    Update Video
+                    Update
                   </Button>
                 </CardContent>
               </Card>

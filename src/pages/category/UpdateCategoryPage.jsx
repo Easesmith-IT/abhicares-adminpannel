@@ -48,12 +48,14 @@ const UpdateCategoryPage = () => {
           convenience: cfg.convenience,
         })),
         previewImage: category.imageUrl,
+        bannerPreview: category.bannerUrl,
       });
     }
   }, [categoryRes]);
 
 
   const onSubmit = (values) => {
+     console.log("values", values);
     const activeConfigs = values.cityConfigs.filter((c) => c.isActive);
 
     const fd = new FormData();
@@ -61,9 +63,12 @@ const UpdateCategoryPage = () => {
     fd.append("name", values.name);
     fd.append("cityConfigs", JSON.stringify(activeConfigs));
 
-    if (values.img) {
-      fd.append("img", values.img);
-    }
+   if (values.img) {
+     fd.append("categoryImage", values.img);
+   }
+   if (values.bannerFile) {
+     fd.append("categoryBanner", values.bannerFile);
+   }
 
     updateCategory(`/categories/update-category/${categoryId}`, fd);
   };

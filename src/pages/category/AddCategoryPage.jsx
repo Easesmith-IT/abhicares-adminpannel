@@ -10,6 +10,8 @@ const AddCategoryPage = () => {
   const { fetchData, res, isLoading } = usePostApiReq();
 
   const onSubmit = (values) => {
+    console.log("values", values);
+    
     const activeConfigs = values.cityConfigs.filter((c) => c.isActive);
 
     const fd = new FormData();
@@ -18,14 +20,17 @@ const AddCategoryPage = () => {
     fd.append("cityConfigs", JSON.stringify(activeConfigs));
 
     if (values.img) {
-      fd.append("img", values.img);
+      fd.append("categoryImage", values.img);
+    }
+    if (values.bannerFile) {
+      fd.append("categoryBanner", values.bannerFile);
     }
 
     fetchData("/categories/create-category", fd);
   };
 
   if (res?.status === 201) {
-    toast.success("Category created");
+    // toast.success("Category created");
     navigate(-1);
   }
 

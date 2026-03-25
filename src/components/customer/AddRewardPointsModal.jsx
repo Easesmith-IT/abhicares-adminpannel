@@ -37,10 +37,10 @@ export default function AddRewardPointsModal({ open, setOpen, getRewardPoints, c
   });
 
   const onSubmit = async (values) => {
-    fetchData(`/rewards/create-reward`, {
+    fetchData(`/rewards/add-bonus`, {
       userId: params?.customerId,
       city: cityId,
-      points:values.points
+      points: values.points,
     });
   };
 
