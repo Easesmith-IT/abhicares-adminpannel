@@ -38,7 +38,6 @@ const PackageForm = ({
 
   console.log("allProducts", allProducts);
   console.log("defaultValues", defaultValues);
-  
 
   /* ---------------- Cities ---------------- */
   const {
@@ -60,7 +59,7 @@ const PackageForm = ({
     defaultValues: {
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
-      cityConfigs:defaultValues?.cityConfigs ||  [],
+      cityConfigs: defaultValues?.cityConfigs || [],
       products:
         defaultValues?.products?.map((item) => ({
           productId:
@@ -87,13 +86,14 @@ const PackageForm = ({
   const products = watch("products") || [];
 
   useEffect(() => {
+    if (defaultValues?.imageUrl) {
       setPreviewImages(
-        defaultValues.imageUrl.map((image) => ({
+        defaultValues?.imageUrl?.map((image) => ({
           preview: `${import.meta.env.VITE_APP_IMAGE_URL}/${image}`,
         })),
       );
-  
-    }, [defaultValues?.imageUrl])
+    }
+  }, [defaultValues?.imageUrl]);
 
   /* ---------------- Merge cities ---------------- */
   useEffect(() => {
@@ -135,20 +135,19 @@ const PackageForm = ({
   );
 
   /* ---------------- Products ---------------- */
- const toggleProduct = (product) => {
-   const pid = product._id.toString();
+  const toggleProduct = (product) => {
+    const pid = product._id.toString();
 
-   const exists = products.some((p) => p.productId?.toString() === pid);
+    const exists = products.some((p) => p.productId?.toString() === pid);
 
-   setValue(
-     "products",
-     exists
-       ? products.filter((p) => p.productId?.toString() !== pid)
-       : [...products, { productId: pid, name: product.name }],
-     { shouldDirty: true },
-   );
- };
-
+    setValue(
+      "products",
+      exists
+        ? products.filter((p) => p.productId?.toString() !== pid)
+        : [...products, { productId: pid, name: product.name }],
+      { shouldDirty: true },
+    );
+  };
 
   /* ---------------- Images ---------------- */
   const handleImages = (e) => {
@@ -197,10 +196,9 @@ const PackageForm = ({
     onSubmit(fd);
   };
 
-  const onError = (error)=> {
-    console.log("error",error);
-    
-  }
+  const onError = (error) => {
+    console.log("error", error);
+  };
 
   /* ---------------- UI ---------------- */
   return (

@@ -337,7 +337,7 @@ const AppHomeBanner = () => {
         <section>
           <H4>Review Videos</H4>
 
-          <div className="grid gap-6 md:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-4 w-[99%]">
             {videos.map((item, index) => (
               <Card key={item.bannerName}>
                 <CardContent className="p-4 space-y-3">

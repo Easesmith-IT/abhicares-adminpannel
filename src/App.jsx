@@ -59,6 +59,10 @@ import EditCampaign from "./pages/notifications/EditCampaign";
 import { Toaster } from "sonner";
 import CampaignDetail from "./pages/notifications/CampaignDetail";
 import CashManagement from "./pages/cash-management/CashManagement";
+import ItemCategories from "./pages/item-category/ItemCategory";
+import AddItemCategory from "./pages/item-category/AddItemCategory";
+import CategoryDetailsPage from "./pages/item-category/CategoryDetailsPage";
+import EditCategoryPage from "./pages/item-category/UpdateItemCategory";
 // import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
@@ -231,6 +235,26 @@ function App() {
             path="/admin/cash-management"
             exact
             element={<CashManagement />}
+          />
+          <Route
+            path="/admin/item-categories"
+            exact
+            element={<ItemCategories />}
+          />
+          <Route
+            path="/admin/item-categories/add"
+            exact
+            element={<AddItemCategory />}
+          />
+          <Route
+            path="/admin/item-categories/:categoryId"
+            exact
+            element={<CategoryDetailsPage />}
+          />
+          <Route
+            path="/admin/item-categories/:categoryId/update"
+            exact
+            element={<EditCategoryPage />}
           />
         </Route>
 

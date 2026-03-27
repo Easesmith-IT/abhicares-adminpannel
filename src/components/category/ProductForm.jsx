@@ -66,11 +66,14 @@ const ProductForm = ({
   });
 
   useEffect(() => {
-    setPreviewImages(
-      defaultValues.imageUrl.map((image) => ({
-        preview: `${import.meta.env.VITE_APP_IMAGE_URL}/${image}`,
-      })),
-    );
+    if (defaultValues?.imageUrl){
+
+      setPreviewImages(
+        defaultValues?.imageUrl?.map((image) => ({
+          preview: `${import.meta.env.VITE_APP_IMAGE_URL}/${image}`,
+        })),
+      );
+    }
 
   }, [defaultValues?.imageUrl])
   
