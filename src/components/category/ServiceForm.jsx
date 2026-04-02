@@ -118,6 +118,7 @@ useEffect(() => {
         startingPrice: "",
         appHomepage: false,
         webHomepage: false,
+        isTrending: false,
       })),
   ];
 
@@ -355,41 +356,43 @@ useEffect(() => {
 
                             {/* Toggles */}
                             <div className="grid grid-cols-2 gap-3">
-                              {["appHomepage", "webHomepage"].map((key) => (
-                                <FormField
-                                  key={key}
-                                  control={form.control}
-                                  name={`cityConfigs.${index}.${key}`}
-                                  render={({ field }) => (
-                                    <FormItem>
-                                      <Label>
-                                        {key === "appHomepage"
-                                          ? "App Homepage"
-                                          : "Web Homepage"}
-                                      </Label>
-                                      <Select
-                                        disabled={!isActive}
-                                        value={String(field.value)}
-                                        onValueChange={(v) =>
-                                          field.onChange(v === "true")
-                                        }
-                                      >
-                                        <SelectTrigger>
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          <SelectItem value="true">
-                                            True
-                                          </SelectItem>
-                                          <SelectItem value="false">
-                                            False
-                                          </SelectItem>
-                                        </SelectContent>
-                                      </Select>
-                                    </FormItem>
-                                  )}
-                                />
-                              ))}
+                              {["appHomepage", "webHomepage", "isTrending"].map(
+                                (key) => (
+                                  <FormField
+                                    key={key}
+                                    control={form.control}
+                                    name={`cityConfigs.${index}.${key}`}
+                                    render={({ field }) => (
+                                      <FormItem>
+                                        <Label>
+                                          {key === "appHomepage"
+                                            ? "App Homepage"
+                                            : key === "isTrending"?"Is Trending": "Web Homepage"}
+                                        </Label>
+                                        <Select
+                                          disabled={!isActive}
+                                          value={String(field.value)}
+                                          onValueChange={(v) =>
+                                            field.onChange(v === "true")
+                                          }
+                                        >
+                                          <SelectTrigger>
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            <SelectItem value="true">
+                                              True
+                                            </SelectItem>
+                                            <SelectItem value="false">
+                                              False
+                                            </SelectItem>
+                                          </SelectContent>
+                                        </Select>
+                                      </FormItem>
+                                    )}
+                                  />
+                                ),
+                              )}
                             </div>
                           </CardContent>
                         </Card>

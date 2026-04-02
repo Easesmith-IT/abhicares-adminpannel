@@ -28,6 +28,7 @@ const UpdateServicePage = () => {
         startingPrice: Number(c.startingPrice),
         appHomepage: c.appHomepage,
         webHomepage: c.webHomepage,
+        isTrending: c.isTrending || false,
       }));
 
     fd.append("name", values.name);
@@ -59,7 +60,8 @@ const UpdateServicePage = () => {
           img: null, // IMPORTANT
           previewImage: service?.imageUrl || "",
           bannerPreview: service?.bannerUrl || "",
-          cityConfigs: service?.cityConfigs || [],
+          cityConfigs:
+            service?.cityConfigs.map((item) => ({ ...item, isTrending:item?.isTrending || false})) || [],
         }}
         onSubmit={onSubmit}
         isLoading={isLoading}

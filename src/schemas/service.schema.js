@@ -28,6 +28,7 @@ export const cityConfigSchema = z.object({
 
   appHomepage: z.boolean(),
   webHomepage: z.boolean(),
+  isTrending: z.boolean(),
 });
 
 export const serviceSchema = z.object({

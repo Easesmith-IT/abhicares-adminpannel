@@ -19,16 +19,11 @@ const AppHomeBanner = () => {
     { bannerName: "hero-banner3", file: null, preview: null },
   ]);
 
-  const [banners, setBanners] = useState([
-    { bannerName: "review1", file: null, preview: null },
-    { bannerName: "review2", file: null, preview: null },
-    { bannerName: "review3", file: null, preview: null },
-  ]);
   const [videos, setVideos] = useState([
     { bannerName: "review1", file: null, preview: null },
     { bannerName: "review2", file: null, preview: null },
     { bannerName: "review3", file: null, preview: null },
-    { bannerName: "review4", file: null, preview: null },
+    // { bannerName: "review4", file: null, preview: null },
   ]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -297,12 +292,12 @@ const AppHomeBanner = () => {
 
   return (
     <>
-      <div className="space-y-8">
+      <div className="space-y-10">
         {/* HERO BANNERS */}
         <section>
-          <H4>Home Page Hero Banners</H4>
+          {/* <H4>Home Page Hero Banners</H4> */}
 
-          <div className="grid gap-6 md:grid-cols-3 mt-4">
+          <div className="hidden gap-6 md:grid-cols-3 mt-4">
             {heroBanners.map((item, index) => (
               <Card key={item.bannerName}>
                 <CardContent className="p-4 space-y-3">
@@ -334,18 +329,18 @@ const AppHomeBanner = () => {
           </div>
         </section>
 
-        <section>
+        <section className="space-y-4">
           <H4>Review Videos</H4>
 
-          <div className="grid gap-6 md:grid-cols-4 w-[99%]">
+          <div className="grid gap-10 md:grid-cols-3">
             {videos.map((item, index) => (
               <Card key={item.bannerName}>
-                <CardContent className="p-4 space-y-3">
+                <CardContent className="p-4 py-0 space-y-3">
                   <h4 className="font-medium">Video {index + 1}</h4>
 
                   <video
                     src={item.preview}
-                    className="h-80 w-full rounded-md object-cover border"
+                    className="h-[400px] w-full rounded-md object-cover border"
                     controls
                   />
 

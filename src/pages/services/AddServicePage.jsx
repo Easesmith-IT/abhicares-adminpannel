@@ -26,6 +26,7 @@ const AddServicePage = () => {
         startingPrice: Number(c.startingPrice),
         appHomepage: c.appHomepage,
         webHomepage: c.webHomepage,
+        isTrending: c.isTrending || false,
       }));
 
     fd.append("name", values.name);

@@ -58,6 +58,8 @@ const BookingDetails = () => {
       setStatus(res.data.bookingDetails.status);
     }
   }, [res]);
+  console.log("booking", booking);
+  
 
   /* ================= Status Update ================= */
 
