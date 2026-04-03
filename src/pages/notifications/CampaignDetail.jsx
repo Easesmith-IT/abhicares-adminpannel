@@ -17,6 +17,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { BackLink } from "../../components/shared/back-link";
+import useGetApiReq from "../../hooks/useGetApiReq";
+import { Skeleton } from "../../components/ui/skeleton";
 
 const DUMMY_CAMPAIGN = {
   id: "1",
@@ -72,34 +74,34 @@ export default function CampaignDetail() {
   const { id } = useParams();
 
   const [campaign, setCampaign] = useState(null);
-  const [logs, setLogs] = useState([]);
-  const [loading, setLoading] = useState(true);
+
+  const { res, isLoading, fetchData } = useGetApiReq();
 
   const fetchCampaign = async () => {
-    try {
-      const res = await axios.get(`/api/notifications/${id}`);
-      setCampaign(res.data);
-    } catch (err) {
-      console.error(err);
-    }
+    fetchData(`/notifications/notification/${id}`, {
+      screenName: "CampaignDetail",
+    });
   };
 
   useEffect(() => {
-    fetchCampaign();
+    if (id) {
+      fetchCampaign();
+    }
   }, [id]);
 
   useEffect(() => {
-    setLoading(true);
+    if (res?.status === 200 || res?.status === 201) {
+      setCampaign(res.data.data); // ✅ correct mapping
+    }
+  }, [res]);
 
-    // simulate API delay
-    setTimeout(() => {
-      setCampaign(DUMMY_CAMPAIGN);
-      //   setLogs(DUMMY_LOGS);
-      setLoading(false);
-    }, 500);
-  }, [id]);
-
-  if (loading || !campaign) return <p>Loading...</p>;
+  if (isLoading || !campaign) {
+  return (
+    <Wrapper>
+      <CampaignSkeleton />
+    </Wrapper>
+  );
+}
 
   return (
     <Wrapper>
@@ -143,12 +145,12 @@ export default function CampaignDetail() {
         </Card>
 
         {/* 🔹 Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {/* <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <StatCard label="Total" value={campaign.stats?.total} />
           <StatCard label="Sent" value={campaign.stats?.sent} />
           <StatCard label="Pending" value={campaign.stats?.pending} />
           <StatCard label="Failed" value={campaign.stats?.failed} />
-        </div>
+        </div> */}
       </div>
     </Wrapper>
   );
@@ -175,4 +177,43 @@ function StatusBadge({ status }) {
   };
 
   return <Badge variant={variants[status] || "outline"}>{status}</Badge>;
+}
+
+function CampaignSkeleton() {
+  return (
+    <div className="space-y-6">
+      {/* Card Skeleton */}
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-6 w-1/3" />
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+
+          <Skeleton className="h-40 w-full rounded" />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Stats Skeleton */}
+      {/* <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+        {[1, 2, 3, 4].map((i) => (
+          <Card key={i}>
+            <CardContent className="p-4 space-y-2">
+              <Skeleton className="h-3 w-1/2" />
+              <Skeleton className="h-6 w-1/3" />
+            </CardContent>
+          </Card>
+        ))}
+      </div> */}
+    </div>
+  );
 }

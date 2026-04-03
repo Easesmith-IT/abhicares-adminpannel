@@ -28,10 +28,12 @@ import useGetApiReq from "@/hooks/useGetApiReq";
 import axios from "axios";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { H2 } from "../../components/shared/typography";
-import { EyeIcon, PencilIcon, XCircleIcon } from "lucide-react";
+import { EyeIcon, PencilIcon, PlusIcon, XCircleIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import MultiSelect from "../../components/shared/MultiSelect";
 import { CityFilter, useCities } from "@/components/filters/city";
+import { PaginationComp } from "../../components/shared/PaginationComp";
+import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
 const DUMMY_CAMPAIGNS = [
   {
@@ -84,6 +86,8 @@ export default function CampaignList() {
   const [campaigns, setCampaigns] = useState([]);
   const [selectedCity, setSelectedCity] = useState(null);
   const { cities } = useCities();
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const [filters, setFilters] = useState({
     userType: "",
@@ -91,57 +95,43 @@ export default function CampaignList() {
     status: "",
   });
 
-  /* 🔹 Fetch campaigns */
-  useEffect(() => {
-    const query = new URLSearchParams(filters).toString();
-    fetchData(`/api/notifications?${query}`, {
-      screenName: "CampaignList",
+  const handleReset = () => {
+    setFilters({
+      userType: "",
+      city: "",
+      status: "",
     });
-  }, [filters]);
-
-  /* 🔹 Sync response */
-  //   useEffect(() => {
-  //     if (res?.data) {
-  //       setCampaigns(res.data.data || []);
-  //     }
-  //   }, [res]);
+  };
 
   useEffect(() => {
-    let filtered = [...DUMMY_CAMPAIGNS];
+    const queryParams = new URLSearchParams();
 
     if (filters.userType && filters.userType !== "all") {
-      filtered = filtered.filter(
-        (item) => item.target_type === filters.userType,
-      );
+      queryParams.append("target_type", filters.userType);
     }
 
-    if (filters.city) {
-      filtered = filtered.filter((item) =>
-        item.cities?.some((c) =>
-          c.toLowerCase().includes(filters.city.toLowerCase()),
-        ),
-      );
+    if (selectedCity) {
+      queryParams.append("city", selectedCity);
     }
 
     if (filters.status && filters.status !== "all") {
-      filtered = filtered.filter((item) => item.status === filters.status);
+      queryParams.append("status", filters.status);
     }
 
-    setCampaigns(filtered);
-  }, [filters]);
+    fetchData(`/notifications/get-notifications?${queryParams.toString()}`, {
+      screenName: "CampaignList",
+    });
+  }, [filters, selectedCity]);
 
-  /* 🔹 Cancel */
-  const handleCancel = async (id) => {
-    if (!window.confirm("Cancel this campaign?")) return;
+  /* 🔹 Sync response */
+  useEffect(() => {
+    if (res?.status === 200 || res?.status === 201) {
+      console.log("res", res);
 
-    try {
-      await axios.patch(`/api/notifications/${id}/cancel`);
-      const query = new URLSearchParams(filters).toString();
-      fetchData(`/api/notifications?${query}`);
-    } catch (err) {
-      console.error(err);
+      setCampaigns(res.data.data || []);
+      setTotalPages(res.data.pages || 1);
     }
-  };
+  }, [res]);
 
   return (
     <Wrapper>
@@ -201,8 +191,13 @@ export default function CampaignList() {
               </SelectContent>
             </Select>
 
-            <Button onClick={() => navigate("/admin/notifications/create")}>
-              + Create Campaign
+            <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
+
+            <Button
+              variant="abhicares"
+              onClick={() => navigate("/admin/notifications/create")}
+            >
+              <PlusIcon /> Create Campaign
             </Button>
           </div>
         </div>
@@ -214,6 +209,7 @@ export default function CampaignList() {
             <TableHeader>
               <TableRow className="bg-slate-200 border-b border-white/40">
                 <TableHead>Title</TableHead>
+                <TableHead>Description</TableHead>
                 <TableHead>Audience</TableHead>
                 <TableHead>Cities</TableHead>
                 <TableHead>Scheduled</TableHead>
@@ -235,14 +231,19 @@ export default function CampaignList() {
               {campaigns.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell className="font-medium">{item.title}</TableCell>
+                  <TableCell>{item.body}</TableCell>
 
-                  <TableCell>{item.target_type}</TableCell>
-
-                  <TableCell>{item.cities?.join(", ") || "All"}</TableCell>
+                  <TableCell>{item.audience}</TableCell>
 
                   <TableCell>
-                    {item.scheduled_at
-                      ? new Date(item.scheduled_at).toLocaleString()
+                    <p className="w-40 whitespace-break-spaces">
+                      {item.cities?.map((city) => city?.name)?.join(", ")}
+                    </p>
+                  </TableCell>
+
+                  <TableCell>
+                    {item.scheduled
+                      ? new Date(item.scheduled).toLocaleString()
                       : "Immediate"}
                   </TableCell>
 
@@ -264,7 +265,7 @@ export default function CampaignList() {
                       </Button>
 
                       {/* Edit (only if pending) */}
-                      {item.status === "pending" && (
+                      {/* {item.status === "pending" && (
                         <Button
                           size="icon"
                           variant="outline"
@@ -274,18 +275,7 @@ export default function CampaignList() {
                         >
                           <PencilIcon className="h-4 w-4" />
                         </Button>
-                      )}
-
-                      {/* Cancel (only if pending) */}
-                      {item.status === "pending" && (
-                        <Button
-                          size="icon"
-                          variant="destructive"
-                          onClick={() => handleCancel(item.id)}
-                        >
-                          <XCircleIcon className="h-4 w-4" />
-                        </Button>
-                      )}
+                      )} */}
                     </div>
                   </TableCell>
                 </TableRow>
@@ -293,6 +283,13 @@ export default function CampaignList() {
             </TableBody>
           </Table>
         </div>
+
+        <PaginationComp
+          page={page}
+          pageCount={totalPages}
+          setPage={setPage}
+          className="mt-8 mb-5"
+        />
       </div>
     </Wrapper>
   );
@@ -309,7 +306,7 @@ function StatusBadge({ status }) {
 
   return (
     <span
-      className={`px-2 py-1 rounded-md text-xs font-medium ${
+      className={`px-2 py-1 rounded-md text-xs capitalize font-medium ${
         styles[status] || "bg-gray-100 text-gray-700"
       }`}
     >
@@ -323,39 +320,39 @@ export function CampaignListSkeleton({ rows = 5 }) {
     <>
       {Array.from({ length: rows }).map((_, i) => (
         <TableRow key={i}>
-          {/* Title */}
           <TableCell>
             <Skeleton className="h-4 w-[180px]" />
           </TableCell>
 
-          {/* Audience */}
+          <TableCell>
+            <Skeleton className="h-4 w-[180px]" />
+          </TableCell>
+
           <TableCell>
             <Skeleton className="h-4 w-[100px]" />
           </TableCell>
 
-          {/* Cities */}
           <TableCell>
             <Skeleton className="h-4 w-[140px]" />
           </TableCell>
 
-          {/* Scheduled */}
           <TableCell>
             <Skeleton className="h-4 w-[160px]" />
           </TableCell>
 
-          {/* Status */}
           <TableCell>
             <Skeleton className="h-6 w-[80px] rounded-md" />
           </TableCell>
 
-          {/* Actions */}
-          <TableCell className="text-right">
+         
+
+          {/* <TableCell className="text-right">
             <div className="flex justify-end gap-2">
               <Skeleton className="h-8 w-8 rounded-md" />
               <Skeleton className="h-8 w-8 rounded-md" />
               <Skeleton className="h-8 w-8 rounded-md" />
             </div>
-          </TableCell>
+          </TableCell> */}
         </TableRow>
       ))}
     </>

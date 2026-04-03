@@ -1,38 +1,31 @@
-import { useState } from "react";
-import axios from "axios";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 
 /* 🔹 Shadcn UI */
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import CampaignForm from "../../components/notifications/CampaignForm";
-import { toast } from "sonner";
 import Wrapper from "../../components/wrappers/Wrapper";
+import usePostApiReq from "../../hooks/usePostApiReq";
 
 export default function CreateCampaign() {
   const navigate = useNavigate();
 
-  const [loading, setLoading] = useState(false);
+  const { fetchData, res, isLoading } = usePostApiReq();
 
   const handleCreate = async (data) => {
-    setLoading(true);
-
-    try {
-      await axios.post("/api/notifications", data);
-
-      toast.success("Campaign created successfully");
-
-      navigate("/admin/notifications");
-    } catch (err) {
-      console.error(err);
-
-      toast.error(err?.response?.data?.message || "Failed to create campaign");
-    } finally {
-      setLoading(false);
-    }
+    fetchData("/notifications/send",data)
   };
+
+  useEffect(() => {
+     if (res?.status === 201 || res?.status === 200) {
+       navigate("/admin/notifications");
+     }
+  
+  }, [res])
+  
 
   return (
     <Wrapper>
@@ -53,7 +46,7 @@ export default function CreateCampaign() {
           </CardHeader>
 
           <CardContent>
-            <CampaignForm onSubmit={handleCreate} loading={loading} />
+            <CampaignForm onSubmit={handleCreate} loading={isLoading} />
           </CardContent>
         </Card>
       </div>

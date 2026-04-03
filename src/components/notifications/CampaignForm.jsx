@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 
@@ -26,6 +26,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import MultiSelect from "../shared/MultiSelect";
 import { useCities } from "@/components/filters/city";
+import useGetApiReq from "../../hooks/useGetApiReq";
 
 export default function CampaignForm({
   defaultValues = {},
@@ -33,12 +34,30 @@ export default function CampaignForm({
   loading,
   isEdit = false,
 }) {
-   const { cities } = useCities();
     
 
   const [imagePreview, setImagePreview] = useState(
     defaultValues.image_url || "",
   );
+
+  const [imageFile, setImageFile] = useState(null);
+  const fileRef = useRef(null);
+
+  const handleImage = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const preview = URL.createObjectURL(file);
+
+    setImageFile(file);
+    setImagePreview(preview);
+  };
+
+  const removeImage = () => {
+    if (fileRef.current) fileRef.current.value = "";
+    setImageFile(null);
+    setImagePreview("");
+  };
 
   const [scheduleType, setScheduleType] = useState(
     defaultValues.scheduled_at ? "later" : "now",
@@ -59,33 +78,57 @@ export default function CampaignForm({
   const { control, handleSubmit, watch, setValue } = form;
   const watchAll = watch();
 
-  console.log("cities", cities);
+
+   const { res, fetchData, isLoading } = useGetApiReq();
   
-  useEffect(() => {
-    if (cities) {
-      const modifiedCities = cities?.map((city) => ({
+    const [cities, setCities] = useState([]);
+    const [page, setPage] = useState(1);
+    const [search, setSearch] = useState("");
+    const [totalPages, setTotalPages] = useState(1);
+  
+ 
+    const fetchCities = useCallback(
+      () => {
+        fetchData(
+          `/cities/getAllCities`,
+        );
+      },
+      [fetchData],
+    );
+  
+    useEffect(() => {
+      fetchCities();
+    }, []);
+  
+    // Handle response
+    useEffect(() => {
+      if (res?.status !== 200 && res?.status !== 201) return;
+  
+      const { data } = res.data;
+      const modifiedCities = data?.map((city) => ({
         label: city?.name,
         value: city?._id,
       }));
-      setValue("cities", modifiedCities);
-    }
-  }, [cities]);
+      
+  
+      setCities(modifiedCities || []);
+    }, [res]);
+  
+  // useEffect(() => {
+  //   if (cities) {
+  //     const modifiedCities = cities?.map((city) => ({
+  //       label: city?.name,
+  //       value: city?._id,
+  //     }));
+  //     setValue("cities", modifiedCities);
+  //   }
+  // }, [cities]);
 
-  /* 🔹 Image Upload */
-  const handleImageUpload = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const res = await axios.post("/api/upload", formData);
-      setImagePreview(res.data.url);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
+  
   /* 🔹 Submit */
   const handleFormSubmit = (data) => {
+    console.log("data",data);
+    
     let parsedPayload = {};
 
     try {
@@ -95,13 +138,33 @@ export default function CampaignForm({
       return;
     }
 
-    onSubmit({
-      ...data,
-      image_url: imagePreview,
-      scheduled_at: scheduleType === "later" ? data.scheduled_at : null,
-      cities: data.cities || [],
-      data_payload: parsedPayload,
-    });
+    const formData = new FormData();
+
+    // Basic fields
+    formData.append("title", data.title);
+    formData.append("body", data.body);
+    formData.append("target_type", data.target_type);
+    formData.append("send_method", data.send_method);
+    formData.append("schedule_type", scheduleType);
+
+    // Cities (🔥 must stringify)
+    formData.append("cities", JSON.stringify(data.cities || []));
+
+    // Schedule
+    if (scheduleType === "later") {
+      formData.append("scheduled_at", data.scheduled_at);
+    }
+
+    // Data payload (optional)
+    formData.append("data_payload", JSON.stringify(parsedPayload));
+
+    // Image file (🔥 NOT preview URL)
+    if (data.notificationImage?.[0]) {
+      formData.append("notificationImage", imageFile);
+    }
+
+    // Call API
+    onSubmit(formData);
   };
 
   return (
@@ -145,7 +208,7 @@ export default function CampaignForm({
                   <FormLabel>Select Cities</FormLabel>
                   <FormControl>
                     <MultiSelect
-                      options={watch("cities") || []}
+                      options={cities || []}
                       value={field.value || []}
                       onChange={field.onChange}
                     />
@@ -192,19 +255,28 @@ export default function CampaignForm({
             />
 
             {/* Image Upload */}
-            <div>
-              <Label>Upload Image</Label>
-              <Input
-                type="file"
-                onChange={(e) => handleImageUpload(e.target.files[0])}
-              />
-              {imagePreview && (
-                <img
-                  src={imagePreview}
-                  className="mt-2 h-32 rounded-lg border"
-                />
-              )}
-            </div>
+            <Input
+              ref={fileRef}
+              type="file"
+              accept=".png,.jpg,.jpeg,.webp"
+              onChange={handleImage}
+            />
+
+            {imagePreview && (
+              <div className="relative w-fit mt-2">
+                <img src={imagePreview} className="h-32 rounded-lg border" />
+
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="destructive"
+                  className="absolute -right-2 -top-2 h-6 w-6"
+                  onClick={removeImage}
+                >
+                  ✕
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -280,15 +352,18 @@ export default function CampaignForm({
         </Card>
 
         {/* 🔹 Submit */}
-        <Button type="submit" className="w-full">
+        <div className="flex justify-end">
+
+        <Button variant="abhicares" type="submit">
           {loading
             ? isEdit
-              ? "Updating..."
-              : "Creating..."
+            ? "Updating..."
+            : "Creating..."
             : isEdit
-              ? "Update Campaign"
-              : "Create Campaign"}
+            ? "Update Campaign"
+            : "Create Campaign"}
         </Button>
+            </div>
       </form>
     </Form>
   );
