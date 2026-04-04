@@ -152,7 +152,7 @@ export default function CampaignForm({
 
     // Schedule
     if (scheduleType === "later") {
-      formData.append("scheduled_at", data.scheduled_at);
+      formData.append("scheduled_at", `${data.scheduled_at}:00+05:30`);
     }
 
     // Data payload (optional)
