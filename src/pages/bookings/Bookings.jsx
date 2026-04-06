@@ -66,7 +66,9 @@ const Bookings = () => {
 
   useEffect(() => {
     if (searchRes?.status === 200) {
-      setBookings([searchRes.data.data]);
+      console.log("searchRes",searchRes);
+      
+      setBookings([searchRes.data.data[0]]);
     }
   }, [searchRes]);
 

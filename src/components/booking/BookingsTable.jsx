@@ -73,11 +73,15 @@ const BookingsTable = ({ bookings, isLoading }) => {
                 </TableCell>
 
                 <TableCell>
-                  {format(new Date(booking.bookingDate), "dd-MM-yyyy")}
+                  {booking?.bookingDate &&
+                    format(new Date(booking?.bookingDate), "dd-MM-yyyy")}
                 </TableCell>
 
                 <TableCell>
-                  {format(new Date(booking.createdAt), "dd-MM-yyyy")}
+                  {booking.createdAt && format(
+                    new Date(booking.createdAt),
+                    "dd-MM-yyyy",
+                  )}
                 </TableCell>
 
                 <TableCell>
