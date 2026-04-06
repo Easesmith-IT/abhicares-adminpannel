@@ -66,6 +66,7 @@ import EditCategoryPage from "./pages/item-category/UpdateItemCategory";
 import Banners from "./pages/banners/Banners";
 import CreateBanner from "./pages/banners/CreateBanner";
 import UpdateBanner from "./pages/banners/UpdateBanner";
+import AnnouncementForm from "./components/banner/announcement/AnnouncementFrom";
 // import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
@@ -208,8 +209,26 @@ function App() {
           <Route path="/admin/seller-cashouts" element={<SellerCashouts />} />
 
           <Route path="/admin/banners" exact element={<Banners />} />
-          <Route path="/admin/banners/create" exact element={<CreateBanner />} />
-          <Route path="/admin/banners/:id/update" exact element={<UpdateBanner />} />
+          <Route
+            path="/admin/banner/add-announcement"
+            exact
+            element={<AnnouncementForm />}
+          />
+          <Route
+            path="/admin/banner/update-announcement"
+            exact
+            element={<AnnouncementForm />}
+          />
+          <Route
+            path="/admin/banners/create"
+            exact
+            element={<CreateBanner />}
+          />
+          <Route
+            path="/admin/banners/:id/update"
+            exact
+            element={<UpdateBanner />}
+          />
           <Route path="/admin/banners/app" exact element={<AppBanner />} />
 
           <Route path="/admin/crash-report" exact element={<CrashReports />} />

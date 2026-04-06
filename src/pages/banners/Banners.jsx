@@ -17,6 +17,7 @@ import useGetApiReq from "../../hooks/useGetApiReq";
 import { PaginationComp } from "../../components/shared/PaginationComp";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
 import AppHomeBanner from "../../components/banner/AppHomeBanner";
+import Announcement from "../../components/banner/announcement/Announcement";
 
 const Banners = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
@@ -128,6 +129,7 @@ const Banners = () => {
         )}
 
         <AppHomeBanner />
+        <Announcement />
       </div>
     </Wrapper>
   );
