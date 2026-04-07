@@ -141,7 +141,7 @@ const ServiceInfoPage = () => {
 
   useEffect(() => {
     if (deleteProductRes?.status === 200) {
-      toast.success("Product deleted");
+      // toast.success("Product deleted");
       getServiceProducts();
       setDeleteOpen(false);
     }
@@ -149,7 +149,7 @@ const ServiceInfoPage = () => {
 
   useEffect(() => {
     if (deletePackageRes?.status === 200) {
-      toast.success("Package deleted");
+      // toast.success("Package deleted");
       getServicePackages();
       setDeleteOpen(false);
     }

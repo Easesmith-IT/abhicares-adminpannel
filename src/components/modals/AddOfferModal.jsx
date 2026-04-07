@@ -127,7 +127,7 @@ const AddOfferModal = ({ setIsModalOpen, offer = null, getAllOffers }) => {
 
   useEffect(() => {
     if (addOfferRes?.status === 200 || updateOfferRes?.status === 200) {
-      toast.success(`Offer ${offer ? "updated" : "added"} successfully`);
+      // toast.success(`Offer ${offer ? "updated" : "added"} successfully`);
       getAllOffers();
       setIsModalOpen(false);
     }

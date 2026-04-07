@@ -72,7 +72,7 @@ const BookingDetails = () => {
 
   useEffect(() => {
     if (updateRes?.status === 200) {
-      toast.success("Booking status updated");
+      // toast.success("Booking status updated");
       getBooking(`/admin/get-booking-details/${id}`);
     }
   }, [updateRes]);

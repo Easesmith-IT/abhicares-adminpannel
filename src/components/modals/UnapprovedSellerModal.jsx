@@ -65,7 +65,7 @@ const UnapprovedSellerModal = ({
 
   useEffect(() => {
     if (approveRes?.status === 200) {
-      toast.success("Partner approved");
+      // toast.success("Partner approved");
       fetchInReview();
       getSellers();
     }
@@ -78,7 +78,7 @@ const UnapprovedSellerModal = ({
 
   useEffect(() => {
     if (deleteRes?.status === 200) {
-      toast.success("Partner deleted");
+      // toast.success("Partner deleted");
       setDeleteOpen(false);
       fetchInReview();
     }

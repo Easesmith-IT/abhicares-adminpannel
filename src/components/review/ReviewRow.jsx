@@ -23,7 +23,7 @@ export const ReviewRow = ({ review, fetchReviews }) => {
 
   useEffect(() => {
     if (deleteReviewRes?.status === 200 || deleteReviewRes?.status === 201) {
-      toast.success("Review deleted successfully");
+      // toast.success("Review deleted successfully");
       fetchReviews();
       setIsDeleteModalOpen(false);
     }

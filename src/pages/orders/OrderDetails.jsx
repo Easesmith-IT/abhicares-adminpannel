@@ -70,7 +70,7 @@ const OrderDetails = () => {
       changeOrderStatusRes?.status === 200 ||
       changeOrderStatusRes?.status === 201
     ) {
-      toast.success("Order status changed successfully");
+      // toast.success("Order status changed successfully");
       getOrderDetails();
     }
   }, [changeOrderStatusRes]);

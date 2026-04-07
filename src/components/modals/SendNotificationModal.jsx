@@ -84,7 +84,7 @@ const SendNotificationModal = ({ setIsModalOpen, getNotifications }) => {
       sendNotificationRes?.status === 200 ||
       sendNotificationRes?.status === 201
     ) {
-      toast.success("Notification sent successfully");
+      // toast.success("Notification sent successfully");
       getNotifications();
       setIsModalOpen(false);
     }

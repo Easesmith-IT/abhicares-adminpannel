@@ -110,7 +110,7 @@ const AddCityModal = ({ setIsModalOpen, city = "", getAllCities }) => {
 
   useEffect(() => {
     if (addCityRes?.status === 200 || addCityRes?.status === 201) {
-      toast.success("City added successfully");
+      // toast.success("City added successfully");
       getAllCities();
       setIsModalOpen(false);
     }
@@ -118,7 +118,7 @@ const AddCityModal = ({ setIsModalOpen, city = "", getAllCities }) => {
 
   useEffect(() => {
     if (updateCityRes?.status === 200 || updateCityRes?.status === 201) {
-      toast.success("City updated successfully");
+      // toast.success("City updated successfully");
       getAllCities();
       setIsModalOpen(false);
     }

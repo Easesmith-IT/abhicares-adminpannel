@@ -42,7 +42,7 @@ const FeaturesModal = ({
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      toast.success(res?.data?.message || "Feature deleted");
+      // toast.success(res?.data?.message || "Feature deleted");
       getServiceDetails();
       setIsDeleteOpen(false);
     }

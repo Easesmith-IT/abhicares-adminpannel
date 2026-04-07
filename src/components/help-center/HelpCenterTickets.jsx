@@ -119,7 +119,7 @@ const HelpCenterTickets = () => {
 
   useEffect(() => {
     if (deleteRes?.status === 200) {
-      toast.success("Ticket deleted");
+      // toast.success("Ticket deleted");
       getAllTickets();
       setSelectedId(null);
     }

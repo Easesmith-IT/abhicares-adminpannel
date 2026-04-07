@@ -94,7 +94,7 @@ const AddSubAdminModal = ({ setIsModalOpen, subAdmin, getSubadmins }) => {
 
   useEffect(() => {
     if (addSubAdminRes?.status === 200 || addSubAdminRes?.status === 201) {
-      toast.success("SubAdmin added successfully");
+      // toast.success("SubAdmin added successfully");
       setIsModalOpen(false);
       getSubadmins();
     }
@@ -105,7 +105,7 @@ const AddSubAdminModal = ({ setIsModalOpen, subAdmin, getSubadmins }) => {
       updateSubAdminRes?.status === 200 ||
       updateSubAdminRes?.status === 201
     ) {
-      toast.success("SubAdmin updated successfully");
+      // toast.success("SubAdmin updated successfully");
       setIsModalOpen(false);
       getSubadmins();
     }

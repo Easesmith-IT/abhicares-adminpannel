@@ -131,7 +131,7 @@ const AddSellerModal = ({ setIsModalOpen, seller = null, getAllSellers }) => {
 
   useEffect(() => {
     if (addRes?.status === 200 || updateRes?.status === 200) {
-      toast.success(`Seller ${seller ? "updated" : "created"} successfully`);
+      // toast.success(`Seller ${seller ? "updated" : "created"} successfully`);
       getAllSellers();
       setIsModalOpen(false);
     }

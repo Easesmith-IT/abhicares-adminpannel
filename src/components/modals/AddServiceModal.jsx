@@ -101,7 +101,7 @@ const AddServiceModal = ({
 
   useEffect(() => {
     if (addRes?.status === 200 || addRes?.status === 201) {
-      toast.success("Service added successfully");
+      // toast.success("Service added successfully");
       getCategoryServices();
       setIsModalOpen(false);
     }
@@ -109,7 +109,7 @@ const AddServiceModal = ({
 
   useEffect(() => {
     if (updateRes?.status === 200 || updateRes?.status === 201) {
-      toast.success("Service updated successfully");
+      // toast.success("Service updated successfully");
       getCategoryServices();
       setIsModalOpen(false);
     }

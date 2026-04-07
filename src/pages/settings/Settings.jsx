@@ -92,7 +92,7 @@ const Settings = () => {
       deleteSubAdminRes?.status === 200 ||
       deleteSubAdminRes?.status === 201
     ) {
-      toast.success("Subadmin deleted successfully");
+      // toast.success("Subadmin deleted successfully");
       setIsDeleteModalOpen(false);
       getSubadmins();
     }

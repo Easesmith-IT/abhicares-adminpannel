@@ -63,7 +63,7 @@ const UpdateComisionModal = ({
       updateCategoryDataRes?.status === 200 ||
       updateCategoryDataRes?.status === 201
     ) {
-      toast.success("Updated successfully");
+      // toast.success("Updated successfully");
       getAllCategories();
       setIsModalOpen(false);
     }

@@ -43,7 +43,7 @@ export default function EditCampaign() {
 
     await axios.put(`/api/notifications/${id}`, formData);
 
-    toast.success("Campaign updated successfully");
+    // toast.success("Campaign updated successfully");
 
     navigate("/admin/notifications");
   };

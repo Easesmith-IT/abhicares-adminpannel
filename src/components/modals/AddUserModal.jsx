@@ -60,7 +60,7 @@ const AddUserModal = ({ setIsModalOpen, user = "", getAllUsers }) => {
 
   useEffect(() => {
     if (addUserRes?.status === 200 || addUserRes?.status === 201) {
-      toast.success("User created successfully");
+      // toast.success("User created successfully");
       getAllUsers();
       setIsModalOpen(false);
     }
@@ -68,7 +68,7 @@ const AddUserModal = ({ setIsModalOpen, user = "", getAllUsers }) => {
 
   useEffect(() => {
     if (updateUserRes?.status === 200 || updateUserRes?.status === 201) {
-      toast.success("User updated successfully");
+      // toast.success("User updated successfully");
       getAllUsers();
       setIsModalOpen(false);
     }

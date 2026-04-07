@@ -5,21 +5,21 @@ import { Button } from "@/components/ui/button";
 
 import useGetApiReq from "@/hooks/useGetApiReq";
 
-export default function WalletBalanceCard({ userId }) {
-  const { res, isLoading, fetchData } = useGetApiReq();
+export default function WalletBalanceCard({ wallet, getWalletInfo,isLoading }) {
+  // const { res, isLoading, fetchData } = useGetApiReq();
 
-  const fetchWallet = async () => {
-    await fetchData("/userWallet/balance", {
-      params: { userId },
-      screenName: "WalletBalanceCard",
-    });
-  };
+  // const fetchWallet = async () => {
+  //   await fetchData("/userWallet/balance", {
+  //     params: { userId },
+  //     screenName: "WalletBalanceCard",
+  //   });
+  // };
 
-  useEffect(() => {
-    fetchWallet();
-  }, [userId]);
+  // useEffect(() => {
+  //   fetchWallet();
+  // }, [userId]);
 
-  const wallet = res?.data?.data;
+  // const wallet = res?.data?.data;
 
   return (
     <Card className="w-full max-w-md">
@@ -28,7 +28,7 @@ export default function WalletBalanceCard({ userId }) {
         <Button
           variant="outline"
           size="sm"
-          onClick={fetchWallet}
+          onClick={getWalletInfo}
           disabled={isLoading}
         >
           Refresh

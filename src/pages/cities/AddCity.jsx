@@ -13,7 +13,7 @@ const AddCityPage = () => {
   };
 
   if (res?.status === 200 || res?.status === 201) {
-    toast.success("City added successfully");
+    // toast.success("City added successfully");
     navigate("/admin/available-cities");
   }
 

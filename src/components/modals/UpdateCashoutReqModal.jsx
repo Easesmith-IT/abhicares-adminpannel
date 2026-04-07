@@ -74,7 +74,7 @@ const UpdateCashoutReqModal = ({
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      toast.success("Cashout request updated");
+      // toast.success("Cashout request updated");
       setIsUpdateModalOpen(false);
       getSellerWallet();
     }

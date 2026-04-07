@@ -66,7 +66,7 @@ const CategoryServices = () => {
 
   useEffect(() => {
     if (deleteRes?.status === 200 || deleteRes?.status === 201) {
-      toast.success("Service deleted successfully");
+      // toast.success("Service deleted successfully");
       setIsDeleteOpen(false);
       fetchServices();
     }

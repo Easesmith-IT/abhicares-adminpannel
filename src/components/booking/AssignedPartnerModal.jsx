@@ -63,7 +63,7 @@ const AssignedPartnerModal = ({
 
   useEffect(() => {
     if (assignRes?.status === 200 || assignRes?.status === 201) {
-      toast.success("Order assigned to seller successfully");
+      // toast.success("Order assigned to seller successfully");
       getBooking();
       setIsModalOpen(false);
       

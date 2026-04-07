@@ -130,7 +130,7 @@ const PartnerDetails = () => {
 
   useEffect(() => {
     if (updateStatusRes?.status === 200) {
-      toast.success("Partner status updated");
+      // toast.success("Partner status updated");
       fetchSeller();
     }
   }, [updateStatusRes]);

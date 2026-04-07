@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { BackLink } from "../../components/shared/back-link";
 import { H2 } from "../../components/shared/typography";
@@ -6,6 +6,7 @@ import WalletCreditModal from "../../components/customer/WalletCreditModal";
 import { Button } from "../../components/ui/button";
 import WalletBalanceCard from "../../components/customer/WalletBalanceCard";
 import { useParams } from "react-router-dom";
+import useGetApiReq from "../../hooks/useGetApiReq";
 
 const CustomerWallet = () => {
   const [isCreditWalletModalOpen, setIsCreditWalletModalOpen] = useState(false);
@@ -15,7 +16,21 @@ const CustomerWallet = () => {
     setIsCreditWalletModalOpen((prev) => !prev);
   };
 
-  const getWalletInfo = () => {};
+  // const getWalletInfo = () => {};
+  const { res, isLoading, fetchData } = useGetApiReq();
+
+  const getWalletInfo = async () => {
+    await fetchData("/userWallet/balance", {
+      params: { userId: params?.customerId },
+      screenName: "WalletBalanceCard",
+    });
+  };
+
+  useEffect(() => {
+    getWalletInfo();
+  }, [params?.customerId]);
+
+  const wallet = res?.data?.data;
 
   return (
     <Wrapper>
@@ -29,7 +44,11 @@ const CustomerWallet = () => {
           </Button>
         </div>
 
-        <WalletBalanceCard userId={params?.customerId} />
+        <WalletBalanceCard
+          wallet={wallet}
+          getWalletInfo={getWalletInfo}
+          isLoading={isLoading}
+        />
 
         {isCreditWalletModalOpen && (
           <WalletCreditModal

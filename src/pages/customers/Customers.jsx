@@ -88,7 +88,7 @@ const Customers = () => {
 
   useEffect(() => {
     if (deleteUserRes?.status === 200 || deleteUserRes?.status === 201) {
-      toast.success("User deleted successfully");
+      // toast.success("User deleted successfully");
       getAllUsers();
       setIsDeleteModalOpen(false);
     }
