@@ -201,10 +201,10 @@ function App() {
 
           <Route path="/admin/reviews" element={<Reviews />} />
 
-          <Route
+          {/* <Route
             path="/admin/send-notifications"
             element={<SendNotifications />}
-          />
+          /> */}
 
           <Route path="/admin/seller-cashouts" element={<SellerCashouts />} />
 

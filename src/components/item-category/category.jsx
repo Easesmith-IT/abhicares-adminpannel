@@ -1,5 +1,5 @@
 import { customId } from "@/lib/utils";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useDeleteApiReq from "../../hooks/useDeleteApiReq";
 import usePatchApiReq from "../../hooks/usePatchApiReq";
@@ -11,7 +11,7 @@ import { Spinner } from "../ui/spinner";
 import { Switch } from "../ui/switch";
 import { TableCell, TableRow } from "../ui/table";
 
-export const Category = ({ category }) => {
+export const Category = ({ category, getItemCategories }) => {
   const navigate = useNavigate();
   const [isAlertModalOpen, setIsAlertModalOpen] = useState(false);
   const [isActive, setIsActive] = useState(category?.isActive || false);
@@ -26,16 +26,18 @@ export const Category = ({ category }) => {
     setIsAlertModalOpen(true);
   };
 
+  const { fetchData: deleteCategory, isLoading: isDeleting } =
+    useDeleteApiReq();
 
-const { fetchData: deleteCategory, isLoading: isDeleting } = useDeleteApiReq();
+  const handleDeleteCategory = async () => {
+    await deleteCategory(`/items/delete/${category?._id}`);
+  };
 
-const handleDeleteCategory = async () => {
-  await deleteCategory(`/items/delete/${category?._id}`);
-};
-
-
-  const { fetchData: patchCategoryStatus, isLoading: isTogglePending } =
-    usePatchApiReq();
+  const {
+    res,
+    fetchData: patchCategoryStatus,
+    isLoading: isTogglePending,
+  } = usePatchApiReq();
 
   const toggleStatus = async () => {
     const prev = isActive;
@@ -49,9 +51,11 @@ const handleDeleteCategory = async () => {
     }
   };
 
-  // useEffect(() => {
-  //   if (error) setIsActive(category?.isActive);
-  // }, [error, category?.isActive]);
+  useEffect(() => {
+    if (res?.status === 200 || res?.status === 201) {
+      getItemCategories();
+    }
+  }, [res]);
 
   return (
     <>

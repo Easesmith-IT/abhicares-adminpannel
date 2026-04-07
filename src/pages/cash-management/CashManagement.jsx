@@ -177,10 +177,10 @@ const CashManagement = () => {
                       key={partner.sellerId}
                     >
                       <TableCell className="font-medium">
-                        {partner.partnerId}
+                        {partner.partnerId || "-"}
                       </TableCell>
                       <TableCell className="font-medium">
-                        {partner.name}
+                        {partner.name || "-"}
                       </TableCell>
 
                       <TableCell className="text-green-600 font-semibold">

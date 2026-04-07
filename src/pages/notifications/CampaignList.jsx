@@ -188,6 +188,7 @@ export default function CampaignList() {
                 <SelectItem value="processing">Processing</SelectItem>
                 <SelectItem value="sent">Sent</SelectItem>
                 <SelectItem value="failed">Failed</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
               </SelectContent>
             </Select>
 

@@ -172,12 +172,12 @@ const SideNav = () => {
             Star,
             permissions.reviews !== "none",
           )}
-          {menuItem(
+          {/* {menuItem(
             "/admin/send-notifications",
             "Send Notifications",
             Bell,
             permissions.notifications !== "none",
-          )}
+          )} */}
           {menuItem(
             "/admin/seller-cashouts",
             "Seller Cashouts",

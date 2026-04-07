@@ -152,7 +152,7 @@ const ItemCategories = () => {
             </TableHeader>
             <TableBody>
               {categories?.map((category, index) => (
-                <Category key={category?._id || index} category={category} />
+                <Category key={category?._id || index} category={category} getItemCategories={getItemCategories} />
               ))}
 
               {isLoading &&

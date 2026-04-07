@@ -218,7 +218,7 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, submitLabel }) => {
 
             {/* Submit */}
             <div className="flex justify-end">
-              <Button variant="medico" type="submit" disabled={isLoading}>
+              <Button variant="abhicares" type="submit" disabled={isLoading}>
                 {isLoading ? <Spinner /> : submitLabel}
               </Button>
             </div>

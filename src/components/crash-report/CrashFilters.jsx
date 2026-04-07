@@ -65,8 +65,8 @@ export function CrashFilters({
             <SelectValue placeholder="User Type" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Patient">Patient</SelectItem>
-            <SelectItem value="Doctor">Doctor</SelectItem>
+            <SelectItem value="User">User</SelectItem>
+            <SelectItem value="Seller">Seller</SelectItem>
             <SelectItem value="Admin">Admin</SelectItem>
           </SelectContent>
         </Select>
