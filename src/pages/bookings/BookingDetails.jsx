@@ -46,7 +46,6 @@ const BookingDetails = () => {
   /* ================= Fetch ================= */
 
   console.log("booking-log", booking);
-  
 
   useEffect(() => {
     getBooking(`/admin/get-booking-details/${id}`);
@@ -59,7 +58,6 @@ const BookingDetails = () => {
     }
   }, [res]);
   console.log("booking", booking);
-  
 
   /* ================= Status Update ================= */
 
@@ -115,7 +113,13 @@ const BookingDetails = () => {
                   <p className="mb-1 text-sm font-medium">Update Status</p>
                   <div className="flex gap-2">
                     <Select value={status} onValueChange={setStatus}>
-                      <SelectTrigger className="w-[160px]">
+                      <SelectTrigger
+                        disabled={
+                          booking.status === "cancelled" ||
+                          booking.currentLocation.status === "cancelled"
+                        }
+                        className="w-[160px]"
+                      >
                         <SelectValue placeholder="Select status" />
                       </SelectTrigger>
                       <SelectContent>
@@ -124,7 +128,16 @@ const BookingDetails = () => {
                       </SelectContent>
                     </Select>
 
-                    <Button variant="abhicares" onClick={handleStatusUpdate}>Update</Button>
+                    <Button
+                      disabled={
+                        booking.status === "cancelled" ||
+                        booking.currentLocation.status === "cancelled"
+                      }
+                      variant="abhicares"
+                      onClick={handleStatusUpdate}
+                    >
+                      Update
+                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -258,7 +271,14 @@ const BookingDetails = () => {
 
               <CardContent>
                 {!booking.sellerId ? (
-                  <Button variant="abhicares" onClick={() => setIsPartnerModalOpen(true)}>
+                  <Button
+                    variant="abhicares"
+                    onClick={() => setIsPartnerModalOpen(true)}
+                    disabled={
+                      booking.status === "cancelled" ||
+                      booking.currentLocation.status === "cancelled"
+                    }
+                  >
                     Assign to Partner
                   </Button>
                 ) : (

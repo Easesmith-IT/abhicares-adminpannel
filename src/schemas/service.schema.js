@@ -50,6 +50,7 @@ export const CityConfigSchema = z
   .object({
     cityId: z.string(),
     isActive: z.boolean(),
+    showOnHomepage: z.boolean(),
 
     price: z.coerce.number().optional(),
     offerPrice: z.coerce.number().optional(),

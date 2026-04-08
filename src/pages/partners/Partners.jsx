@@ -79,6 +79,10 @@ const Partners = () => {
   const [unapprovedOpen, setUnapprovedOpen] = useState(false);
   const [cityId, setCityId] = useState("");
 
+  const handleCreate = ()=>{
+    navigate("/admin/partners/create");
+  }
+
   const handleReset = () => {
     setCityId("");
     setStatus("");
@@ -147,7 +151,7 @@ const Partners = () => {
             <Button
               variant="abhicares"
               className="ml-auto"
-              onClick={() => setAddOpen(true)}
+              onClick={handleCreate}
             >
               <PlusIcon className="mr-2 h-4 w-4" />
               Add Partner
@@ -232,8 +236,9 @@ const Partners = () => {
                           size="icon"
                           variant="outline"
                           onClick={() => {
-                            setSeller(s);
-                            setEditOpen(true);
+                            navigate(`/admin/partners/${s._id}/update`, {
+                              state: { seller:s},
+                            });
                           }}
                         >
                           <Pencil className="h-4 w-4" />

@@ -19,6 +19,8 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ReviewDetailsModal = ({ setIsModalOpen, review }) => {
+  console.log("review", review);
+
   const {
     res: getReviewDetailsRes,
     fetchData: getReviewDetails,
@@ -104,50 +106,52 @@ const ReviewDetailsModal = ({ setIsModalOpen, review }) => {
                   <h5 className="font-semibold">User Details</h5>
                   <p>
                     <span className="font-medium">Name:</span>{" "}
-                    {reviewDetails?.userId?.name}
+                    {reviewDetails?.userId?.name || "NA"}
                   </p>
                   <p>
                     <span className="font-medium">Phone:</span>{" "}
-                    {reviewDetails?.userId?.phone}
+                    {reviewDetails?.userId?.phone || "NA"}
                   </p>
                 </div>
 
                 {/* Service */}
-                <div className="space-y-2">
-                  <h5 className="font-semibold">Service Details</h5>
-                  <p>
-                    <span className="font-medium">Name:</span>{" "}
-                    {reviewDetails?.productId
-                      ? reviewDetails.productId.name
-                      : reviewDetails?.packageId?.name}
-                  </p>
-                  <p>
-                    <span className="font-medium">Type:</span>{" "}
-                    {reviewDetails?.productId ? "Product" : "Package"}
-                  </p>
-
-                  <div className="text-sm text-muted-foreground">
-                    {reviewDetails?.productId
-                      ? parse(reviewDetails.productId.description)
-                      : reviewDetails?.packageId?.description &&
-                        parse(reviewDetails.packageId.description)}
-                  </div>
-
-                  <div className="flex gap-3 font-medium">
-                    <span className="line-through text-muted-foreground">
-                      ₹
+                {(reviewDetails?.productId || reviewDetails?.packageId) && (
+                  <div className="space-y-2">
+                    <h5 className="font-semibold">Service Details</h5>
+                    <p>
+                      <span className="font-medium">Name:</span>{" "}
                       {reviewDetails?.productId
-                        ? reviewDetails.productId.price
-                        : reviewDetails?.packageId?.price}
-                    </span>
-                    <span>
-                      ₹
+                        ? reviewDetails.productId.name
+                        : reviewDetails?.packageId?.name}
+                    </p>
+                    <p>
+                      <span className="font-medium">Type:</span>{" "}
+                      {reviewDetails?.productId ? "Product" : "Package"}
+                    </p>
+
+                    <div className="text-sm text-muted-foreground">
                       {reviewDetails?.productId
-                        ? reviewDetails.productId.offerPrice
-                        : reviewDetails?.packageId?.offerPrice}
-                    </span>
+                        ? parse(reviewDetails.productId.description)
+                        : reviewDetails?.packageId?.description &&
+                          parse(reviewDetails.packageId.description)}
+                    </div>
+
+                    <div className="flex gap-3 font-medium">
+                      <span className="line-through text-muted-foreground">
+                        ₹
+                        {reviewDetails?.productId
+                          ? reviewDetails.productId.price
+                          : reviewDetails?.packageId?.price}
+                      </span>
+                      <span>
+                        ₹
+                        {reviewDetails?.productId
+                          ? reviewDetails.productId.offerPrice
+                          : reviewDetails?.packageId?.offerPrice}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* Partner */}
                 {reviewDetails?.bookingId?.sellerId && (

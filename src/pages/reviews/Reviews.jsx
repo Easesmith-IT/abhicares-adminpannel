@@ -127,7 +127,7 @@ const Reviews = () => {
             />
 
             {/* Service filter (optional – kept commented like original) */}
-            <Select
+            {/* <Select
               value={filters.serviceType}
               onValueChange={(value) =>
                 handleFilterChange("serviceType", value)
@@ -143,7 +143,7 @@ const Reviews = () => {
                   </SelectItem>
                 ))}
               </SelectContent>
-            </Select>
+            </Select> */}
 
             <Select
               value={filters.type}

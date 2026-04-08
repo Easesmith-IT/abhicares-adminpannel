@@ -26,7 +26,7 @@ export const Category = ({ category, getItemCategories }) => {
     setIsAlertModalOpen(true);
   };
 
-  const { fetchData: deleteCategory, isLoading: isDeleting } =
+  const { res:deleteRes,fetchData: deleteCategory, isLoading: isDeleting } =
     useDeleteApiReq();
 
   const handleDeleteCategory = async () => {
@@ -56,6 +56,13 @@ export const Category = ({ category, getItemCategories }) => {
       getItemCategories();
     }
   }, [res]);
+
+  useEffect(() => {
+    if (deleteRes?.status === 200 || deleteRes?.status === 201) {
+      getItemCategories();
+      setIsAlertModalOpen(false)
+    }
+  }, [deleteRes]);
 
   return (
     <>

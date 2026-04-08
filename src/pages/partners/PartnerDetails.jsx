@@ -162,47 +162,160 @@ const PartnerDetails = () => {
               {sellerLoading || !seller ? (
                 <PartnerInfoSkeleton />
               ) : (
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <p>
-                    <b>Name:</b> {seller.name}
-                  </p>
-                  <p>
-                    <b>Joined:</b>{" "}
-                    {format(new Date(seller.createdAt), "dd/MM/yyyy")}
-                  </p>
-                  <p>
-                    <b>GST:</b> {seller.gstNumber || "-"}
-                  </p>
-                  <p>
-                    <b>Phone:</b> {seller.phone || "-"}
-                  </p>
-                  <p>
-                    <b>Legal Name:</b> {seller.legalName || "-"}
-                  </p>
+                <div className="space-y-6">
+                  {/* ---------------- BASIC INFO ---------------- */}
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <p>
+                      <b>Name:</b> {seller.name}
+                    </p>
+                    <p>
+                      <b>Phone:</b> {seller.phone}
+                    </p>
+                    <p>
+                      <b>Email:</b> {seller.email || "-"}
+                    </p>
+                    <p>
+                      <b>Gender:</b> {seller.Gender}
+                    </p>
 
-                  <div className="flex items-center gap-2">
-                    <b>Status:</b>
-                    <Badge>{seller.status}</Badge>
-                    <Select
-                      value={seller.status}
-                      onValueChange={handleStatusChange}
-                    >
-                      <SelectTrigger className="w-40">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="IN-REVIEW">In Review</SelectItem>
-                        <SelectItem value="APPROVED">Approved</SelectItem>
-                        <SelectItem value="REJECTED">Rejected</SelectItem>
-                        <SelectItem value="HOLD">Hold</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <p>
+                      <b>Legal Name:</b> {seller.legalName || "-"}
+                    </p>
+                    <p>
+                      <b>GST:</b> {seller.gstNumber || "-"}
+                    </p>
+
+                    <p>
+                      <b>Category:</b> {seller.categoryId?.name || "-"}
+                    </p>
+
+                    <p className="col-span-2">
+                      <b>Services:</b>{" "}
+                      {seller.services?.length
+                        ? seller.services
+                            .map((s) => s.serviceId?.name)
+                            .join(", ")
+                        : "-"}
+                    </p>
+
+                    <p>
+                      <b>Status:</b> <Badge>{seller.status}</Badge>
+                    </p>
+
+                    <p>
+                      <b>Joined:</b>{" "}
+                      {format(new Date(seller.createdAt), "dd/MM/yyyy")}
+                    </p>
                   </div>
 
-                  <p className="col-span-2">
+                  {/* ---------------- ADDRESS ---------------- */}
+                  <div className="text-sm">
                     <b>Address:</b>{" "}
-                    {`${seller.address?.addressLine}, ${seller.address?.city}, ${seller.address?.state} - ${seller.address?.pincode}`}
-                  </p>
+                    {[
+                      seller.address?.addressLine,
+                      seller.address?.landmark,
+                      seller.city?.cityName,
+                      seller.city?.state,
+                      seller.address?.pincode,
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </div>
+
+                  {/* ---------------- CONTACT PERSON ---------------- */}
+                  <div className="grid grid-cols-3 gap-4 text-sm">
+                    <p>
+                      <b>Contact Name:</b> {seller.contactPerson?.name || "-"}
+                    </p>
+                    <p>
+                      <b>Contact Phone:</b> {seller.contactPerson?.phone || "-"}
+                    </p>
+                    <p>
+                      <b>Contact Email:</b> {seller.contactPerson?.email || "-"}
+                    </p>
+                  </div>
+
+                  {/* ---------------- BANK DETAILS ---------------- */}
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <p>
+                      <b>Account No:</b>{" "}
+                      {seller.bankDetails?.accountNumber || "-"}
+                    </p>
+                    <p>
+                      <b>IFSC:</b> {seller.bankDetails?.ifscCode || "-"}
+                    </p>
+                    <p>
+                      <b>Holder:</b>{" "}
+                      {seller.bankDetails?.accountHolderName || "-"}
+                    </p>
+                    <p>
+                      <b>Bank:</b> {seller.bankDetails?.bankName || "-"}
+                    </p>
+                  </div>
+
+                  {/* ---------------- PROFILE PHOTO ---------------- */}
+                  <div>
+                    <h3 className="font-semibold mb-2">Profile Photo</h3>
+                    {seller.profilePhoto?.url ? (
+                      <img
+                        src={`${import.meta.env.VITE_APP_IMAGE_URL}/${seller.profilePhoto.url}`}
+                        className="h-32 w-32 object-cover rounded border"
+                      />
+                    ) : (
+                      <p>No profile photo</p>
+                    )}
+                  </div>
+
+                  {/* ---------------- DOCUMENTS ---------------- */}
+                  <div>
+                    <h3 className="font-semibold mb-3">Documents</h3>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      {/* PAN */}
+                      {seller.documents?.panCard?.url && (
+                        <DocCard
+                          title="PAN Card"
+                          file={seller.documents.panCard}
+                        />
+                      )}
+
+                      {/* ADDRESS PROOF */}
+                      {seller.documents?.addressProof?.url && (
+                        <DocCard
+                          title={`Address Proof (${seller.documents.addressProof.type})`}
+                          file={seller.documents.addressProof}
+                        />
+                      )}
+
+                      {/* GST */}
+                      {seller.documents?.gstCertificate?.url && (
+                        <DocCard
+                          title="GST Certificate"
+                          file={seller.documents.gstCertificate}
+                        />
+                      )}
+
+                      {/* SHOP LICENSE */}
+                      {seller.documents?.shopLicense?.url && (
+                        <DocCard
+                          title="Shop License"
+                          file={seller.documents.shopLicense}
+                        />
+                      )}
+                    </div>
+
+                    {/* OTHER DOCUMENTS */}
+                    {seller.documents?.otherDocuments?.length > 0 && (
+                      <div className="mt-4">
+                        <h4 className="font-medium mb-2">Other Documents</h4>
+                        <div className="flex flex-wrap gap-3">
+                          {seller.documents.otherDocuments.map((doc, i) => (
+                            <DocCard key={i} title={doc.name} file={doc} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </CardContent>
@@ -358,6 +471,30 @@ const PartnerDetails = () => {
         />
       )}
     </>
+  );
+};
+
+const DocCard = ({ title, file }) => {
+  return (
+    <div className="border rounded p-2 text-xs">
+      <p className="mb-1 font-medium">{title}</p>
+
+      <img
+        src={`${import.meta.env.VITE_APP_IMAGE_URL}/${file.url}`}
+        className="h-24 w-full object-cover rounded"
+      />
+
+      <p className="mt-1 text-xs">
+        Status:{" "}
+        <span
+          className={
+            file.verified ? "text-green-600" : "text-red-600"
+          }
+        >
+          {file.verified ? "Verified" : "Not Verified"}
+        </span>
+      </p>
+    </div>
   );
 };
 

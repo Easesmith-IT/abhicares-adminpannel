@@ -67,6 +67,8 @@ import Banners from "./pages/banners/Banners";
 import CreateBanner from "./pages/banners/CreateBanner";
 import UpdateBanner from "./pages/banners/UpdateBanner";
 import AnnouncementForm from "./components/banner/announcement/AnnouncementFrom";
+import CreateSeller from "./pages/partners/CreatePartner";
+import UpdateSeller from "./pages/partners/UpdatePartner";
 // import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
@@ -140,6 +142,11 @@ function App() {
           /> */}
 
           <Route path="/admin/partners" element={<Partners />} />
+          <Route path="/admin/partners/create" element={<CreateSeller />} />
+          <Route
+            path="/admin/partners/:partnerId/update"
+            element={<UpdateSeller />}
+          />
           <Route
             path="/admin/partners/:partnerId"
             element={<PartnerDetails />}

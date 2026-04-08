@@ -25,6 +25,13 @@ import { useCities } from "@/components/filters/city";
 import { productSchema } from "../../schemas/service.schema";
 import { CityCardProductSkeleton } from "./CityCardSkeleton";
 import { Spinner } from "../ui/spinner";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const ProductForm = ({
   defaultValues,
@@ -103,6 +110,7 @@ const ProductForm = ({
 
    const normalizedExisting = existing.map((cfg) => ({
      ...cfg,
+     showOnHomepage:cfg.showOnHomepage || false,
      // 🔥 FIX: always force cityId to string
      cityId: typeof cfg.cityId === "object" ? cfg.cityId._id : cfg.cityId,
 
@@ -122,6 +130,7 @@ const ProductForm = ({
          cityId: city._id,
          cityName: city.name,
          isActive: false,
+         appHomepage: false,
          price: "",
          offerPrice: "",
        })),
@@ -179,6 +188,7 @@ const ProductForm = ({
       isActive: cfg.isActive,
       price: cfg.isActive ? Number(cfg.price) : 0,
       offerPrice: cfg.isActive ? Number(cfg.offerPrice) : 0,
+      showOnHomepage: cfg.showOnHomepage || false,
     }));
 
     fd.append("cityConfigs", JSON.stringify(sanitizedCityConfigs));
@@ -345,6 +355,35 @@ const ProductForm = ({
                                     {...field}
                                     disabled={!isActive}
                                   />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`cityConfigs.${index}.showOnHomepage`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Show on Homepage</FormLabel>
+                                <FormControl>
+                                  <Select
+                                    disabled={!isActive}
+                                    value={String(field.value)}
+                                    onValueChange={(v) =>
+                                      field.onChange(v === "true")
+                                    }
+                                  >
+                                    <SelectTrigger>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="true">True</SelectItem>
+                                      <SelectItem value="false">
+                                        False
+                                      </SelectItem>
+                                    </SelectContent>
+                                  </Select>
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
