@@ -23,6 +23,7 @@ import useGetApiReq from "../../hooks/useGetApiReq";
 import { BackLink } from "../../components/shared/back-link";
 import { H2 } from "../../components/shared/typography";
 import BookingDetailsSkeleton from "../../components/booking/BookingDetailsSkeleton";
+import RefundStatusModal from "../../components/booking/RefundStatusModal";
 
 const statusVariantMap = {
   cancelled: "destructive",
@@ -41,14 +42,18 @@ const BookingDetails = () => {
   const [booking, setBooking] = useState(null);
   const [status, setStatus] = useState("");
   const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [mapData, setMapData] = useState({ distance: "", time: "" });
 
   /* ================= Fetch ================= */
 
   console.log("booking-log", booking);
+  const getBookingDetails = ()=> {
+    getBooking(`/admin/get-booking-details/${id}`);
+  }
 
   useEffect(() => {
-    getBooking(`/admin/get-booking-details/${id}`);
+    id && getBookingDetails()
   }, [id]);
 
   useEffect(() => {
@@ -156,9 +161,26 @@ const BookingDetails = () => {
                   {booking.refundInfo?.status}
                 </p>
                 <p>
+                  <span className="font-medium">Refund Admin Comment:</span>{" "}
+                  {booking.refundInfo?.reason}
+                </p>
+                <p>
                   <span className="font-medium">Delivery Date:</span>{" "}
                   {format(new Date(booking.bookingDate), "dd-MM-yyyy")}
                 </p>
+                {booking.status === "cancelled" && (
+                  <Button className="w-40" onClick={() => setIsModalOpen(true)}>
+                    Update Refund Status
+                  </Button>
+                )}
+                {isModalOpen && (
+                  <RefundStatusModal
+                    bookingId={booking._id}
+                    open={isModalOpen}
+                    setOpen={setIsModalOpen}
+                    getBookingDetails={getBookingDetails}
+                  />
+                )}
               </CardContent>
             </Card>
 
