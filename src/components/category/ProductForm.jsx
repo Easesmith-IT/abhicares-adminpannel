@@ -131,6 +131,7 @@ const ProductForm = ({
          cityName: city.name,
          isActive: false,
          appHomepage: false,
+         showOnHomepage: false,
          price: "",
          offerPrice: "",
        })),
