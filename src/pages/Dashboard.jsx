@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "../components/ui/button";
+import TooltipIconButton from "../components/shared/TooltipIconButton";
 
 const AdminPage = () => {
   const navigate = useNavigate();
@@ -22,6 +23,10 @@ const AdminPage = () => {
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [status, setStatus] = useState("");
+
+   const handleReset = () => {
+     setStatus("");
+   };
 
   useEffect(() => {
     fetchData(`/admin/get-recent-orders?page=${page}&status=${status}`);
@@ -58,6 +63,11 @@ const AdminPage = () => {
                   <SelectItem value="Cancelled">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
+
+              <TooltipIconButton
+                tooltip="Reset Filters"
+                onClick={handleReset}
+              />
 
               <Button
                 onClick={() => navigate("/admin/orders")}

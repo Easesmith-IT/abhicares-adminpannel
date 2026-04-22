@@ -64,28 +64,33 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
     },
   });
 
-  const { watch, setValue, getValues } = form;
-   const bannerRef = useRef(null);
+  const {
+    watch,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = form;
+  const bannerRef = useRef(null);
 
-   const bannerPreview = watch("bannerPreview");
-   const bannerFile = watch("bannerFile");
+  const bannerPreview = watch("bannerPreview");
+  const bannerFile = watch("bannerFile");
 
-   const handleBanner = (e) => {
-     const file = e.target.files?.[0];
-     if (!file) return;
+  const handleBanner = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-     const preview = URL.createObjectURL(file);
+    const preview = URL.createObjectURL(file);
 
-     setValue("bannerFile", file);
-     setValue("bannerPreview", preview);
-   };
+    setValue("bannerFile", file);
+    setValue("bannerPreview", preview);
+  };
 
-   const removeBanner = () => {
-     if (bannerRef.current) bannerRef.current.value = "";
+  const removeBanner = () => {
+    if (bannerRef.current) bannerRef.current.value = "";
 
-     setValue("bannerFile", null);
-     setValue("bannerPreview", "");
-   };
+    setValue("bannerFile", null);
+    setValue("bannerPreview", "");
+  };
 
   console.log("getValues", getValues());
 
@@ -97,34 +102,33 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
      Merge current page cities into cityConfigs
      (ACCUMULATE — Option B)
   ---------------------------------- */
-useEffect(() => {
-  if (!cities.length) return;
+  useEffect(() => {
+    if (!cities.length) return;
 
-  const existing = getValues("cityConfigs") || [];
+    const existing = getValues("cityConfigs") || [];
 
-  const cityMap = new Map(cities.map((c) => [c._id, c.name]));
+    const cityMap = new Map(cities.map((c) => [c._id, c.name]));
 
-  const merged = [
-    ...existing.map((cfg) => ({
-      ...cfg,
-      cityName: cfg.cityName ?? cityMap.get(cfg.cityId) ?? "",
-    })),
-    ...cities
-      .filter((city) => !existing.some((c) => c.cityId === city._id))
-      .map((city) => ({
-        cityId: city._id,
-        cityName: city.name,
-        isActive: false,
-        startingPrice: "",
-        appHomepage: false,
-        webHomepage: false,
-        isTrending: false,
+    const merged = [
+      ...existing.map((cfg) => ({
+        ...cfg,
+        cityName: cfg.cityName ?? cityMap.get(cfg.cityId) ?? "",
       })),
-  ];
+      ...cities
+        .filter((city) => !existing.some((c) => c.cityId === city._id))
+        .map((city) => ({
+          cityId: city._id,
+          cityName: city.name,
+          isActive: false,
+          startingPrice: "",
+          appHomepage: false,
+          webHomepage: false,
+          isTrending: false,
+        })),
+    ];
 
-  setValue("cityConfigs", merged, { shouldDirty: false });
-}, [cities]);
-
+    setValue("cityConfigs", merged, { shouldDirty: false });
+  }, [cities]);
 
   /* ----------------------------------
      ONLY show current page cities (UI filter)
@@ -367,7 +371,9 @@ useEffect(() => {
                                         <Label>
                                           {key === "appHomepage"
                                             ? "App Homepage"
-                                            : key === "isTrending"?"Is Trending": "Web Homepage"}
+                                            : key === "isTrending"
+                                              ? "Is Trending"
+                                              : "Web Homepage"}
                                         </Label>
                                         <Select
                                           disabled={!isActive}
@@ -399,6 +405,10 @@ useEffect(() => {
                       );
                     })}
               </div>
+
+              {errors.cityConfigs?.root?.message && (
+                <FormMessage>{errors.cityConfigs.root.message}</FormMessage>
+              )}
 
               {/* Pagination */}
               <div className="flex justify-end gap-4">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import toast from "react-hot-toast";
 
 import {
@@ -7,8 +7,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
 import {
   Select,
   SelectContent,
@@ -16,51 +18,79 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 import usePatchApiReq from "../../hooks/usePatchApiReq";
 import usePostApiReq from "../../hooks/usePostApiReq";
 
-const AddUserModal = ({ setIsModalOpen, user = "", getAllUsers }) => {
+/* ---------------- SCHEMA ---------------- */
+const userSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+
+  phone: z
+    .string()
+    .min(1, "Phone is required")
+    .regex(/^[6-9]\d{9}$/, "Invalid phone number"),
+
+  email: z.string().email("Invalid email").optional().or(z.literal("")),
+
+  dateOfBirth: z.string().optional(),
+
+  Gender: z.string().min(1, "Gender is required"),
+
+});
+
+/* ---------------- COMPONENT ---------------- */
+const AddUserModal = ({ setIsModalOpen, user = null, getAllUsers }) => {
   const {
     res: addUserRes,
     fetchData: addUser,
     isLoading: addUserLoading,
   } = usePostApiReq();
 
-  const { res: updateUserRes, fetchData: addUserFetchData } = usePatchApiReq();
+  const {
+    res: updateUserRes,
+    fetchData: updateUser,
+    isLoading: updateLoading,
+  } = usePatchApiReq();
 
-  const [userInfo, setUserInfo] = useState({
-    name: user?.name || "",
-    phone: user?.phone || "",
-    status: user?.status ?? true,
+  /* ---------------- FORM ---------------- */
+  const form = useForm({
+    resolver: zodResolver(userSchema),
+    defaultValues: {
+      name: user?.name || "",
+      phone: user?.phone || "",
+      email: user?.email || "",
+      dateOfBirth: user?.dateOfBirth || "",
+      Gender: user?.Gender || "",
+    },
   });
 
-  const handleOnChange = (e) => {
-    const { name, value } = e.target;
-    setUserInfo((p) => ({ ...p, [name]: value }));
-  };
-
-  const handleOnSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!userInfo.name || !userInfo.phone || userInfo.status === "") {
-      toast.error("All fields are required");
-      return;
-    }
-
+  /* ---------------- SUBMIT ---------------- */
+  const handleOnSubmit = async (values) => {
     if (user) {
-      await addUserFetchData(`/admin/update-user/${user._id}`, {
-        ...userInfo,
-      });
+      await updateUser(`/admin/update-user/${user._id}`, values);
     } else {
-      addUser("/admin/create-user", { ...userInfo });
+      await addUser("/admin/create-user", values);
     }
   };
 
+  /* ---------------- SUCCESS HANDLING ---------------- */
   useEffect(() => {
     if (addUserRes?.status === 200 || addUserRes?.status === 201) {
-      // toast.success("User created successfully");
+      toast.success("User created successfully");
       getAllUsers();
       setIsModalOpen(false);
     }
@@ -68,12 +98,13 @@ const AddUserModal = ({ setIsModalOpen, user = "", getAllUsers }) => {
 
   useEffect(() => {
     if (updateUserRes?.status === 200 || updateUserRes?.status === 201) {
-      // toast.success("User updated successfully");
+      toast.success("User updated successfully");
       getAllUsers();
       setIsModalOpen(false);
     }
   }, [updateUserRes]);
 
+  /* ---------------- UI ---------------- */
   return (
     <Dialog open onOpenChange={setIsModalOpen}>
       <DialogContent className="sm:max-w-md">
@@ -81,67 +112,114 @@ const AddUserModal = ({ setIsModalOpen, user = "", getAllUsers }) => {
           <DialogTitle>{user ? "Update User" : "Add User"}</DialogTitle>
         </DialogHeader>
 
-        <form onSubmit={handleOnSubmit} className="space-y-4">
-          {/* Name */}
-          <div className="space-y-1">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(handleOnSubmit)}
+            className="space-y-4"
+          >
+            {/* NAME */}
+            <FormField
               name="name"
-              value={userInfo.name}
-              onChange={handleOnChange}
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          {/* Phone */}
-          <div className="space-y-1">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
+            {/* PHONE */}
+            <FormField
               name="phone"
-              type="number"
-              value={userInfo.phone}
-              onChange={handleOnChange}
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-          </div>
 
-          {/* Status */}
-          <div className="space-y-1">
-            <Label>Status</Label>
-            <Select
-              value={String(userInfo.status)}
-              onValueChange={(v) =>
-                setUserInfo((p) => ({
-                  ...p,
-                  status: v === "true",
-                }))
-              }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="true">Active</SelectItem>
-                <SelectItem value="false">Inactive</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+            {/* EMAIL */}
+            <FormField
+              name="email"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* Actions */}
-          <div className="flex justify-end gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setIsModalOpen(false)}
-            >
-              Cancel
-            </Button>
+            {/* DOB */}
+            <FormField
+              name="dateOfBirth"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Date of Birth</FormLabel>
+                  <FormControl>
+                    <Input type="date" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-            <Button type="submit" disabled={addUserLoading}>
-              {addUserLoading ? "Saving..." : user ? "Update" : "Add"}
-            </Button>
-          </div>
-        </form>
+            {/* GENDER */}
+            <FormField
+              name="Gender"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Gender</FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select gender" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="MALE">Male</SelectItem>
+                      <SelectItem value="FEMALE">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* ACTIONS */}
+            <div className="flex justify-end gap-3 pt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsModalOpen(false)}
+              >
+                Cancel
+              </Button>
+
+              <Button type="submit" disabled={addUserLoading || updateLoading}>
+                {addUserLoading || updateLoading
+                  ? "Saving..."
+                  : user
+                    ? "Update"
+                    : "Add"}
+              </Button>
+            </div>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

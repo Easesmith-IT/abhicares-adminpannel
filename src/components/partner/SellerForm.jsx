@@ -24,6 +24,8 @@ import { Spinner } from "../ui/spinner";
 import { Label } from "../ui/label";
 import { FormMessage } from "../ui/form";
 import { previewDbImage } from "../../lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { sellerSchema } from "../../schemas/seller.schema";
 
 /* ---------------- SECTION ---------------- */
 const Section = ({ title, children }) => (
@@ -75,6 +77,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
   }, [cityRes]);
 
   const form = useForm({
+    resolver: zodResolver(sellerSchema),
     defaultValues: {
       name: "",
       phone: "",
@@ -154,14 +157,13 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
 
         profilePhotoPreview: initialData?.profilePhoto?.url,
         panCardPreview: initialData?.documents?.panCard?.url,
-        addressProofPreview: 
-          initialData?.documents?.profilePhoto?.url,
-        gstCertificatePreview: 
-          initialData?.documents?.gstCertificate?.url,
-        shopLicensePreview: 
-          initialData?.documents?.shopLicense?.url,
-  
-        otherDocumentsPreview:initialData?.documents?.otherDocuments.map((doc)=> ({preview:previewDbImage(doc.url)})),
+        addressProofPreview: initialData?.documents?.profilePhoto?.url,
+        gstCertificatePreview: initialData?.documents?.gstCertificate?.url,
+        shopLicensePreview: initialData?.documents?.shopLicense?.url,
+
+        otherDocumentsPreview: initialData?.documents?.otherDocuments.map(
+          (doc) => ({ preview: previewDbImage(doc.url) }),
+        ),
 
         bankDetails: initialData.bankDetails || {},
       });
@@ -274,7 +276,6 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
   const handleSubmit = (values) => {
     const formData = new FormData();
     console.log("values", values);
-    
 
     /* -------- BASIC -------- */
     [
@@ -348,6 +349,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -358,6 +360,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>Phone</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -368,6 +371,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -377,9 +381,10 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Gender</FormLabel>
-                  <Select onValueChange={field.onChange} 
-                  value={field.value}
-                  key={field.value}
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value}
+                    key={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -391,6 +396,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                       <SelectItem value="FEMALE">Female</SelectItem>
                     </SelectContent>
                   </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -427,6 +433,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                       ))}
                     </SelectContent>
                   </Select>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -457,6 +464,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                         </label>
                       ))}
                     </div>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -469,6 +477,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>Legal Name</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -480,6 +489,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>GST Number</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -491,6 +501,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>Contact Person Name</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -501,6 +512,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>Contact Person Email</FormLabel>
                   <Input type="email" {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -511,6 +523,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>Contact Person Phone</FormLabel>
                   <Input type="number" {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -527,6 +540,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem className="col-span-2">
                   <FormLabel>Address</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -537,6 +551,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>Landmark</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -547,6 +562,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>State</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -557,33 +573,38 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>Pincode</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
-            <FormItem>
-              <Label>City</Label>
-              <Select
-                key={form.watch("cityId")}
-                value={form.watch("cityId")}
-                onValueChange={(val) => form.setValue("cityId", val)}
-              >
-                <SelectTrigger>
-                  <SelectValue
-                    placeholder={
-                      cityLoading ? "Loading cities..." : "Select city"
-                    }
-                  />
-                </SelectTrigger>
-                <SelectContent>
-                  {cities.map((c) => (
-                    <SelectItem key={c._id} value={c._id}>
-                      {c.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <FormMessage />
-            </FormItem>
+            <FormField
+              name="cityId"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>City</FormLabel>
+                  <Select
+                    key={field.value}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select city" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {cities.map((c) => (
+                        <SelectItem key={c._id} value={c._id}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
         </Section>
 
@@ -597,6 +618,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>Account Number</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -607,6 +629,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>IFSC Code</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -617,6 +640,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>Account Holder</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -627,6 +651,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 <FormItem>
                   <FormLabel>Bank Name</FormLabel>
                   <Input {...field} />
+                  <FormMessage />
                 </FormItem>
               )}
             />

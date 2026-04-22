@@ -19,6 +19,7 @@ import { PaginationComp } from "../../components/shared/PaginationComp";
 import Wrapper from "../../components/wrappers/Wrapper";
 import BookingsTable from "../../components/booking/BookingsTable";
 import MonthlyBookingModal from "../../components/modals/MonthlyBookingModal";
+import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
 const Bookings = () => {
   const navigate = useNavigate();
@@ -37,6 +38,15 @@ const Bookings = () => {
     date: "",
     status: "",
   });
+
+  const handleReset = () => {
+    setFilters({
+      date: "",
+      status: "",
+    });
+
+    searchRef.current.value = "";
+  };
 
   /* ================= Fetch ================= */
 
@@ -66,8 +76,8 @@ const Bookings = () => {
 
   useEffect(() => {
     if (searchRes?.status === 200) {
-      console.log("searchRes",searchRes);
-      
+      console.log("searchRes", searchRes);
+
       setBookings([searchRes.data.data[0]]);
     }
   }, [searchRes]);
@@ -131,6 +141,8 @@ const Bookings = () => {
                 className="absolute right-2 top-2.5 cursor-pointer text-muted-foreground hover:text-black"
               />
             </div>
+
+            <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
 
             {/* Download */}
             <Button

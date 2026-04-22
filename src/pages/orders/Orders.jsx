@@ -17,6 +17,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "../../components/ui/input";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
 const Orders = () => {
   const { res: getOrdersRes, fetchData: getOrders, isLoading } = useGetApiReq();
@@ -39,6 +40,16 @@ const Orders = () => {
     endDate: "",
     status: "",
   });
+
+   const handleReset = () => {
+     setFilters({
+       startDate: "",
+       endDate: "",
+       status: "",
+     });
+
+     searchRef.current.value = ""
+   };
 
   useEffect(() => {
     getOrders(
@@ -131,6 +142,11 @@ const Orders = () => {
                   className="absolute right-2 top-2.5 cursor-pointer text-muted-foreground hover:text-black"
                 />
               </div>
+
+              <TooltipIconButton
+                tooltip="Reset Filters"
+                onClick={handleReset}
+              />
 
               {/* Download */}
               <Button

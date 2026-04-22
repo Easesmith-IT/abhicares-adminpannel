@@ -31,17 +31,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import TooltipIconButton from "../shared/TooltipIconButton";
 
 const HelpCenterTickets = () => {
   const navigate = useNavigate();
   const { res, fetchData, isLoading } = useGetApiReq();
-   const {
-     res: filterRes,
-     fetchData: filterTickets,
-     isLoading: filterLoading,
-   } = useGetApiReq();
-   const { res: deleteRes, fetchData: deleteTicket } = useDeleteApiReq();
-   const { res: categoriesRes, fetchData: getCategories } = useGetApiReq();
+  const {
+    res: filterRes,
+    fetchData: filterTickets,
+    isLoading: filterLoading,
+  } = useGetApiReq();
+  const { res: deleteRes, fetchData: deleteTicket } = useDeleteApiReq();
+  const { res: categoriesRes, fetchData: getCategories } = useGetApiReq();
 
   const [tickets, setTickets] = useState([]);
   const [page, setPage] = useState(1);
@@ -49,16 +50,25 @@ const HelpCenterTickets = () => {
   const [selectedId, setSelectedId] = useState(null);
   const [categories, setCategories] = useState([]);
 
-    const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState({
+    date: "",
+    serviceType: "",
+    raisedBy: "",
+    searchQuery: "",
+  });
+
+  const handleReset = () => {
+    setFilters({
       date: "",
       serviceType: "",
       raisedBy: "",
       searchQuery: "",
     });
+  };
 
-     const handleDelete = async () => {
-       deleteTicket(`/admin/delete-ticket?ticketId=${selectedId}`);
-     };
+  const handleDelete = async () => {
+    deleteTicket(`/admin/delete-ticket?ticketId=${selectedId}`);
+  };
 
   const getAllTickets = () => {
     fetchData(
@@ -127,7 +137,7 @@ const HelpCenterTickets = () => {
 
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_36px] gap-4">
         <Input
           placeholder="Search by Ticket ID"
           value={filters.searchQuery}
@@ -172,6 +182,11 @@ const HelpCenterTickets = () => {
             <SelectItem value="partner">Partner</SelectItem>
           </SelectContent>
         </Select>
+
+        <TooltipIconButton
+                tooltip="Reset Filters"
+                onClick={handleReset}
+              />
       </div>
       <div className="table-container mt-5">
         <Table>

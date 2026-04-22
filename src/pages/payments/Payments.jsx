@@ -87,7 +87,7 @@ const Payments = () => {
               {allPayments.map((payment) => (
                 <TableRow key={payment._id}>
                   <TableCell className="font-mono text-sm">
-                    {payment.razorpay_payment_id}
+                    {payment.razorpay_payment_id || "-"}
                   </TableCell>
 
                   <TableCell

@@ -97,7 +97,7 @@ export const CategoryInfo = () => {
             <img
               src={`${import.meta.env.VITE_APP_IMAGE_URL}/${category?.bannerUrl}`}
               alt="icon"
-              className="h-full w-[50%] rounded-md object-cover"
+              className="h-70 w-auto rounded-md object-contain"
             />
           </CardHeader>}
           <CardContent className="flex flex-row items-start gap-4">

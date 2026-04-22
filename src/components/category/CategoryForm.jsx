@@ -48,7 +48,12 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
     },
   });
 
-  const { watch, setValue, getValues } = form;
+  const {
+    watch,
+    setValue,
+    getValues,
+    formState: { errors },
+  } = form;
 
   const bannerRef = useRef(null);
 
@@ -312,6 +317,10 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
                       );
                     })}
               </div>
+
+              {errors.cityConfigs?.root?.message && (
+                <FormMessage>{errors.cityConfigs.root.message}</FormMessage>
+              )}
 
               {/* Pagination */}
               <div className="flex justify-end gap-3">

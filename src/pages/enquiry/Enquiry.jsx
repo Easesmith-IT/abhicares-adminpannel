@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import toast from "react-hot-toast";
 import { Search, Trash2 } from "lucide-react";
 
@@ -22,6 +22,7 @@ import DeleteModal from "../../components/modals/DeleteModal";
 import { PaginationComp } from "../../components/shared/PaginationComp";
 import { H2 } from "../../components/shared/typography";
 import { Button } from "../../components/ui/button";
+import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
 const Enquiry = () => {
   const { res: deleteInquiryRes, fetchData: deleteInquiry } = useDeleteApiReq();
@@ -43,6 +44,7 @@ const Enquiry = () => {
   const [enquiryId, setEnquiryId] = useState("");
   const [pageCount, setPageCount] = useState(1);
   const [page, setPage] = useState(1);
+  const [searchValue, setSearchValue] = useState("");
 
   const getAllInquiries = useCallback(() => {
     getInquiries(`/admin/get-all-enquiry?page=${page}`);
@@ -51,6 +53,11 @@ const Enquiry = () => {
   useEffect(() => {
     getAllInquiries();
   }, [getAllInquiries]);
+
+  const handleReset = () => {
+    setSearchValue("");
+    getAllInquiries();
+  };
 
   useEffect(() => {
     if (getInquiriesRes?.status === 200 || getInquiriesRes?.status === 201) {
@@ -87,20 +94,23 @@ const Enquiry = () => {
 
   const handlePageClick = (page) => setPage(page);
 
-  /* debounce */
-  const debounce = (delay) => {
-    let timer;
-    return (e) => {
-      const value = e.target.value;
-      clearTimeout(timer);
-      timer = setTimeout(() => {
-        if (!value) {
-          getAllInquiries();
-        } else {
-          searchInquiries(`/admin/search-enquiries?query=${value}`);
-        }
-      }, delay);
-    };
+  const debounceRef = useRef(null);
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchValue(value);
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = setTimeout(() => {
+      if (!value) {
+        getAllInquiries();
+      } else {
+        searchInquiries(`/admin/search-enquiries?query=${value}`);
+      }
+    }, 500); // faster UX than 1000ms
   };
 
   const isTableLoading = isLoading || searchInquiriesLoading;
@@ -112,13 +122,20 @@ const Enquiry = () => {
           <div className="flex flex-row items-center justify-between">
             <H2>Enquiries</H2>
 
-            <div className="relative w-[400px]">
-              <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search by name, phone, city"
-                className="pl-10"
-                onChange={debounce(1000)}
+            <div className="flex gap-5 items-center">
+              <div className="relative w-[400px]">
+                <Search className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
+                <Input
+                  type="search"
+                  placeholder="Search by name, phone, city"
+                  className="pl-10"
+                  value={searchValue}
+                  onChange={handleSearch}
+                />
+              </div>
+              <TooltipIconButton
+                tooltip="Reset Filters"
+                onClick={handleReset}
               />
             </div>
           </div>

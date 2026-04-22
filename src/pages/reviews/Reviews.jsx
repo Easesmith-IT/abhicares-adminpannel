@@ -27,6 +27,7 @@ import {
 import Wrapper from "../../components/wrappers/Wrapper";
 import { PaginationComp } from "../../components/shared/PaginationComp";
 import { H2 } from "../../components/shared/typography";
+import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
 const Reviews = () => {
   const { res: getCategoriesRes, fetchData: getCategories } = useGetApiReq();
@@ -52,6 +53,14 @@ const Reviews = () => {
     serviceType: "",
     type: "",
   });
+
+  const handleReset = () => {
+    setFilters({
+      date: "",
+      serviceType: "",
+      type: "",
+    });
+  };
 
   const [allCategories, setAllCategories] = useState([]);
 
@@ -158,6 +167,7 @@ const Reviews = () => {
                 <SelectItem value="ON-PACKAGE">ON PACKAGE</SelectItem>
               </SelectContent>
             </Select>
+            <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
           </div>
         </div>
 

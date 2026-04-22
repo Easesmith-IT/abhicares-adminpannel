@@ -32,7 +32,7 @@ const Stats = ({ setAllSellers }) => {
     <div className="grid gap-6 sm:grid-cols-2">
       {/* Online Partners */}
       <Card
-        onClick={() => setAllSellers(onlineRes?.data?.onlineSellers || [])}
+        // onClick={() => setAllSellers(onlineRes?.data?.onlineSellers || [])}
         className="cursor-pointer border-l-4 border-emerald-500 transition hover:shadow-md"
       >
         <CardContent className="flex items-center justify-between p-6">
@@ -46,7 +46,7 @@ const Stats = ({ setAllSellers }) => {
 
       {/* Fulfilling Sellers */}
       <Card
-        onClick={() => setAllSellers(res?.data?.fulfillingSellers || [])}
+        // onClick={() => setAllSellers(res?.data?.fulfillingSellers || [])}
         className="cursor-pointer border-l-4 border-indigo-500 transition hover:shadow-md"
       >
         <CardContent className="flex items-center justify-between p-6">

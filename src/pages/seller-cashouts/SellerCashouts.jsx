@@ -29,6 +29,7 @@ import Wrapper from "../../components/wrappers/Wrapper";
 import { PaginationComp } from "../../components/shared/PaginationComp";
 import { H2 } from "../../components/shared/typography";
 import { Label } from "../../components/ui/label";
+import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
 const CashoutRowSkeleton = () => (
   <TableRow>
@@ -67,6 +68,15 @@ const SellerCashouts = () => {
     endDate: "",
     status: "",
   });
+
+  const handleReset = () => {
+    setFilters({
+      startDate: "",
+      endDate: "",
+      status: "",
+    });
+    setSearchQuery("");
+  };
 
   const navigate = useNavigate();
 
@@ -152,6 +162,11 @@ const SellerCashouts = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-[200px]!"
             />
+
+            <TooltipIconButton
+                tooltip="Reset Filters"
+                onClick={handleReset}
+              />
           </div>
         </div>
 
