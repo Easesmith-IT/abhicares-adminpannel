@@ -1,6 +1,5 @@
 import { Pencil, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
 import UpdatePwdModal from "../../components/modals/UpdatePwd";
@@ -10,14 +9,7 @@ import useGetApiReq from "../../hooks/useGetApiReq";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import AddSubAdminModal from "../../components/modals/AddSubAdminModal";
-import DeleteModal from "../../components/modals/DeleteModal";
-import SeoModal from "../../components/modals/SeoModal";
-import UpdateReferEarnModal from "../../components/modals/UpdateReferEarnModal";
-import { PaginationComp } from "../../components/shared/PaginationComp";
-import Wrapper from "../../components/wrappers/Wrapper";
 import {
   Table,
   TableBody,
@@ -26,6 +18,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import AddSubAdminModal from "../../components/modals/AddSubAdminModal";
+import DeleteModal from "../../components/modals/DeleteModal";
+import SeoModal from "../../components/modals/SeoModal";
+import UpdateReferEarnModal from "../../components/modals/UpdateReferEarnModal";
+import { PaginationComp } from "../../components/shared/PaginationComp";
+import Wrapper from "../../components/wrappers/Wrapper";
 
 const Settings = () => {
   const {
