@@ -201,10 +201,6 @@ function App() {
           <Route path="/admin/enquiries" element={<Enquiry />} />
 
           <Route path="/admin/settings" element={<Settings />} />
-          <Route
-            path="/admin/settings/manage-comision"
-            element={<MangageComision />}
-          />
 
           <Route path="/admin/reviews" element={<Reviews />} />
 

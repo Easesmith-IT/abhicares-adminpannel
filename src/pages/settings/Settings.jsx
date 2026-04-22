@@ -132,12 +132,6 @@ const Settings = () => {
                 Update Password
               </Button>
 
-              <Button
-                variant="outline"
-                onClick={() => navigate("/admin/settings/manage-comision")}
-              >
-                Manage Commission
-              </Button>
             </div>
           </div>
 
