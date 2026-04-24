@@ -1,10 +1,9 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-import Wrapper from "@/components/wrappers/Wrapper";
 import BannerForm from "@/components/banners/BannerForm";
+import Wrapper from "@/components/wrappers/Wrapper";
 import useGetApiReq from "@/hooks/useGetApiReq";
-import usePostApiReq from "@/hooks/usePostApiReq";
 
 import { BackLink } from "../../components/shared/back-link";
 import { H2 } from "../../components/shared/typography";
@@ -49,15 +48,25 @@ const UpdateBanner = () => {
 
   const banner = getRes?.data?.data;
 
-  const normalizedBanner = banner
-    ? {
-        ...banner,
-        cityConfigs: banner.cityConfigs.map((c) => ({
-          ...c,
-          existingImage: c.image || [], // 🔥 CRITICAL FIX
-        })),
-      }
-    : null;
+ const normalizedBanner = banner
+   ? {
+       ...banner,
+       cityConfigs: banner.cityConfigs.map((city) => ({
+         ...city,
+
+         banners:
+           city.banners?.map((b) => ({
+             ...b,
+
+             // critical
+             existingImage: b.image || "",
+
+             file: null,
+             preview: "",
+           })) || [],
+       })),
+     }
+   : null;
 
   return (
     <Wrapper>

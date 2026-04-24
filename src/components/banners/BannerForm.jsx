@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -26,25 +26,39 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { XIcon } from "lucide-react";
+
 import { Spinner } from "../ui/spinner";
 import { toast } from "sonner";
 import { CityCardCategorySkeleton } from "../category/CityCardSkeleton";
 
-/* -------------------- ZOD SCHEMA -------------------- */
+/* -------------------- SCHEMA -------------------- */
+
+const BannerItemSchema = z.object({
+  categoryId: z.string().optional().nullable(),
+  serviceId: z.string().optional().nullable(),
+  existingImage: z.string().optional().nullable(),
+  preview: z.string().optional().nullable(),
+  file: z.any().optional().nullable(),
+});
+
 const bannerSchema = z.object({
   type: z.enum(["HOME", "OFFER", "REFER"]),
   cityConfigs: z.array(
     z.object({
       cityId: z.string(),
+      cityName: z.string().optional(),
       isActive: z.boolean(),
-      categoryId: z.string().nullable().optional(),
-      serviceId: z.string().nullable().optional(),
-      files: z.array(z.any()).optional(),
-      previews: z.array(z.any()).optional(),
-      existingImage: z.array(z.string()).optional(),
+      banners: z.array(BannerItemSchema),
     }),
   ),
+});
+
+const makeEmptyBanner = () => ({
+  categoryId: "",
+  serviceId: "",
+  existingImage: "",
+  preview: "",
+  file: null,
 });
 
 export default function BannerForm({
@@ -53,8 +67,6 @@ export default function BannerForm({
   isEdit = false,
   isLoading,
 }) {
-  const bannerRef = useRef(null);
-
   const {
     cities,
     page,
@@ -73,10 +85,8 @@ export default function BannerForm({
   const form = useForm({
     resolver: zodResolver(bannerSchema),
     defaultValues: {
-      type: initialData.type || "",
-      bannerFile: null,
-      bannerPreview: initialData.defaultImage || "",
-      cityConfigs: initialData.cityConfigs || [],
+      type: initialData?.type || "HOME",
+      cityConfigs: initialData?.cityConfigs || [],
     },
   });
 
@@ -85,7 +95,8 @@ export default function BannerForm({
   const type = watch("type");
   const cityConfigs = watch("cityConfigs");
 
-  /* -------------------- LOAD CATEGORIES -------------------- */
+  /* ---------------- CATEGORIES ---------------- */
+
   useEffect(() => {
     getCategories("/admin/get-all-category");
   }, []);
@@ -96,20 +107,25 @@ export default function BannerForm({
     }
   }, [categoryRes]);
 
-  /* -------------------- LOAD SERVICES -------------------- */
+  /* ---------------- SERVICES ---------------- */
+
   const loadServices = async (categoryId) => {
+    if (!categoryId) return;
     await getServices(`/admin/get-category-service/${categoryId}`);
   };
 
   useEffect(() => {
     if (serviceRes?.status === 200) {
       const catId = serviceRes.config?.url.split("/").pop();
+
       setServicesMap((prev) => ({
         ...prev,
-        [catId]: serviceRes.data.data,
+        [catId]: serviceRes.data.data || [],
       }));
     }
   }, [serviceRes]);
+
+  /* ---------------- CITY MERGE ---------------- */
 
   useEffect(() => {
     if (!cities.length) return;
@@ -118,11 +134,19 @@ export default function BannerForm({
 
     const cityMap = new Map(cities.map((c) => [c._id, c.name]));
 
+    const bannerCount = (initialData.type || type) === "HOME" ? 3 : 1;
+
     const merged = [
       ...existing.map((cfg) => ({
         ...cfg,
         cityName: cfg.cityName ?? cityMap.get(cfg.cityId),
+        banners: cfg.banners?.length
+          ? cfg.banners
+          : Array.from({
+              length: bannerCount,
+            }).map(makeEmptyBanner),
       })),
+
       ...cities
         .filter(
           (c) => !existing.some((e) => String(e.cityId) === String(c._id)),
@@ -131,16 +155,98 @@ export default function BannerForm({
           cityId: city._id,
           cityName: city.name,
           isActive: false,
-          categoryId: "",
-          serviceId: "",
-          files: [],
-          previews: [],
-          existingImage: [],
+          banners: Array.from({
+            length: bannerCount,
+          }).map(makeEmptyBanner),
         })),
     ];
 
-    setValue("cityConfigs", merged, { shouldDirty: false });
+    setValue("cityConfigs", merged, {
+      shouldDirty: false,
+    });
   }, [cities]);
+
+  /* type change HOME/OFFER sync banner count */
+
+  useEffect(() => {
+    const expected = type === "HOME" ? 3 : 1;
+
+    const updated = getValues("cityConfigs").map((c) => {
+      let banners = [...(c.banners || [])];
+
+      if (banners.length < expected) {
+        while (banners.length < expected) {
+          banners.push(makeEmptyBanner());
+        }
+      }
+
+      if (banners.length > expected) {
+        banners = banners.slice(0, expected);
+      }
+
+      return {
+        ...c,
+        banners,
+      };
+    });
+
+    setValue("cityConfigs", updated);
+  }, [type]);
+
+  /* preload services for edit */
+  useEffect(() => {
+    const existing = getValues("cityConfigs") || [];
+
+    existing.forEach((city) => {
+      city.banners?.forEach((b) => {
+        if (b.categoryId) {
+          loadServices(b.categoryId);
+        }
+      });
+    });
+  }, []);
+
+  /* ---------------- SUBMIT ---------------- */
+
+  const submitHandler = (data) => {
+    const expected = data.type === "HOME" ? 3 : 1;
+
+    const invalid = data.cityConfigs.some(
+      (c) => c.isActive && c.banners.length !== expected,
+    );
+
+    if (invalid) {
+      toast.error("Invalid banner count");
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("type", data.type);
+
+    const clean = data.cityConfigs.map((c) => ({
+      cityId: c.cityId,
+      isActive: c.isActive,
+
+      banners: c.banners.map((b) => ({
+        image: b.existingImage || null,
+        categoryId: b.categoryId || null,
+        serviceId: b.serviceId || null,
+      })),
+    }));
+
+    formData.append("cityConfigs", JSON.stringify(clean));
+
+    data.cityConfigs.forEach((city) => {
+      city.banners.forEach((b, i) => {
+        if (b.file) {
+          formData.append(`cityBanner_${city.cityId}_${i}`, b.file);
+        }
+      });
+    });
+
+    onSubmit(formData);
+  };
 
   const visibleCityIds = useMemo(
     () => new Set(cities.map((c) => c._id)),
@@ -152,68 +258,12 @@ export default function BannerForm({
     [cityConfigs, visibleCityIds],
   );
 
-  useEffect(() => {
-    const existing = getValues("cityConfigs") || [];
-
-    existing.forEach((c) => {
-      if (c.categoryId) {
-        loadServices(c.categoryId);
-      }
-    });
-  }, []);
-
-  /* -------------------- SUBMIT -------------------- */
-  const submitHandler = (data) => {
-    if (data.type === "HOME") {
-      const invalid = data.cityConfigs.some(
-        (c) =>
-          c.isActive && (c.files?.length || c.existingImage?.length || 0) < 3,
-      );
-
-      if (invalid) {
-        toast.error("Each active city must have 3 images for HOME banner");
-        return;
-      }
-    }
-    const formData = new FormData();
-
-    formData.append("type", data.type);
-
-    if (data.bannerFile) {
-      formData.append("defaultImage", data.bannerFile);
-    }
-
-    const clean = data.cityConfigs.map((c) => ({
-      cityId: c.cityId,
-      image: c.existingImage || [],
-      isActive: c.isActive,
-      categoryId: c.categoryId || null,
-      serviceId: c.serviceId || null,
-    }));
-
-    formData.append("cityConfigs", JSON.stringify(clean));
-
-    data.cityConfigs.forEach((c) => {
-      if (c.files?.length) {
-        c.files.forEach((file, i) => {
-          formData.append(`cityImage_${c.cityId}_${i}`, file);
-        });
-      }
-    });
-
-    onSubmit(formData);
-  };
-
-  const onError = (error) => {
-    console.log("Error:", error);
-  };
-
   return (
     <Card>
       <CardContent className="space-y-6">
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(submitHandler, onError)}
+            onSubmit={form.handleSubmit(submitHandler)}
             className="space-y-6"
           >
             {/* TYPE */}
@@ -222,175 +272,165 @@ export default function BannerForm({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <Label>Type</Label>
-                  <Select onValueChange={field.onChange} value={field.value}>
+                  <Label>Banner Type</Label>
+
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select type" />
+                        <SelectValue />
                       </SelectTrigger>
                     </FormControl>
+
                     <SelectContent>
                       <SelectItem value="HOME">HOME</SelectItem>
+
                       <SelectItem value="OFFER">OFFER</SelectItem>
+
                       <SelectItem value="REFER">REFER</SelectItem>
                     </SelectContent>
                   </Select>
+
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* CITY CONFIGS */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* CITIES */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {cityLoading
-                ? Array.from({ length: 6 }).map((_, i) => (
-                    <CityCardCategorySkeleton key={i} />
-                  ))
-                : visibleConfigs.map((city) => {
-                    const index = cityConfigs.findIndex(
-                      (c) => c.cityId === city.cityId,
-                    );
-                    const services = servicesMap[city.categoryId] || [];
+                ? Array.from({
+                    length: 6,
+                  }).map((_, i) => <CityCardCategorySkeleton key={i} />)
+                : visibleConfigs.map((city, cityIndex) => (
+                    <div key={city.cityId} className="bg-white border rounded-md">
+                      <CardContent className="pt-5 space-y-5">
+                        <div className="flex justify-between">
+                          <h3 className="font-semibold capitalize">
+                            {city.cityName}
+                          </h3>
 
-                    return (
-                      <Card
-                        key={city.cityId}
-                        // className={!city.isActive ? "opacity-50" : ""}
-                      >
-                        <CardContent className="space-y-4 pt-4">
-                          <div className="flex justify-between">
-                            <h3 className="capitalize">{city.cityName}</h3>
-
-                            <Switch
-                              checked={city.isActive}
-                              onCheckedChange={(val) =>
-                                setValue(`cityConfigs.${index}.isActive`, val)
-                              }
-                              className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-orange-500"
-                            />
-                          </div>
-
-                          {/* CATEGORY */}
-                          <Select
-                            value={city.categoryId}
-                            onValueChange={(val) => {
-                              setValue(`cityConfigs.${index}.categoryId`, val);
-                              setValue(`cityConfigs.${index}.serviceId`, "");
-                              loadServices(val);
-                            }}
-                            disabled={!city.isActive}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Category" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {categories.map((c) => (
-                                <SelectItem key={c._id} value={c._id}>
-                                  {c.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-
-                          {/* SERVICE */}
-                          <Select
-                            value={city.serviceId}
-                            onValueChange={(val) =>
-                              setValue(`cityConfigs.${index}.serviceId`, val)
+                          <Switch
+                            checked={city.isActive}
+                            onCheckedChange={(val) =>
+                              setValue(`cityConfigs.${cityIndex}.isActive`, val)
                             }
-                            disabled={!city.categoryId || !city.isActive}
-                          >
-                            <SelectTrigger>
-                              <SelectValue placeholder="Service" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {services.map((s) => (
-                                <SelectItem key={s._id} value={s._id}>
-                                  {s.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-
-                          {/* IMAGE */}
-                          <Input
-                            type="file"
-                            multiple={type === "HOME"} // 🔥 key change
-                            disabled={!city.isActive}
-                            onChange={(e) => {
-                              const files = Array.from(e.target.files || []);
-
-                              if (!files.length) return;
-
-                              const previews = files.map((f) =>
-                                URL.createObjectURL(f),
-                              );
-
-                              setValue(`cityConfigs.${index}.files`, files);
-                              setValue(
-                                `cityConfigs.${index}.previews`,
-                                previews,
-                              );
-                            }}
+                            className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-orange-500"
                           />
+                        </div>
 
-                          {(city.previews?.length > 0 ||
-                            city.existingImage?.length > 0) && (
-                            <div className="flex gap-2 flex-wrap">
-                              {(city.previews?.length
-                                ? city.previews
-                                : city.existingImage || []
-                              ).map((img, i) => (
-                                <div key={i} className="relative">
+                        {city.banners.map((banner, bannerIndex) => {
+                          const services = servicesMap[banner.categoryId] || [];
+
+                          return (
+                            <Card
+                              className="shadow-none! bg-white!"
+                              key={bannerIndex}
+                            >
+                              <CardContent className="pt-4 space-y-4 p-0">
+                                <div className="font-medium">
+                                  Banner {bannerIndex + 1}
+                                </div>
+
+                                {/* category */}
+                                <Select
+                                  disabled={!city.isActive}
+                                  value={banner.categoryId}
+                                  key={`${city.cityId}-${bannerIndex}`}
+                                  onValueChange={(val) => {
+                                    setValue(
+                                      `cityConfigs.${cityIndex}.banners.${bannerIndex}.categoryId`,
+                                      val,
+                                    );
+
+                                    setValue(
+                                      `cityConfigs.${cityIndex}.banners.${bannerIndex}.serviceId`,
+                                      "",
+                                    );
+
+                                    loadServices(val);
+                                  }}
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Category" />
+                                  </SelectTrigger>
+
+                                  <SelectContent>
+                                    {categories.map((c, index) => (
+                                      <SelectItem
+                                        key={c._id || index}
+                                        value={c._id}
+                                      >
+                                        {c.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+
+                                {/* service */}
+                                <Select
+                                  disabled={
+                                    !city.isActive || !banner.categoryId
+                                  }
+                                  value={banner.serviceId}
+                                  key={`-${city.cityId}-${bannerIndex}`}
+                                  onValueChange={(val) =>
+                                    setValue(
+                                      `cityConfigs.${cityIndex}.banners.${bannerIndex}.serviceId`,
+                                      val,
+                                    )
+                                  }
+                                >
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Service" />
+                                  </SelectTrigger>
+
+                                  <SelectContent>
+                                    {services.map((s) => (
+                                      <SelectItem key={s._id} value={s._id}>
+                                        {s.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+
+                                {/* image */}
+                                <Input
+                                  disabled={!city.isActive}
+                                  type="file"
+                                  onChange={(e) => {
+                                    const file = e.target.files?.[0];
+
+                                    if (!file) return;
+
+                                    setValue(
+                                      `cityConfigs.${cityIndex}.banners.${bannerIndex}.file`,
+                                      file,
+                                    );
+
+                                    setValue(
+                                      `cityConfigs.${cityIndex}.banners.${bannerIndex}.preview`,
+                                      URL.createObjectURL(file),
+                                    );
+                                  }}
+                                />
+
+                                {(banner.preview || banner.existingImage) && (
                                   <img
                                     src={
-                                      city.previews?.length
-                                        ? img
-                                        : `${import.meta.env.VITE_APP_IMAGE_URL}/${img}`
+                                      banner.preview
+                                        ? banner.preview
+                                        : `${import.meta.env.VITE_APP_IMAGE_URL}/${banner.existingImage}`
                                     }
-                                    className="h-[100px] w-[100px] rounded-md border object-cover"
+                                    className="h-28 w-full object-cover rounded-md border"
                                   />
-
-                                  <Button
-                                    type="button"
-                                    size="icon"
-                                    variant="destructive"
-                                    className="absolute -right-2 -top-2 h-5 w-5"
-                                    onClick={() => {
-                                      const newFiles = (
-                                        city.files || []
-                                      ).filter((_, idx) => idx !== i);
-                                      const newPreviews = (
-                                        city.previews || []
-                                      ).filter((_, idx) => idx !== i);
-                                      const newExisting = (
-                                        city.existingImage || []
-                                      ).filter((_, idx) => idx !== i);
-
-                                      setValue(
-                                        `cityConfigs.${index}.files`,
-                                        newFiles,
-                                      );
-                                      setValue(
-                                        `cityConfigs.${index}.previews`,
-                                        newPreviews,
-                                      );
-                                      setValue(
-                                        `cityConfigs.${index}.existingImage`,
-                                        newExisting,
-                                      );
-                                    }}
-                                  >
-                                    <XIcon size={12} />
-                                  </Button>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                                )}
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
+                      </CardContent>
+                    </div>
+                  ))}
             </div>
 
             <div className="flex justify-end gap-3">
