@@ -34,6 +34,7 @@ const Orders = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
+  const [limit, setLimit] = useState("10");
 
   const [filters, setFilters] = useState({
     startDate: "",
@@ -48,14 +49,16 @@ const Orders = () => {
        status: "",
      });
 
+      setLimit("10");
+
      searchRef.current.value = ""
    };
 
   useEffect(() => {
     getOrders(
-      `/admin/get-all-orders?page=${page}&status=${filters.status}&startDate=${filters.startDate}&endDate=${filters.endDate}`,
+      `/admin/get-all-orders?page=${page}&status=${filters.status}&startDate=${filters.startDate}&endDate=${filters.endDate}&limit=${limit}`,
     );
-  }, [page, filters]);
+  }, [page, filters,limit]);
 
   useEffect(() => {
     if (getOrdersRes?.status === 200) {
@@ -128,6 +131,22 @@ const Orders = () => {
                   <SelectItem value="Cancelled">Cancelled</SelectItem>
                 </SelectContent>
               </Select>
+
+               <div>
+            {/* <label className="text-sm font-medium mb-1 block">Limit</label> */}
+            <Select value={limit} onValueChange={(value) => setLimit(value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Limit" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="40">40</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
               {/* Search */}
               <div className="relative">

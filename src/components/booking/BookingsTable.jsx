@@ -41,6 +41,7 @@ const BookingsTable = ({ bookings, isLoading }) => {
           <TableRow className="bg-slate-200 border-b border-white/40">
             <TableHead className="w-[200px]">Booking ID</TableHead>
             <TableHead>Delivery Date</TableHead>
+            <TableHead>Delivery Time</TableHead>
             <TableHead>Booking Date</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Booking Value</TableHead>
@@ -76,12 +77,14 @@ const BookingsTable = ({ bookings, isLoading }) => {
                   {booking?.bookingDate &&
                     format(new Date(booking?.bookingDate), "dd-MM-yyyy")}
                 </TableCell>
+                <TableCell>
+                  {booking?.bookingTime &&
+                    format(new Date(booking?.bookingDate), "hh:mm aa")}
+                </TableCell>
 
                 <TableCell>
-                  {booking.createdAt && format(
-                    new Date(booking.createdAt),
-                    "dd-MM-yyyy",
-                  )}
+                  {booking.createdAt &&
+                    format(new Date(booking.createdAt), "dd-MM-yyyy")}
                 </TableCell>
 
                 <TableCell>
@@ -124,6 +127,9 @@ const TableSkeletonRow = () => {
         <Skeleton className="h-4 w-[140px]" />
       </TableCell>
 
+      <TableCell>
+        <Skeleton className="h-4 w-[120px]" />
+      </TableCell>
       <TableCell>
         <Skeleton className="h-4 w-[120px]" />
       </TableCell>

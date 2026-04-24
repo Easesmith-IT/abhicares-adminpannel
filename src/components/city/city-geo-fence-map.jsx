@@ -1,4 +1,4 @@
-import { MapContainer, TileLayer, FeatureGroup } from "react-leaflet";
+import { MapContainer, TileLayer, FeatureGroup, Marker, Popup } from "react-leaflet";
 import { EditControl } from "react-leaflet-draw";
 import { useEffect, useRef } from "react";
 import L from "leaflet";
@@ -47,6 +47,9 @@ const CityGeoFenceMap = ({
             zoom={12}
             className="h-full w-full"
           >
+            <Marker position={[latitude, longitude]}>
+              <Popup>City Center</Popup>
+            </Marker>
             <MapSetView latitude={latitude} longitude={longitude} />
 
             <TileLayer

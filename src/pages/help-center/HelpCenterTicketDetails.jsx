@@ -40,6 +40,9 @@ const HelpCenterTicketDetails = () => {
     getTicket(`/admin/get-single-ticket?ticketId=${ticketId}`);
   };
 
+  console.log("ticketDetails", ticketDetails);
+  
+
   useEffect(() => {
     getTicketDetails();
   }, []);
@@ -179,7 +182,7 @@ const HelpCenterTicketDetails = () => {
                       </Badge>
                     </p>
 
-                    <div className="flex items-center gap-2">
+                    {ticketDetails?.serviceId && <div className="flex items-center gap-2">
                       <Wrench className="h-4 w-4" />
                       {ticketDetails?.serviceId?.name}
                       {ticketDetails?.serviceId && (
@@ -191,7 +194,7 @@ const HelpCenterTicketDetails = () => {
                           <Eye className="h-4 w-4" />
                         </Button>
                       )}
-                    </div>
+                    </div>}
 
                     <p>
                       <Clock className="inline h-4 w-4 mr-2" />

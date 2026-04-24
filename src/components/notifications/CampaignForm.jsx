@@ -27,6 +27,7 @@ import { Label } from "@/components/ui/label";
 import MultiSelect from "../shared/MultiSelect";
 import { useCities } from "@/components/filters/city";
 import useGetApiReq from "../../hooks/useGetApiReq";
+import { toast } from "sonner";
 
 export default function CampaignForm({
   defaultValues = {},
@@ -34,8 +35,6 @@ export default function CampaignForm({
   loading,
   isEdit = false,
 }) {
-    
-
   const [imagePreview, setImagePreview] = useState(
     defaultValues.image_url || "",
   );
@@ -70,7 +69,6 @@ export default function CampaignForm({
       target_type: "",
       cities: [],
       scheduled_at: "",
-      data_payload: "",
       ...defaultValues,
     },
   });
@@ -78,42 +76,34 @@ export default function CampaignForm({
   const { control, handleSubmit, watch, setValue } = form;
   const watchAll = watch();
 
+  const { res, fetchData, isLoading } = useGetApiReq();
 
-   const { res, fetchData, isLoading } = useGetApiReq();
-  
-    const [cities, setCities] = useState([]);
-    const [page, setPage] = useState(1);
-    const [search, setSearch] = useState("");
-    const [totalPages, setTotalPages] = useState(1);
-  
- 
-    const fetchCities = useCallback(
-      () => {
-        fetchData(
-          `/cities/getAllCities`,
-        );
-      },
-      [fetchData],
-    );
-  
-    useEffect(() => {
-      fetchCities();
-    }, []);
-  
-    // Handle response
-    useEffect(() => {
-      if (res?.status !== 200 && res?.status !== 201) return;
-  
-      const { data } = res.data;
-      const modifiedCities = data?.map((city) => ({
-        label: city?.name,
-        value: city?._id,
-      }));
-      
-  
-      setCities(modifiedCities || []);
-    }, [res]);
-  
+  const [cities, setCities] = useState([]);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [totalPages, setTotalPages] = useState(1);
+
+  const fetchCities = useCallback(() => {
+    fetchData(`/cities/getAllCities`);
+  }, [fetchData]);
+
+  useEffect(() => {
+    fetchCities();
+  }, []);
+
+  // Handle response
+  useEffect(() => {
+    if (res?.status !== 200 && res?.status !== 201) return;
+
+    const { data } = res.data;
+    const modifiedCities = data?.map((city) => ({
+      label: city?.name,
+      value: city?._id,
+    }));
+
+    setCities(modifiedCities || []);
+  }, [res]);
+
   // useEffect(() => {
   //   if (cities) {
   //     const modifiedCities = cities?.map((city) => ({
@@ -124,19 +114,23 @@ export default function CampaignForm({
   //   }
   // }, [cities]);
 
-  
   /* 🔹 Submit */
   const handleFormSubmit = (data) => {
-    console.log("data",data);
-    
-    let parsedPayload = {};
+    console.log("data", data);
 
-    try {
-      parsedPayload = data.data_payload ? JSON.parse(data.data_payload) : {};
-    } catch {
-      alert("Invalid JSON in Data Payload");
-      return;
+    if (
+      !data.title ||
+      !data.body ||
+      !data.target_type ||
+      data.cities.length === 0 ||
+      !data.scheduled_at
+    ) {
+      return toast.error(
+        "Required fields: Title, Message, City, Schedule Date, User Type",
+      );
     }
+
+    let parsedPayload = {};
 
     const formData = new FormData();
 
@@ -155,11 +149,8 @@ export default function CampaignForm({
       formData.append("scheduled_at", `${data.scheduled_at}:00+05:30`);
     }
 
-    // Data payload (optional)
-    formData.append("data_payload", JSON.stringify(parsedPayload));
-
     // Image file (🔥 NOT preview URL)
-    if (data.notificationImage?.[0]) {
+    if (imageFile) {
       formData.append("notificationImage", imageFile);
     }
 
@@ -318,26 +309,6 @@ export default function CampaignForm({
           </CardContent>
         </Card>
 
-        {/* 🔹 Data Payload */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Data Payload</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FormField
-              control={control}
-              name="data_payload"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Textarea placeholder='{"screen":"offers"}' {...field} />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
-
         {/* 🔹 Preview */}
         <Card>
           <CardHeader>
@@ -353,17 +324,16 @@ export default function CampaignForm({
 
         {/* 🔹 Submit */}
         <div className="flex justify-end">
-
-        <Button variant="abhicares" type="submit">
-          {loading
-            ? isEdit
-            ? "Updating..."
-            : "Creating..."
-            : isEdit
-            ? "Update Campaign"
-            : "Create Campaign"}
-        </Button>
-            </div>
+          <Button variant="abhicares" type="submit">
+            {loading
+              ? isEdit
+                ? "Updating..."
+                : "Creating..."
+              : isEdit
+                ? "Update Campaign"
+                : "Create Campaign"}
+          </Button>
+        </div>
       </form>
     </Form>
   );

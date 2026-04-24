@@ -10,6 +10,7 @@ import CityGeoFenceMap from "../city/city-geo-fence-map";
 import { Card, CardContent } from "../ui/card";
 import { BackLink } from "../shared/back-link";
 import { H2 } from "../shared/typography";
+import * as turf from "@turf/turf";
 
 const CityForm = ({
   title = "Add City",
@@ -28,11 +29,10 @@ const CityForm = ({
   const [geoFence, setGeoFence] = useState(
     initialData?.area?.coordinates?.[0]?.length >= 3
       ? initialData?.area?.coordinates?.[0].map(([lng, lat]) => [lat, lng])
-      : []
+      : [],
   );
 
   console.log("geoFence", geoFence);
-  
 
   /* Auto fetch lat/long on city change */
   useEffect(() => {
@@ -57,7 +57,6 @@ const CityForm = ({
     return () => clearTimeout(timeout);
   }, [cityInfo.city]);
 
-
   useEffect(() => {
     if (!initialData?._id) return;
 
@@ -72,35 +71,52 @@ const CityForm = ({
     }
   }, [initialData]);
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCityInfo((prev) => ({ ...prev, [name]: value }));
   };
 
- const handleSubmit = (e) => {
-   e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-   if (!cityInfo.city) {
-     toast.error("City name is required");
-     return;
-   }
+    if (!cityInfo.city) {
+      toast.error("City name is required");
+      return;
+    }
 
-   if (!geoFence || geoFence.length < 3) {
-     toast.error("Please draw a valid geo-fence");
-     return;
-   }
+    if (!geoFence || geoFence.length < 3) {
+      toast.error("Please draw a valid geo-fence");
+      return;
+    }
 
-   const payload = {
-     name: cityInfo.city,
-     latitude,
-     longitude,
-     polygon: geoFence.map(([lat, lng]) => [lng, lat]), // 🔥 IMPORTANT
-   };
+    const polygonCoords = geoFence.map(([lat, lng]) => [lng, lat]);
 
-   onSubmit(payload);
- };
+    // close polygon
+    if (
+      polygonCoords[0][0] !== polygonCoords.at(-1)[0] ||
+      polygonCoords[0][1] !== polygonCoords.at(-1)[1]
+    ) {
+      polygonCoords.push(polygonCoords[0]);
+    }
 
+    const point = turf.point([longitude, latitude]);
+
+    const polygon = turf.polygon([polygonCoords]);
+
+    if (!turf.booleanPointInPolygon(point, polygon)) {
+      toast.error("Selected latitude/longitude is outside polygon boundary");
+      return;
+    }
+
+    const payload = {
+      name: cityInfo.city,
+      latitude,
+      longitude,
+      polygon: polygonCoords,
+    };
+
+    onSubmit(payload);
+  };
 
   return (
     <div>

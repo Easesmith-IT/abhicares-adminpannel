@@ -49,6 +49,7 @@ const HelpCenterTickets = () => {
   const [pageCount, setPageCount] = useState(1);
   const [selectedId, setSelectedId] = useState(null);
   const [categories, setCategories] = useState([]);
+  const [limit, setLimit] = useState("10");
 
   const [filters, setFilters] = useState({
     date: "",
@@ -64,6 +65,7 @@ const HelpCenterTickets = () => {
       raisedBy: "",
       searchQuery: "",
     });
+     setLimit("10");
   };
 
   const handleDelete = async () => {
@@ -72,13 +74,13 @@ const HelpCenterTickets = () => {
 
   const getAllTickets = () => {
     fetchData(
-      `/admin/get-all-tickets?page=${page}&ticketId=${filters.searchQuery}`,
+      `/admin/get-all-tickets?page=${page}&ticketId=${filters.searchQuery}&limit=${limit}`,
     );
   };
 
   const applyFilters = () => {
     filterTickets(
-      `/admin/filter-ticket?date=${filters.date}&serviceType=${filters.serviceType}&raisedBy=${filters.raisedBy}&page=${page}`,
+      `/admin/filter-ticket?date=${filters.date}&serviceType=${filters.serviceType}&raisedBy=${filters.raisedBy}&page=${page}&limit=${limit}`,
     );
   };
 
@@ -107,6 +109,7 @@ const HelpCenterTickets = () => {
     }
   }, [
     page,
+    limit,
     filters.date,
     filters.serviceType,
     filters.raisedBy,
@@ -137,7 +140,7 @@ const HelpCenterTickets = () => {
 
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_36px] gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr_1fr_1fr_80px_36px] gap-4">
         <Input
           placeholder="Search by Ticket ID"
           value={filters.searchQuery}
@@ -182,6 +185,23 @@ const HelpCenterTickets = () => {
             <SelectItem value="partner">Partner</SelectItem>
           </SelectContent>
         </Select>
+
+         <div>
+            {/* <label className="text-sm font-medium mb-1 block">Limit</label> */}
+            <Select value={limit} onValueChange={(value) => setLimit(value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Limit" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="40">40</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
 
         <TooltipIconButton
                 tooltip="Reset Filters"

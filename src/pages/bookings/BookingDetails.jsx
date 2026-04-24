@@ -48,12 +48,12 @@ const BookingDetails = () => {
   /* ================= Fetch ================= */
 
   console.log("booking-log", booking);
-  const getBookingDetails = ()=> {
+  const getBookingDetails = () => {
     getBooking(`/admin/get-booking-details/${id}`);
-  }
+  };
 
   useEffect(() => {
-    id && getBookingDetails()
+    id && getBookingDetails();
   }, [id]);
 
   useEffect(() => {
@@ -160,10 +160,12 @@ const BookingDetails = () => {
                   <span className="font-medium">Refund Status:</span>{" "}
                   {booking.refundInfo?.status}
                 </p>
-                <p>
-                  <span className="font-medium">Refund Admin Comment:</span>{" "}
-                  {booking.refundInfo?.reason}
-                </p>
+                {booking.refundInfo?.reason && (
+                  <p>
+                    <span className="font-medium">Refund Admin Comment:</span>{" "}
+                    {booking.refundInfo?.reason}
+                  </p>
+                )}
                 <p>
                   <span className="font-medium">Delivery Date:</span>{" "}
                   {format(new Date(booking.bookingDate), "dd-MM-yyyy")}
@@ -278,9 +280,30 @@ const BookingDetails = () => {
                   {booking.userId?.phone}
                 </p>
                 <p>
-                  <span className="font-medium">Address:</span>{" "}
-                  {booking.userAddress.addressLine},{" "}
-                  {booking.userAddress.landmark}, {booking.userAddress.pincode}
+                  <div>
+                    <span className="font-medium">Address Line:</span>{" "}
+                    {booking.userAddress.addressLine}
+                  </div>
+                  <div>
+                    <span className="font-medium">Landmark:</span>{" "}
+                    {booking.userAddress.landmark}
+                  </div>
+                  <div>
+                    <span className="font-medium">Pincode:</span>{" "}
+                    {booking.userAddress.pincode}
+                  </div>
+                  {booking.userAddress.city && (
+                    <div>
+                      <span className="font-medium">City:</span>{" "}
+                      {booking.userAddress.city}
+                    </div>
+                  )}
+                  {booking.userAddress.state && (
+                    <div>
+                      <span className="font-medium">State:</span>{" "}
+                      {booking.userAddress.state}
+                    </div>
+                  )}
                 </p>
               </CardContent>
             </Card>

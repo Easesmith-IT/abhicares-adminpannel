@@ -71,7 +71,7 @@ import Settings from "./pages/settings/Settings";
 function App() {
   return (
     <Router>
-      <Toaster />
+      <Toaster richColors position="top-center" />
       <Routes>
         <Route path="/" element={<AdminLogin />} />
         <Route element={<PrivateRoute />}>

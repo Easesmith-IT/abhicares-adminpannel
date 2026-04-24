@@ -33,6 +33,7 @@ const Bookings = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
+  const [limit, setLimit] = useState("10");
 
   const [filters, setFilters] = useState({
     date: "",
@@ -45,6 +46,8 @@ const Bookings = () => {
       status: "",
     });
 
+    setLimit("10");
+
     searchRef.current.value = "";
   };
 
@@ -53,12 +56,12 @@ const Bookings = () => {
   useEffect(() => {
     if (filters.date || filters.status) {
       filterBookings(
-        `/admin/search-filter-bookings?status=${filters.status}&bookingDate=${filters.date}&page=${page}`,
+        `/admin/search-filter-bookings?status=${filters.status}&bookingDate=${filters.date}&page=${page}&limit=${limit}`,
       );
     } else {
-      getBookings(`/admin/get-booking-list?page=${page}`);
+      getBookings(`/admin/get-booking-list?page=${page}&limit=${limit}`);
     }
-  }, [page, filters]);
+  }, [page, filters,limit]);
 
   useEffect(() => {
     if (listRes?.status === 200) {
@@ -66,6 +69,9 @@ const Bookings = () => {
       setPageCount(listRes.data.pagination.totalPages);
     }
   }, [listRes]);
+
+  console.log("bookings", bookings);
+  
 
   useEffect(() => {
     if (filterRes?.status === 200) {
@@ -127,6 +133,22 @@ const Bookings = () => {
                 <SelectItem value="not-alloted">Not Alloted</SelectItem>
               </SelectContent>
             </Select>
+
+            <div>
+              {/* <label className="text-sm font-medium mb-1 block">Limit</label> */}
+              <Select value={limit} onValueChange={(value) => setLimit(value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select Limit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="30">30</SelectItem>
+                  <SelectItem value="40">40</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
             {/* Search */}
             <div className="relative">

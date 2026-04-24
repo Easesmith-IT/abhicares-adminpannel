@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import useGetApiReq from "@/hooks/useGetApiReq";
 
-const LIMIT = 5;
+const LIMIT = 10;
 
 const useCities = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
