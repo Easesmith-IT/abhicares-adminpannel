@@ -15,6 +15,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { X } from "lucide-react";
+import { getImageDimensions } from "../../utils/getImageDimensions";
+
+const MAX_SIZE = 1 * 1024 * 1024;
+
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+const MIN_DIM = 256;
+const MAX_DIM = 1024;
 
 const AddIconModal = ({ setIsModalOpen, serviceId, getServiceDetails }) => {
   const { res, fetchData, isLoading } = usePostApiReq();
@@ -23,16 +31,52 @@ const AddIconModal = ({ setIsModalOpen, serviceId, getServiceDetails }) => {
   const [icon, setIcon] = useState(null);
   const [preview, setPreview] = useState("");
 
-  const handleImageChange = (e) => {
+  const handleImageChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      setIcon(file);
-      setPreview(reader.result);
-    };
-    reader.readAsDataURL(file);
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error("Only JPG PNG WEBP allowed");
+      return;
+    }
+
+    if (file.size > MAX_SIZE) {
+      toast.error("Icon max 1MB");
+      return;
+    }
+
+    try {
+      const dim = await getImageDimensions(file);
+
+      if (dim.width < MIN_DIM || dim.height < MIN_DIM) {
+        toast.error("Minimum 256x256 required");
+        return;
+      }
+
+      if (dim.width > MAX_DIM || dim.height > MAX_DIM) {
+        toast.error("Maximum 1024x1024 allowed");
+        return;
+      }
+
+      // mandatory square
+      const ratio = dim.width / dim.height;
+
+      // if (Math.abs(ratio - 1) > 0.03) {
+      //   toast.error("Icon must be square (1:1)");
+      //   return;
+      // }
+
+      const reader = new FileReader();
+
+      reader.onload = () => {
+        setIcon(file);
+        setPreview(reader.result);
+      };
+
+      reader.readAsDataURL(file);
+    } catch {
+      toast.error("Invalid or corrupt image");
+    }
   };
 
   const handleSubmit = (e) => {
@@ -70,10 +114,13 @@ const AddIconModal = ({ setIsModalOpen, serviceId, getServiceDetails }) => {
           {/* File input */}
           <div className="space-y-2">
             <Label>Icon</Label>
+            <p className="text-sm text-muted-foreground">
+              Square icon • Max 1MB • 256x256 min • PNG/WebP preferred
+            </p>
             <Input
               ref={fileRef}
               type="file"
-              accept="image/*"
+              accept=".jpg,.jpeg,.png,.webp"
               onChange={handleImageChange}
             />
           </div>

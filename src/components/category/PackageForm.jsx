@@ -51,6 +51,9 @@ const PackageForm = ({
 
   /* ---------------- Images ---------------- */
   const [previewImages, setPreviewImages] = useState([]);
+
+  console.log("previewImages",previewImages);
+  
   const [uploadedImages, setUploadedImages] = useState([]);
 
   /* ---------------- Form ---------------- */
@@ -88,7 +91,8 @@ const PackageForm = ({
   useEffect(() => {
     if (defaultValues?.imageUrl) {
       setPreviewImages(
-        defaultValues?.imageUrl?.map((image) => ({
+        defaultValues.imageUrl.map((image) => ({
+          id: crypto.randomUUID(),
           preview: `${import.meta.env.VITE_APP_IMAGE_URL}/${image}`,
         })),
       );
@@ -151,23 +155,105 @@ const PackageForm = ({
     );
   };
 
-  /* ---------------- Images ---------------- */
-  const handleImages = (e) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length > 3) {
-      toast.error("Maximum 3 images allowed");
-      return;
+const MAX_IMAGES = 3;
+const MAX_SIZE = 2 * 1024 * 1024; //2MB
+const MIN_WIDTH = 512;
+const MIN_HEIGHT = 512;
+const MAX_WIDTH = 2000;
+const MAX_HEIGHT = 2000;
+
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+const getImageDimensions = (file) =>
+  new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+
+    img.onload = () => {
+      resolve({
+        width: img.width,
+        height: img.height,
+      });
+      URL.revokeObjectURL(url);
+    };
+
+    img.onerror = () => {
+      reject(new Error("Invalid/corrupt image"));
+      URL.revokeObjectURL(url);
+    };
+
+    img.src = url;
+  });
+
+const handleImages = async (e) => {
+  let files = Array.from(e.target.files || []);
+
+  if (!files.length) return;
+
+  const remainingSlots = MAX_IMAGES - previewImages.length;
+
+  if (files.length > remainingSlots) {
+    toast.error(`Only ${remainingSlots} more image(s) allowed`);
+    files = files.slice(0, remainingSlots);
+  }
+
+  const validFiles = [];
+
+  for (const file of files) {
+    // type validation
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error(`${file.name}: invalid format`);
+      continue;
     }
 
-    const previews = files.map((file) => ({
-      id: crypto.randomUUID(),
-      preview: URL.createObjectURL(file),
-      file,
-    }));
+    // size validation
+    if (file.size > MAX_SIZE) {
+      toast.error(`${file.name}: exceeds 2MB`);
+      continue;
+    }
 
-    setPreviewImages(previews);
-    setUploadedImages(previews);
-  };
+    // duplicate prevention (simple heuristic)
+    const duplicate = uploadedImages.some(
+      (i) => i.file?.name === file.name && i.file?.size === file.size,
+    );
+
+    if (duplicate) {
+      toast.error(`${file.name} already added`);
+      continue;
+    }
+
+    try {
+      const dim = await getImageDimensions(file);
+
+      if (dim.width < MIN_WIDTH || dim.height < MIN_HEIGHT) {
+        toast.error(`${file.name}: minimum ${MIN_WIDTH}x${MIN_HEIGHT}`);
+        continue;
+      }
+
+      if (dim.width > MAX_WIDTH || dim.height > MAX_HEIGHT) {
+        toast.error(`${file.name}: maximum ${MAX_WIDTH}x${MAX_HEIGHT}`);
+        continue;
+      }
+
+      validFiles.push({
+        id: crypto.randomUUID(),
+        preview: URL.createObjectURL(file),
+        file,
+      });
+    } catch {
+      toast.error(`${file.name} is corrupt`);
+    }
+  }
+
+  if (!validFiles.length) return;
+
+  setPreviewImages((prev) => [...prev, ...validFiles]);
+  setUploadedImages((prev) => [...prev, ...validFiles]);
+
+  if (fileRef.current) {
+    fileRef.current.value = "";
+  }
+};
 
   const removeImage = (id) => {
     setPreviewImages((p) => p.filter((i) => i.id !== id));
@@ -225,7 +311,6 @@ const PackageForm = ({
                 </FormItem>
               )}
             />
-
             {/* Description */}
             <FormField
               control={form.control}
@@ -239,15 +324,23 @@ const PackageForm = ({
                 </FormItem>
               )}
             />
-
             <div className="space-y-2 mt-5">
-              <FormLabel>Images (max 3)</FormLabel>
+              <FormLabel>
+                Images ({previewImages.length}/{MAX_IMAGES})
+              </FormLabel>
+
               <Input
                 ref={fileRef}
                 type="file"
                 multiple
+                accept=".jpg,.jpeg,.png,.webp"
                 onChange={handleImages}
+                disabled={previewImages.length >= MAX_IMAGES}
               />
+
+              <p className="text-sm text-muted-foreground">
+                Max 3 images • 2MB each • JPG PNG WEBP • Min 512x512
+              </p>
 
               <div className="grid grid-cols-3 gap-3">
                 {previewImages.map((img) => (
@@ -256,6 +349,7 @@ const PackageForm = ({
                       src={img.preview}
                       className="h-[120px] w-full rounded-md border object-cover"
                     />
+
                     <Button
                       type="button"
                       size="icon"
@@ -269,7 +363,6 @@ const PackageForm = ({
                 ))}
               </div>
             </div>
-
             {/* Products */}
             <div className="space-y-3">
               <FormLabel>Products</FormLabel>
@@ -332,10 +425,8 @@ const PackageForm = ({
                 })}
               </div>
             </div>
-
             {/* City-wise Pricing */}
             <h3 className="text-lg font-semibold">City-wise Pricing</h3>
-
             {/* Array-level city error */}
             {/* {errors.cityConfigs?.root?.message && (
               <div className="rounded-md border border-red-300 bg-red-50 p-3">
@@ -344,7 +435,6 @@ const PackageForm = ({
                 </p>
               </div>
             )} */}
-
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {cityLoading
                 ? Array.from({ length: 6 }).map((_, i) => (
@@ -458,11 +548,9 @@ const PackageForm = ({
                     );
                   })}
             </div>
-
             {errors.cityConfigs?.root?.message && (
               <FormMessage>{errors.cityConfigs.root.message}</FormMessage>
             )}
-
             {/* Pagination */}
             <div className="flex justify-end gap-4">
               <Button
@@ -482,7 +570,6 @@ const PackageForm = ({
                 Next
               </Button>
             </div>
-
             {/* Submit */}
             <div className="flex justify-end">
               <Button variant="abhicares" type="submit" disabled={isLoading}>

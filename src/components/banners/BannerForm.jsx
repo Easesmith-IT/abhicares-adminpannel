@@ -30,6 +30,7 @@ import {
 import { Spinner } from "../ui/spinner";
 import { toast } from "sonner";
 import { CityCardCategorySkeleton } from "../category/CityCardSkeleton";
+import { getImageDimensions } from "../../utils/getImageDimensions";
 
 /* -------------------- SCHEMA -------------------- */
 
@@ -60,6 +61,19 @@ const makeEmptyBanner = () => ({
   preview: "",
   file: null,
 });
+
+const BANNER_MAX_SIZE = 2 * 1024 * 1024;
+
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+const MIN_WIDTH = 1280;
+const MIN_HEIGHT = 720;
+
+const MAX_WIDTH = 2000;
+const MAX_HEIGHT = 1200;
+
+const BANNER_RATIO = 16 / 9;
+const TOLERANCE = 0.03;
 
 export default function BannerForm({
   initialData = {},
@@ -397,22 +411,72 @@ export default function BannerForm({
                                 <Input
                                   disabled={!city.isActive}
                                   type="file"
-                                  onChange={(e) => {
+                                  accept=".jpg,.jpeg,.png,.webp"
+                                  onChange={async (e) => {
                                     const file = e.target.files?.[0];
-
                                     if (!file) return;
 
-                                    setValue(
-                                      `cityConfigs.${cityIndex}.banners.${bannerIndex}.file`,
-                                      file,
-                                    );
+                                    if (!ALLOWED_TYPES.includes(file.type)) {
+                                      toast.error("Only JPG PNG WEBP allowed");
+                                      return;
+                                    }
 
-                                    setValue(
-                                      `cityConfigs.${cityIndex}.banners.${bannerIndex}.preview`,
-                                      URL.createObjectURL(file),
-                                    );
+                                    if (file.size > BANNER_MAX_SIZE) {
+                                      toast.error("Banner max 2MB");
+                                      return;
+                                    }
+
+                                    try {
+                                      const dim =
+                                        await getImageDimensions(file);
+
+                                      if (
+                                        dim.width < MIN_WIDTH ||
+                                        dim.height < MIN_HEIGHT
+                                      ) {
+                                        toast.error(
+                                          "Minimum 1280x720 required",
+                                        );
+                                        return;
+                                      }
+
+                                      if (
+                                        dim.width > MAX_WIDTH ||
+                                        dim.height > MAX_HEIGHT
+                                      ) {
+                                        toast.error(
+                                          "Maximum 2000x1200 allowed",
+                                        );
+                                        return;
+                                      }
+
+                                      const ratio = dim.width / dim.height;
+
+                                      // if (
+                                      //   Math.abs(ratio - BANNER_RATIO) >
+                                      //   TOLERANCE
+                                      // ) {
+                                      //   toast.error("Banner must be 16:9");
+                                      //   return;
+                                      // }
+
+                                      setValue(
+                                        `cityConfigs.${cityIndex}.banners.${bannerIndex}.file`,
+                                        file,
+                                      );
+
+                                      setValue(
+                                        `cityConfigs.${cityIndex}.banners.${bannerIndex}.preview`,
+                                        URL.createObjectURL(file),
+                                      );
+                                    } catch {
+                                      toast.error("Invalid banner image");
+                                    }
                                   }}
                                 />
+                                <p className="text-xs text-muted-foreground">
+                                  Max 2MB • Recommended 1280x720
+                                </p>
 
                                 {(banner.preview || banner.existingImage) && (
                                   <img

@@ -33,6 +33,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const MAX_IMAGES = 3;
+const MAX_SIZE_MB = 2;
+const MAX_SIZE = MAX_SIZE_MB * 1024 * 1024;
+
+const MIN_WIDTH = 512;
+const MIN_HEIGHT = 512;
+
+const MAX_WIDTH = 2000;
+const MAX_HEIGHT = 2000;
+
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
 const ProductForm = ({
   defaultValues,
   onSubmit,
@@ -43,7 +55,6 @@ const ProductForm = ({
   const fileRef = useRef(null);
 
   console.log("defaultValues", defaultValues);
-  
 
   /* ---------------- Cities ---------------- */
   const {
@@ -73,17 +84,15 @@ const ProductForm = ({
   });
 
   useEffect(() => {
-    if (defaultValues?.imageUrl){
-
+    if (defaultValues?.imageUrl) {
       setPreviewImages(
-        defaultValues?.imageUrl?.map((image) => ({
+        defaultValues.imageUrl.map((image) => ({
+          id: crypto.randomUUID(),
           preview: `${import.meta.env.VITE_APP_IMAGE_URL}/${image}`,
         })),
       );
     }
-
-  }, [defaultValues?.imageUrl])
-  
+  }, [defaultValues?.imageUrl]);
 
   const {
     watch,
@@ -96,50 +105,50 @@ const ProductForm = ({
   const previewImage = watch("previewImage");
 
   console.log("getValues", getValues());
-  
 
   console.log("cityConfigs", cityConfigs);
 
   /* ---------------- Merge cities ---------------- */
- useEffect(() => {
-   if (!cities.length) return;
+  useEffect(() => {
+    if (!cities.length) return;
 
-   const existing = getValues("cityConfigs") || [];
+    const existing = getValues("cityConfigs") || [];
 
-   const cityMap = new Map(cities.map((c) => [c._id, c.name]));
+    const cityMap = new Map(cities.map((c) => [c._id, c.name]));
 
-   const normalizedExisting = existing.map((cfg) => ({
-     ...cfg,
-     showOnHomepage:cfg.showOnHomepage || false,
-     // 🔥 FIX: always force cityId to string
-     cityId: typeof cfg.cityId === "object" ? cfg.cityId._id : cfg.cityId,
+    const normalizedExisting = existing.map((cfg) => ({
+      ...cfg,
+      showOnHomepage: cfg.showOnHomepage || false,
+      // 🔥 FIX: always force cityId to string
+      cityId: typeof cfg.cityId === "object" ? cfg.cityId._id : cfg.cityId,
 
-     cityName:
-       cfg.cityName ??
-       cityMap.get(
-         typeof cfg.cityId === "object" ? cfg.cityId._id : cfg.cityId,
-       ) ??
-       "",
-   }));
+      cityName:
+        cfg.cityName ??
+        cityMap.get(
+          typeof cfg.cityId === "object" ? cfg.cityId._id : cfg.cityId,
+        ) ??
+        "",
+    }));
 
-   const merged = [
-     ...normalizedExisting,
-     ...cities
-       .filter((city) => !normalizedExisting.some((c) => c.cityId === city._id))
-       .map((city) => ({
-         cityId: city._id,
-         cityName: city.name,
-         isActive: false,
-         appHomepage: false,
-         showOnHomepage: false,
-         price: "",
-         offerPrice: "",
-       })),
-   ];
+    const merged = [
+      ...normalizedExisting,
+      ...cities
+        .filter(
+          (city) => !normalizedExisting.some((c) => c.cityId === city._id),
+        )
+        .map((city) => ({
+          cityId: city._id,
+          cityName: city.name,
+          isActive: false,
+          appHomepage: false,
+          showOnHomepage: false,
+          price: "",
+          offerPrice: "",
+        })),
+    ];
 
-   setValue("cityConfigs", merged, { shouldDirty: false });
- }, [cities]);
-
+    setValue("cityConfigs", merged, { shouldDirty: false });
+  }, [cities]);
 
   /* ---------------- Visible cities ---------------- */
   const visibleCityIds = useMemo(
@@ -153,21 +162,95 @@ const ProductForm = ({
   );
 
   /* ---------------- Images ---------------- */
-  const handleImages = (e) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length > 3) {
-      toast.error("Maximum 3 images allowed");
-      return;
+  const getImageDimensions = (file) =>
+    new Promise((resolve, reject) => {
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+
+      img.onload = () => {
+        resolve({
+          width: img.width,
+          height: img.height,
+        });
+
+        URL.revokeObjectURL(url);
+      };
+
+      img.onerror = () => {
+        reject();
+        URL.revokeObjectURL(url);
+      };
+
+      img.src = url;
+    });
+
+  const handleImages = async (e) => {
+    let files = Array.from(e.target.files || []);
+
+    if (!files.length) return;
+
+    const remainingSlots = MAX_IMAGES - previewImages.length;
+
+    if (files.length > remainingSlots) {
+      toast.error(`Only ${remainingSlots} more image(s) allowed`);
+      files = files.slice(0, remainingSlots);
     }
 
-    const previews = files.map((file) => ({
-      id: crypto.randomUUID(),
-      preview: URL.createObjectURL(file),
-      file,
-    }));
+    const validFiles = [];
 
-    setPreviewImages(previews);
-    setUploadedImages(previews);
+    for (const file of files) {
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        toast.error(`${file.name} invalid format`);
+        continue;
+      }
+
+      if (file.size > MAX_SIZE) {
+        toast.error(`${file.name} exceeds ${MAX_SIZE_MB}MB`);
+        continue;
+      }
+
+      // duplicate prevention
+      const duplicate = uploadedImages.some(
+        (img) => img.file?.name === file.name && img.file?.size === file.size,
+      );
+
+      if (duplicate) {
+        toast.error(`${file.name} already added`);
+        continue;
+      }
+
+      try {
+        const dim = await getImageDimensions(file);
+
+        if (dim.width < MIN_WIDTH || dim.height < MIN_HEIGHT) {
+          toast.error(`${file.name} min ${MIN_WIDTH}x${MIN_HEIGHT}`);
+          continue;
+        }
+
+        if (dim.width > MAX_WIDTH || dim.height > MAX_HEIGHT) {
+          toast.error(`${file.name} max ${MAX_WIDTH}x${MAX_HEIGHT}`);
+          continue;
+        }
+
+        validFiles.push({
+          id: crypto.randomUUID(),
+          preview: URL.createObjectURL(file),
+          file,
+        });
+      } catch {
+        toast.error(`${file.name} corrupt image`);
+      }
+    }
+
+    if (!validFiles.length) return;
+
+    // append (important fix)
+    setPreviewImages((prev) => [...prev, ...validFiles]);
+    setUploadedImages((prev) => [...prev, ...validFiles]);
+
+    if (fileRef.current) {
+      fileRef.current.value = "";
+    }
   };
 
   const removeImage = (id) => {
@@ -201,10 +284,9 @@ const ProductForm = ({
     onSubmit(fd);
   };
 
-  const onError = (error)=>{
-    console.log("error",error);
-    
-  }
+  const onError = (error) => {
+    console.log("error", error);
+  };
 
   /* ---------------- UI ---------------- */
   return (
@@ -252,13 +334,22 @@ const ProductForm = ({
 
             {/* Images */}
             <div className="space-y-2 mt-5">
-              <FormLabel>Images (max 3)</FormLabel>
+              <FormLabel>
+                {" "}
+                Images ({previewImages.length}/{MAX_IMAGES})
+              </FormLabel>
               <Input
                 ref={fileRef}
                 type="file"
                 multiple
+                accept=".jpg,.jpeg,.png,.webp"
                 onChange={handleImages}
+                disabled={previewImages.length >= MAX_IMAGES}
               />
+
+              <p className="text-sm text-muted-foreground">
+                Max 3 images • 2MB each • JPG PNG WEBP • Min 512x512
+              </p>
 
               <div className="grid grid-cols-3 gap-3">
                 {previewImages.map((img) => (

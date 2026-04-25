@@ -28,6 +28,19 @@ import MultiSelect from "../shared/MultiSelect";
 import { useCities } from "@/components/filters/city";
 import useGetApiReq from "../../hooks/useGetApiReq";
 import { toast } from "sonner";
+import { getImageDimensions } from "../../utils/getImageDimensions";
+const MAX_SIZE = 500 * 1024;
+
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+const MIN_WIDTH = 800;
+const MIN_HEIGHT = 400;
+
+const MAX_WIDTH = 2000;
+const MAX_HEIGHT = 1000;
+
+const TARGET_RATIO = 2; //2:1
+const TOLERANCE = 0.08;
 
 export default function CampaignForm({
   defaultValues = {},
@@ -42,14 +55,47 @@ export default function CampaignForm({
   const [imageFile, setImageFile] = useState(null);
   const fileRef = useRef(null);
 
-  const handleImage = (e) => {
+  const handleImage = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const preview = URL.createObjectURL(file);
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error("Only JPG PNG WEBP allowed");
+      return;
+    }
 
-    setImageFile(file);
-    setImagePreview(preview);
+    if (file.size > MAX_SIZE) {
+      toast.error("Notification image max 500KB");
+      return;
+    }
+
+    try {
+      const dim = await getImageDimensions(file);
+
+      if (dim.width < MIN_WIDTH || dim.height < MIN_HEIGHT) {
+        toast.error("Minimum 800x400 required");
+        return;
+      }
+
+      if (dim.width > MAX_WIDTH || dim.height > MAX_HEIGHT) {
+        toast.error("Maximum 2000x1000 allowed");
+        return;
+      }
+
+      // const ratio = dim.width / dim.height;
+
+      // if (Math.abs(ratio - TARGET_RATIO) > TOLERANCE) {
+      //   toast.error("Image should be 2:1 ratio");
+      //   return;
+      // }
+
+      const preview = URL.createObjectURL(file);
+
+      setImageFile(file);
+      setImagePreview(preview);
+    } catch {
+      toast.error("Invalid image");
+    }
   };
 
   const removeImage = () => {
@@ -122,11 +168,10 @@ export default function CampaignForm({
       !data.title ||
       !data.body ||
       !data.target_type ||
-      data.cities.length === 0 ||
-      !data.scheduled_at
+      data.cities.length === 0 
     ) {
       return toast.error(
-        "Required fields: Title, Message, City, Schedule Date, User Type",
+        "Required fields: Title, Message, City, User Type",
       );
     }
 
@@ -245,7 +290,11 @@ export default function CampaignForm({
               )}
             />
 
+            <Label>Image</Label>
             {/* Image Upload */}
+            <p className="text-sm text-muted-foreground">
+              2:1 banner • Max 500KB • Recommended 1200x600
+            </p>
             <Input
               ref={fileRef}
               type="file"

@@ -41,7 +41,6 @@ const HelpCenterTicketDetails = () => {
   };
 
   console.log("ticketDetails", ticketDetails);
-  
 
   useEffect(() => {
     getTicketDetails();
@@ -136,10 +135,15 @@ const HelpCenterTicketDetails = () => {
                     <Phone className="inline h-4 w-4 mr-2" />
                     {ticketDetails?.userId?.phone}
                   </p>
-                  <p>
-                    <MapPin className="inline h-4 w-4 mr-2" />
-                    {`${userAddress.addressLine}, ${userAddress.landmark}, ${userAddress.city}, ${userAddress.pincode}`}
-                  </p>
+                  {userAddress.addressLine &&
+                    userAddress.landmark &&
+                    userAddress.city &&
+                    userAddress.pincode && (
+                      <p>
+                        <MapPin className="inline h-4 w-4 mr-2" />
+                        {`${userAddress.addressLine || ""}, ${userAddress.landmark || ""}, ${userAddress.city || ""}, ${userAddress.pincode || ""}`}
+                      </p>
+                    )}
                 </CardContent>
               </Card>
 
@@ -158,10 +162,12 @@ const HelpCenterTicketDetails = () => {
                       <Phone className="inline h-4 w-4 mr-2" />
                       {ticketDetails?.sellerId?.phone}
                     </p>
-                    <p>
-                      <MapPin className="inline h-4 w-4 mr-2" />
-                      {`${sellerAddress.addressLine}, ${sellerAddress.city}, ${sellerAddress.state}, ${sellerAddress.pincode}`}
-                    </p>
+                    {
+                      <p>
+                        <MapPin className="inline h-4 w-4 mr-2" />
+                        {`${sellerAddress.addressLine || ""}, ${sellerAddress.city || ""}, ${sellerAddress.state || ""}, ${sellerAddress.pincode || ""}`}
+                      </p>
+                    }
                   </CardContent>
                 </Card>
               )}
@@ -182,19 +188,21 @@ const HelpCenterTicketDetails = () => {
                       </Badge>
                     </p>
 
-                    {ticketDetails?.serviceId && <div className="flex items-center gap-2">
-                      <Wrench className="h-4 w-4" />
-                      {ticketDetails?.serviceId?.name}
-                      {ticketDetails?.serviceId && (
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setIsServiceDetailsModalOpen(true)}
-                        >
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>}
+                    {ticketDetails?.serviceId && (
+                      <div className="flex items-center gap-2">
+                        <Wrench className="h-4 w-4" />
+                        {ticketDetails?.serviceId?.name}
+                        {ticketDetails?.serviceId && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setIsServiceDetailsModalOpen(true)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    )}
 
                     <p>
                       <Clock className="inline h-4 w-4 mr-2" />

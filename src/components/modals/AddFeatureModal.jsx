@@ -16,6 +16,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { X } from "lucide-react";
+import { getImageDimensions } from "../../utils/getImageDimensions";
+
+const MAX_SIZE = 2 * 1024 * 1024;
+
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+const MIN_DIM = 512;
+const MAX_DIM = 2000;
 
 const AddFeatureModal = ({
   setIsModalOpen,
@@ -40,19 +48,47 @@ const AddFeatureModal = ({
 
   /* ---------- Image ---------- */
 
-  const handleImage = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+ const handleImage = async (e) => {
+   const file = e.target.files?.[0];
+   if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () =>
-      setForm((p) => ({
-        ...p,
-        img: file,
-        preview: reader.result,
-      }));
-    reader.readAsDataURL(file);
-  };
+   if (!ALLOWED_TYPES.includes(file.type)) {
+     toast.error("Only JPG PNG WEBP allowed");
+     return;
+   }
+
+   if (file.size > MAX_SIZE) {
+     toast.error("Image max 2MB");
+     return;
+   }
+
+   try {
+     const dim = await getImageDimensions(file);
+
+     if (dim.width < MIN_DIM || dim.height < MIN_DIM) {
+       toast.error("Minimum 512x512 required");
+       return;
+     }
+
+     if (dim.width > MAX_DIM || dim.height > MAX_DIM) {
+       toast.error("Maximum 2000x2000 allowed");
+       return;
+     }
+
+     const reader = new FileReader();
+
+     reader.onload = () =>
+       setForm((p) => ({
+         ...p,
+         img: file,
+         preview: reader.result,
+       }));
+
+     reader.readAsDataURL(file);
+   } catch {
+     toast.error("Invalid or corrupt image");
+   }
+ };
 
   const removeImage = () => {
     if (fileRef.current) fileRef.current.value = "";
@@ -144,10 +180,13 @@ const AddFeatureModal = ({
           {/* Image */}
           <div className="space-y-2">
             <Label>Image</Label>
+            <p className="text-sm text-muted-foreground">
+              Max 2MB • Min 512x512 • JPG PNG WEBP
+            </p>
             <Input
               ref={fileRef}
               type="file"
-              accept="image/*"
+              accept=".jpg,.jpeg,.png,.webp"
               onChange={handleImage}
             />
 
@@ -183,12 +222,16 @@ const AddFeatureModal = ({
               Cancel
             </Button>
 
-            <Button variant="abhicares" type="submit" disabled={isLoading||isLoading2}>
-              {(isLoading|| isLoading2)
+            <Button
+              variant="abhicares"
+              type="submit"
+              disabled={isLoading || isLoading2}
+            >
+              {isLoading || isLoading2
                 ? "Saving..."
                 : feature
-                ? "Update"
-                : "Add"}
+                  ? "Update"
+                  : "Add"}
             </Button>
           </div>
         </form>

@@ -26,6 +26,17 @@ import { FormMessage } from "../ui/form";
 import { previewDbImage } from "../../lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { sellerSchema } from "../../schemas/seller.schema";
+import { toast } from "sonner";
+
+const PROFILE_MAX = 2 * 1024 * 1024;
+const DOC_MAX = 5 * 1024 * 1024;
+
+const MAX_OTHER_DOCS = 5;
+const MAX_OTHER_TOTAL = 20 * 1024 * 1024;
+
+const IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+const DOC_TYPES = ["image/jpeg", "image/png"];
 
 /* ---------------- SECTION ---------------- */
 const Section = ({ title, children }) => (
@@ -196,9 +207,21 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
     );
   };
 
-  const handleSingleFile = (field, e) => {
+  const handleSingleFile = async (field, e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const isProfile = field === "profilePhoto";
+
+    if (!(isProfile ? IMAGE_TYPES : DOC_TYPES).includes(file.type)) {
+      toast.error("Invalid file type");
+      return;
+    }
+
+    if (file.size > (isProfile ? PROFILE_MAX : DOC_MAX)) {
+      toast.error(isProfile ? "Profile photo max 2MB" : "Document max 5MB");
+      return;
+    }
 
     const preview = URL.createObjectURL(file);
 
@@ -215,6 +238,30 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
 
   const handleMultipleFiles = (e) => {
     const files = Array.from(e.target.files || []);
+
+    if (files.length > MAX_OTHER_DOCS) {
+      toast.error("Maximum 5 documents allowed");
+      return;
+    }
+
+    for (const file of files) {
+      if (!DOC_TYPES.includes(file.type)) {
+        toast.error(`${file.name} invalid type`);
+        return;
+      }
+
+      if (file.size > DOC_MAX) {
+        toast.error(`${file.name} exceeds 5MB`);
+        return;
+      }
+    }
+
+    const total = files.reduce((sum, f) => sum + f.size, 0);
+
+    if (total > MAX_OTHER_TOTAL) {
+      toast.error("Total files exceed 20MB");
+      return;
+    }
 
     const previews = files.map((file) => ({
       file,
@@ -663,6 +710,9 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
           {/* PROFILE PHOTO */}
           <FormItem>
             <FormLabel>Profile Photo</FormLabel>
+            <p className="text-sm text-muted-foreground">
+              Max 2MB • JPG PNG WEBP
+            </p>
             <Input
               ref={refs.profilePhoto}
               type="file"
@@ -682,9 +732,13 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
           {/* PAN CARD */}
           <FormItem>
             <FormLabel>PAN Card</FormLabel>
+            <p className="text-sm text-muted-foreground">
+              PDF/JPG/PNG • Max 5MB
+            </p>
             <Input
               ref={refs.panCard}
               type="file"
+              accept=".jpg,.jpeg,.png"
               onChange={(e) => handleSingleFile("panCard", e)}
             />
 
@@ -700,9 +754,13 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
           {/* ADDRESS PROOF */}
           <FormItem>
             <FormLabel>Address Proof</FormLabel>
+            <p className="text-sm text-muted-foreground">
+              PDF/JPG/PNG • Max 5MB
+            </p>
             <Input
               ref={refs.addressProof}
               type="file"
+              accept=".jpg,.jpeg,.png"
               onChange={(e) => handleSingleFile("addressProof", e)}
             />
 
@@ -743,9 +801,13 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
           {/* GST */}
           <FormItem>
             <FormLabel>GST Certificate</FormLabel>
+            <p className="text-sm text-muted-foreground">
+              PDF/JPG/PNG • Max 5MB
+            </p>
             <Input
               ref={refs.gstCertificate}
               type="file"
+              accept=".jpg,.jpeg,.png"
               onChange={(e) => handleSingleFile("gstCertificate", e)}
             />
 
@@ -761,9 +823,13 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
           {/* SHOP LICENSE */}
           <FormItem>
             <FormLabel>Shop License</FormLabel>
+            <p className="text-sm text-muted-foreground">
+              PDF/JPG/PNG • Max 5MB
+            </p>
             <Input
               ref={refs.shopLicense}
               type="file"
+              accept=".jpg,.jpeg,.png"
               onChange={(e) => handleSingleFile("shopLicense", e)}
             />
 
@@ -779,7 +845,15 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
           {/* MULTIPLE */}
           <FormItem>
             <FormLabel>Other Documents</FormLabel>
-            <Input type="file" multiple onChange={handleMultipleFiles} />
+            <p className="text-sm text-muted-foreground">
+              Max 5 files • 5MB each • 20MB total
+            </p>
+            <Input
+              type="file"
+              accept=".jpg,.jpeg,.png"
+              multiple
+              onChange={handleMultipleFiles}
+            />
 
             <div className="flex gap-2 mt-2 flex-wrap">
               {form.watch("otherDocumentsPreview")?.map((doc, i) => (

@@ -23,6 +23,19 @@ import { H2 } from "@/components/shared/typography";
 import { categorySchema } from "../../schemas/service.schema";
 import { CityCardCategorySkeleton } from "./CityCardSkeleton";
 import { XIcon } from "lucide-react";
+import { toast } from "sonner";
+import { getImageDimensions } from "../../utils/getImageDimensions";
+
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+const IMAGE_MAX_SIZE = 2 * 1024 * 1024;
+const BANNER_MAX_SIZE = 5 * 1024 * 1024;
+
+const MIN_DIM = 512;
+const MAX_DIM = 2000;
+
+const BANNER_RATIO = 16 / 9;
+const RATIO_TOLERANCE = 0.03;
 
 const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
   const {
@@ -60,14 +73,42 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
   const bannerPreview = watch("bannerPreview");
   const bannerFile = watch("bannerFile");
 
-  const handleBanner = (e) => {
+  const handleBanner = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const preview = URL.createObjectURL(file);
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error("Only JPG PNG WEBP allowed");
+      return;
+    }
 
-    setValue("bannerFile", file);
-    setValue("bannerPreview", preview);
+    if (file.size > BANNER_MAX_SIZE) {
+      toast.error("Banner max 5MB");
+      return;
+    }
+
+    try {
+      const dim = await getImageDimensions(file);
+
+      // const ratio = dim.width / dim.height;
+
+      // if (Math.abs(ratio - BANNER_RATIO) > RATIO_TOLERANCE) {
+      //   toast.error("Banner must be 16:9");
+      //   return;
+      // }
+
+      if (dim.width < 1280 || dim.height < 720) {
+        toast.error("Banner min 1280x720");
+        return;
+      }
+
+      const preview = URL.createObjectURL(file);
+
+      setValue("bannerFile", file);
+      setValue("bannerPreview", preview);
+    } catch {
+      toast.error("Invalid banner");
+    }
   };
 
   const removeBanner = () => {
@@ -83,13 +124,40 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
   const previewImage = watch("previewImage");
   const img = watch("img");
 
-  const handleImage = (e) => {
+  const handleImage = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const preview = URL.createObjectURL(file);
-    setValue("img", file);
-    setValue("previewImage", preview);
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error("Only JPG PNG WEBP allowed");
+      return;
+    }
+
+    if (file.size > IMAGE_MAX_SIZE) {
+      toast.error("Image max 2MB");
+      return;
+    }
+
+    try {
+      const dim = await getImageDimensions(file);
+
+      if (dim.width < MIN_DIM || dim.height < MIN_DIM) {
+        toast.error("Minimum 512x512 required");
+        return;
+      }
+
+      if (dim.width > MAX_DIM || dim.height > MAX_DIM) {
+        toast.error("Maximum 2000x2000 allowed");
+        return;
+      }
+
+      const preview = URL.createObjectURL(file);
+
+      setValue("img", file);
+      setValue("previewImage", preview);
+    } catch {
+      toast.error("Invalid/corrupt image");
+    }
   };
 
   const removeImage = () => {
@@ -158,10 +226,14 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
 
                 <Input
                   ref={bannerRef}
-                  accept=".png,.jpg,.jpeg,.webp"
+                  accept=".jpg,.jpeg,.png,.webp"
                   type="file"
                   onChange={handleBanner}
                 />
+
+                <p className="text-sm text-muted-foreground">
+                  Max 5MB • 1280x720+
+                </p>
 
                 {bannerPreview && (
                   <div className="relative w-fit mt-2">
@@ -204,12 +276,17 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
 
               <FormItem className="inline-block space-y-2">
                 <Label>Image</Label>
+
                 <Input
                   ref={fileRef}
-                  accept=".png,.jpg,.jpeg,.webp"
+                  accept=".jpg,.jpeg,.png,.webp"
                   type="file"
                   onChange={handleImage}
                 />
+
+                <p className="text-sm text-muted-foreground">
+                  • Max 2MB • Min 512x512
+                </p>
 
                 {previewImage && (
                   <div className="relative w-fit mt-2">

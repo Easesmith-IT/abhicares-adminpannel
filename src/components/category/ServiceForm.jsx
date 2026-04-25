@@ -33,6 +33,19 @@ import { CityCardSkeleton } from "./CityCardSkeleton";
 import { Switch } from "../ui/switch";
 import { Badge } from "../ui/badge";
 import { Spinner } from "../ui/spinner";
+import { toast } from "sonner";
+import { getImageDimensions } from "../../utils/getImageDimensions";
+
+const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
+
+const IMAGE_MAX_SIZE = 2 * 1024 * 1024;
+const BANNER_MAX_SIZE = 5 * 1024 * 1024;
+
+const MIN_DIM = 512;
+const MAX_DIM = 2000;
+
+const BANNER_RATIO = 16 / 9;
+const RATIO_TOLERANCE = 0.03;
 
 const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
   const fileRef = useRef(null);
@@ -75,14 +88,42 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
   const bannerPreview = watch("bannerPreview");
   const bannerFile = watch("bannerFile");
 
-  const handleBanner = (e) => {
+  const handleBanner = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const preview = URL.createObjectURL(file);
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast.error("Only JPG PNG WEBP allowed");
+      return;
+    }
 
-    setValue("bannerFile", file);
-    setValue("bannerPreview", preview);
+    if (file.size > BANNER_MAX_SIZE) {
+      toast.error("Banner max 5MB");
+      return;
+    }
+
+    try {
+      const dim = await getImageDimensions(file);
+
+      const ratio = dim.width / dim.height;
+
+      // if (Math.abs(ratio - BANNER_RATIO) > RATIO_TOLERANCE) {
+      //   toast.error("Banner must be 16:9");
+      //   return;
+      // }
+
+      if (dim.width < 1280 || dim.height < 720) {
+        toast.error("Recommended minimum 1280x720");
+        return;
+      }
+
+      const preview = URL.createObjectURL(file);
+
+      setValue("bannerFile", file);
+      setValue("bannerPreview", preview);
+    } catch {
+      toast.error("Invalid banner image");
+    }
   };
 
   const removeBanner = () => {
@@ -146,14 +187,48 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
   /* ----------------------------------
      Image handling
   ---------------------------------- */
-  const handleImage = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+const handleImage = async (e) => {
+ const file = e.target.files?.[0];
+ if(!file) return;
 
-    const preview = URL.createObjectURL(file);
-    setValue("img", file);
-    setValue("previewImage", preview);
-  };
+ if(!ALLOWED_TYPES.includes(file.type)){
+   toast.error("Only JPG PNG WEBP allowed");
+   return;
+ }
+
+ if(file.size > IMAGE_MAX_SIZE){
+   toast.error("Image max 2MB");
+   return;
+ }
+
+ try{
+   const dim = await getImageDimensions(file);
+
+   if(
+     dim.width < MIN_DIM ||
+     dim.height < MIN_DIM
+   ){
+      toast.error("Minimum 512x512 required");
+      return;
+   }
+
+   if(
+      dim.width > MAX_DIM ||
+      dim.height > MAX_DIM
+   ){
+      toast.error("Maximum 2000x2000 allowed");
+      return;
+   }
+
+   const preview = URL.createObjectURL(file);
+
+   setValue("img", file);
+   setValue("previewImage", preview);
+
+ } catch {
+   toast.error("Corrupt image");
+ }
+};
 
   const removeImage = () => {
     if (fileRef.current) fileRef.current.value = "";
@@ -183,6 +258,10 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
             >
               <FormItem className="inline-block space-y-2">
                 <Label>Service Banner</Label>
+
+                <p className="text-sm text-muted-foreground">
+                  Max 5MB • Recommended 1280x720
+                </p>
 
                 <Input
                   ref={bannerRef}
@@ -252,6 +331,10 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
               {/* Image */}
               <FormItem className="inline-block mt-10">
                 <Label>Image</Label>
+
+                <p className="text-sm text-muted-foreground">
+                  Square preferred • Max 2MB • Min 512x512
+                </p>
                 <Input
                   ref={fileRef}
                   accept=".png,.jpg,.jpeg,.webp"
