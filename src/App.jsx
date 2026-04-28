@@ -13,6 +13,7 @@ import CreateBanner from "./pages/banners/CreateBanner";
 import UpdateBanner from "./pages/banners/UpdateBanner";
 import BookingDetails from "./pages/bookings/BookingDetails";
 import Bookings from "./pages/bookings/Bookings";
+import RejectedBookingRequests from "./pages/bookings/SellerRejectRequests";
 import CashManagement from "./pages/cash-management/CashManagement";
 import AddCategoryPage from "./pages/category/AddCategoryPage";
 import Categories from "./pages/category/Categories";
@@ -81,6 +82,7 @@ function App() {
           <Route path="/admin/orders/:id" element={<OrderDetails />} />
 
           <Route path="/admin/bookings" element={<Bookings />} />
+          <Route path="/admin/bookings/rejected-request" element={<RejectedBookingRequests />} />
           <Route path="/admin/bookings/:id" element={<BookingDetails />} />
 
           <Route path="/admin/categories" element={<Categories />} />

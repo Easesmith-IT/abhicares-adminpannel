@@ -61,7 +61,7 @@ const Bookings = () => {
     } else {
       getBookings(`/admin/get-booking-list?page=${page}&limit=${limit}`);
     }
-  }, [page, filters,limit]);
+  }, [page, filters, limit]);
 
   useEffect(() => {
     if (listRes?.status === 200) {
@@ -71,7 +71,6 @@ const Bookings = () => {
   }, [listRes]);
 
   console.log("bookings", bookings);
-  
 
   useEffect(() => {
     if (filterRes?.status === 200) {
@@ -105,76 +104,83 @@ const Bookings = () => {
         <div className="flex flex-wrap items-center justify-between gap-4 pb-4">
           <h1 className="text-[30px] font-semibold">Bookings</h1>
 
-          <div className="flex flex-wrap items-center gap-3">
-            {/* Date */}
-            <Input
-              type="date"
-              value={filters.date}
-              onChange={(e) =>
-                setFilters((p) => ({ ...p, date: e.target.value }))
-              }
-              className="w-[160px]"
-            />
+          <Button
+            variant="abhicares"
+            onClick={() => navigate("/admin/bookings/rejected-request")}
+          >
+            Rejected Bokkings
+          </Button>
+        </div>
 
-            {/* Status */}
-            <Select
-              value={filters.status}
-              onValueChange={(value) =>
-                setFilters((p) => ({ ...p, status: value }))
-              }
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select Status" />
+        <div className="flex items-center gap-4 pb-5">
+          {/* Date */}
+          <Input
+            type="date"
+            value={filters.date}
+            onChange={(e) =>
+              setFilters((p) => ({ ...p, date: e.target.value }))
+            }
+            className="w-[160px]"
+          />
+
+          {/* Status */}
+          <Select
+            value={filters.status}
+            onValueChange={(value) =>
+              setFilters((p) => ({ ...p, status: value }))
+            }
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
+              <SelectItem value="alloted">Alloted</SelectItem>
+              <SelectItem value="completed">Completed</SelectItem>
+              <SelectItem value="not-alloted">Not Alloted</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div>
+            {/* <label className="text-sm font-medium mb-1 block">Limit</label> */}
+            <Select value={limit} onValueChange={(value) => setLimit(value)}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select Limit" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-                <SelectItem value="alloted">Alloted</SelectItem>
-                <SelectItem value="completed">Completed</SelectItem>
-                <SelectItem value="not-alloted">Not Alloted</SelectItem>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="20">20</SelectItem>
+                <SelectItem value="30">30</SelectItem>
+                <SelectItem value="40">40</SelectItem>
+                <SelectItem value="50">50</SelectItem>
               </SelectContent>
             </Select>
-
-            <div>
-              {/* <label className="text-sm font-medium mb-1 block">Limit</label> */}
-              <Select value={limit} onValueChange={(value) => setLimit(value)}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select Limit" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                  <SelectItem value="40">40</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Search */}
-            <div className="relative">
-              <Input
-                ref={searchRef}
-                placeholder="Search booking by id"
-                className="w-[260px] pr-9"
-              />
-              <Search
-                size={18}
-                onClick={handleSearch}
-                className="absolute right-2 top-2.5 cursor-pointer text-muted-foreground hover:text-black"
-              />
-            </div>
-
-            <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
-
-            {/* Download */}
-            <Button
-              variant="abhicares"
-              size="icon"
-              onClick={() => setIsModalOpen(true)}
-            >
-              <Download size={18} />
-            </Button>
           </div>
+
+          {/* Search */}
+          <div className="relative">
+            <Input
+              ref={searchRef}
+              placeholder="Search booking by id"
+              className="w-[260px] pr-9"
+            />
+            <Search
+              size={18}
+              onClick={handleSearch}
+              className="absolute right-2 top-2.5 cursor-pointer text-muted-foreground hover:text-black"
+            />
+          </div>
+
+          <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
+
+          {/* Download */}
+          <Button
+            variant="abhicares"
+            size="icon"
+            onClick={() => setIsModalOpen(true)}
+          >
+            <Download size={18} />
+          </Button>
         </div>
 
         <BookingsTable bookings={bookings} isLoading={isLoading} />
