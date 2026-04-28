@@ -2,8 +2,9 @@ import { format } from "date-fns";
 import React, { useState } from "react";
 import { TableCell, TableRow } from "../ui/table";
 import { Button } from "../ui/button";
-import { CheckCircleIcon, XCircleIcon } from "lucide-react";
+import { CheckCircleIcon, EyeIcon, XCircleIcon } from "lucide-react";
 import ApproveRejectRequestModal from "./ApproveRejectRequestModal";
+import { useNavigate } from "react-router-dom";
 
 const getRequestStatusClasses = (status) => {
   switch (status) {
@@ -21,6 +22,7 @@ const getRequestStatusClasses = (status) => {
 const Request = ({ item, refetch }) => {
   const [approveOpen, setApproveOpen] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
+  const navigate = useNavigate()
 
   return (
     <>
@@ -58,7 +60,6 @@ const Request = ({ item, refetch }) => {
           </p>
         </TableCell>
 
-
         <TableCell
           className="w-[200px] whitespace-pre-wrap"
           title={item.reason}
@@ -88,11 +89,29 @@ const Request = ({ item, refetch }) => {
 
         <TableCell>
           <div className="flex gap-2 items-center">
-            <Button disabled={item.status !== "pending"} onClick={() => setApproveOpen(true)}>
+            <Button
+              variant="outline"
+              onClick={() =>
+                navigate(
+                  `/admin/bookings/rejected-request/${item?.requestId}`,
+                  { state: { requestData: item } },
+                )
+              }
+            >
+              <EyeIcon />
+            </Button>
+            <Button
+              disabled={item.status !== "pending"}
+              onClick={() => setApproveOpen(true)}
+            >
               <CheckCircleIcon />
             </Button>
 
-            <Button disabled={item.status !== "pending"} variant="destructive" onClick={() => setRejectOpen(true)}>
+            <Button
+              disabled={item.status !== "pending"}
+              variant="destructive"
+              onClick={() => setRejectOpen(true)}
+            >
               <XCircleIcon />
             </Button>
           </div>

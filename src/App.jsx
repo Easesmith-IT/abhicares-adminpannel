@@ -67,6 +67,7 @@ import UpdatePackagePage from "./pages/services/UpdatePackagePage";
 import UpdateProductPage from "./pages/services/UpdateProductPage";
 import UpdateServicePage from "./pages/services/UpdateServicePage";
 import Settings from "./pages/settings/Settings";
+import RejectedBookingRequestDetails from "./pages/bookings/RejectedBookingRequestDetails";
 // import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
@@ -83,6 +84,7 @@ function App() {
 
           <Route path="/admin/bookings" element={<Bookings />} />
           <Route path="/admin/bookings/rejected-request" element={<RejectedBookingRequests />} />
+          <Route path="/admin/bookings/rejected-request/:requestId" element={<RejectedBookingRequestDetails />} />
           <Route path="/admin/bookings/:id" element={<BookingDetails />} />
 
           <Route path="/admin/categories" element={<Categories />} />

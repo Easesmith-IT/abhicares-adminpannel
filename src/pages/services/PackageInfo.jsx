@@ -148,6 +148,9 @@ const PackageInfo = () => {
             {/* Info */}
             <div className="space-y-2">
               <h2 className="text-xl font-semibold">{pkg.name}</h2>
+              <p className="text-sm">
+                <b>Duration Minutes:</b> <span>{pkg.durationMinutes}</span>
+              </p>
               {pkg.description && (
                 <div className="prose text-sm text-muted-foreground">
                   {parse(pkg.description)}
@@ -174,7 +177,6 @@ const PackageInfo = () => {
               {pkg.products.map(({ productId }) => {
                 if (!productId) return null;
                 console.log("productId", productId);
-                
 
                 return (
                   <Card key={productId._id}>

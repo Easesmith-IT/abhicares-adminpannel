@@ -209,6 +209,12 @@ const ProductInfo = () => {
             {/* Info */}
             <div className="space-y-3">
               <h2 className="text-xl font-semibold">{product.name}</h2>
+              <p className="text-sm">
+                <b>Duration Minutes:</b>{" "}
+                <span>
+                  {product.durationMinutes || 0}
+                </span>
+              </p>
 
               {product.description && (
                 <div className="prose max-w-none text-sm text-muted-foreground">

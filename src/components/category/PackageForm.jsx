@@ -63,6 +63,7 @@ const PackageForm = ({
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       cityConfigs: defaultValues?.cityConfigs || [],
+      durationMinutes: defaultValues?.durationMinutes || 0,
       products:
         defaultValues?.products?.map((item) => ({
           productId:
@@ -263,12 +264,15 @@ const handleImages = async (e) => {
 
   /* ---------------- Submit ---------------- */
   const handleFormSubmit = (values) => {
+    console.log("values",values);
+    
     const fd = new FormData();
 
     fd.append("name", values.name);
     fd.append("description", values.description);
     fd.append("serviceId", serviceId);
     fd.append("products", JSON.stringify(values.products));
+    fd.append("durationMinutes", values?.durationMinutes);
 
     const sanitizedCityConfigs = values.cityConfigs.map((cfg) => ({
       cityId: cfg.cityId,
@@ -311,6 +315,20 @@ const handleImages = async (e) => {
                 </FormItem>
               )}
             />
+             <FormField
+                          control={form.control}
+                          name="durationMinutes"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Duration Minutes</FormLabel>
+                              <FormControl>
+                                <Input type="number" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
             {/* Description */}
             <FormField
               control={form.control}

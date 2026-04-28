@@ -77,6 +77,7 @@ const ProductForm = ({
       name: defaultValues?.name || "",
       description: defaultValues?.description || "",
       cityConfigs: defaultValues?.cityConfigs || [],
+      durationMinutes: defaultValues?.durationMinutes || 0,
       // previewImage: defaultValues.imageUrl.map(
       //   (image) => ({preview:`${import.meta.env.VITE_APP_IMAGE_URL}/${image}`}),
       // ),
@@ -261,11 +262,13 @@ const ProductForm = ({
 
   /* ---------------- Submit ---------------- */
   const handleFormSubmit = (values) => {
+     console.log("handleFormSubmit values", values);
     const fd = new FormData();
 
     fd.append("name", values.name);
     fd.append("description", values.description);
     fd.append("serviceId", serviceId);
+    fd.append("durationMinutes", values?.durationMinutes);
 
     const sanitizedCityConfigs = values.cityConfigs.map((cfg) => ({
       cityId: cfg.cityId,
@@ -306,6 +309,19 @@ const ProductForm = ({
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="durationMinutes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Duration Minutes</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

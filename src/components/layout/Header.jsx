@@ -33,12 +33,11 @@ const Header = ({ onClick }) => {
   return (
     <>
       {/* Header */}
-      <header className="sticky top-0 z-20 flex h-[70px] w-full items-center justify-between px-[30px] glass shadow-sm!">
+      <header className="sticky top-0 z-20 flex h-[70px] w-full items-center justify-between px-[30px] glass !shadow-sm ![background:rgba(255,255,255,0.8)]">
         {/* Left section */}
         <div className="flex items-center gap-[60px]">
           <div className="flex gap-2 items-center">
             <SidebarTrigger />
-            
           </div>
 
           {/* Menu icon */}

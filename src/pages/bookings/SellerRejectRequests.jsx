@@ -84,12 +84,12 @@ const RejectedBookingRequests = () => {
           getReqs={getReqs}
         />
 
-        <PaginationComp
+        {/* <PaginationComp
           page={page}
           pageCount={pageCount}
           setPage={setPage}
           className="mt-8 mb-5"
-        />
+        /> */}
       </div>
     </Wrapper>
   );

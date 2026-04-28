@@ -1,5 +1,5 @@
 import { format } from "date-fns";
-import { Eye, Wallet } from "lucide-react";
+import { BadgeCheck, Briefcase, CheckCircle2, Eye, ShieldCheck, TrendingUp, Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
@@ -41,8 +41,11 @@ import {
 import Wrapper from "../../components/wrappers/Wrapper";
 import { BackLink } from "../../components/shared/back-link";
 import { H2 } from "../../components/shared/typography";
+import PartnerMetrics from "./PartnerMetrics";
 
 const PartnerDetails = () => {
+
+ 
   const { partnerId } = useParams();
 
   const {
@@ -99,7 +102,10 @@ const PartnerDetails = () => {
   /* ---------------- RESPONSES ---------------- */
 
   useEffect(() => {
-    if (sellerRes?.status === 200) setSeller(sellerRes.data.data);
+    if (sellerRes?.status === 200) {
+      setSeller(sellerRes.data.data);
+      console.log("sellerRes", sellerRes);
+    }
   }, [sellerRes]);
 
   useEffect(() => {
@@ -321,6 +327,8 @@ const PartnerDetails = () => {
             </CardContent>
           </Card>
 
+         <PartnerMetrics />
+
           {/* ================= Orders + Wallet ================= */}
           <div className="grid grid-cols-5 gap-6">
             {/* Orders */}
@@ -486,11 +494,7 @@ const DocCard = ({ title, file }) => {
 
       <p className="mt-1 text-xs">
         Status:{" "}
-        <span
-          className={
-            file.verified ? "text-green-600" : "text-red-600"
-          }
-        >
+        <span className={file.verified ? "text-green-600" : "text-red-600"}>
           {file.verified ? "Verified" : "Not Verified"}
         </span>
       </p>

@@ -93,6 +93,7 @@ export const CityConfigSchema = z
 
 export const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  durationMinutes: z.coerce.number().min(1, "Duration Minutes is required"),
   description: z.string().min(1, "Description is required"),
 
   img: z.any().optional(),
@@ -107,6 +108,7 @@ export const productSchema = z.object({
 
 export const packageSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  durationMinutes: z.coerce.number().min(1, "Duration Minutes is required"),
   description: z.string().optional(),
   products: z
     .array(
