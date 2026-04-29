@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import { Eye, Pencil, PlusIcon, Trash2 } from "lucide-react";
 
@@ -79,9 +79,9 @@ const Partners = () => {
   const [unapprovedOpen, setUnapprovedOpen] = useState(false);
   const [cityId, setCityId] = useState("");
 
-  const handleCreate = ()=>{
+  const handleCreate = () => {
     navigate("/admin/partners/create");
-  }
+  };
 
   const handleReset = () => {
     setCityId("");
@@ -156,6 +156,11 @@ const Partners = () => {
               <PlusIcon className="mr-2 h-4 w-4" />
               Add Partner
             </Button>
+            <div className="flex gap-5 items-center">
+              <Button variant="abhicares" className="w-auto px-4">
+                <Link to={`/admin/partners/metrics`}>Metrics</Link>
+              </Button>
+            </div>
           </div>
 
           <div className="mb-6 flex flex-wrap items-center gap-3 mt-6">
@@ -237,7 +242,7 @@ const Partners = () => {
                           variant="outline"
                           onClick={() => {
                             navigate(`/admin/partners/${s._id}/update`, {
-                              state: { seller:s},
+                              state: { seller: s },
                             });
                           }}
                         >

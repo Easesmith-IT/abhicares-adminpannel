@@ -1,5 +1,13 @@
 import { format } from "date-fns";
-import { BadgeCheck, Briefcase, CheckCircle2, Eye, ShieldCheck, TrendingUp, Wallet } from "lucide-react";
+import {
+  BadgeCheck,
+  Briefcase,
+  CheckCircle2,
+  Eye,
+  ShieldCheck,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
@@ -44,8 +52,6 @@ import { H2 } from "../../components/shared/typography";
 import PartnerMetrics from "./PartnerMetrics";
 
 const PartnerDetails = () => {
-
- 
   const { partnerId } = useParams();
 
   const {
@@ -149,14 +155,27 @@ const PartnerDetails = () => {
             <BackLink href={-1}>
               <H2>Partner Details</H2>
             </BackLink>
-            <Button variant="abhicares" className="w-auto px-4">
-              <Link
-                to={`/admin/partners/${partnerId}/cash-submission`}
-                state={{ walletId: wallet?._id }}
-              >
-                Cash Submissions
-              </Link>
-            </Button>
+
+            <div className="flex gap-5 items-center">
+              <Button variant="abhicares" className="w-auto px-4">
+                <Link
+                  to={`/admin/partners/${partnerId}/cash-submission`}
+                  state={{ walletId: wallet?._id }}
+                >
+                  Cash Submissions
+                </Link>
+              </Button>
+              <Button variant="abhicares" className="w-auto px-4">
+                <Link to={`/admin/partners/${partnerId}/offer-metrics`}>
+                  Offer Metrics
+                </Link>
+              </Button>
+              <Button variant="abhicares" className="w-auto px-4">
+                <Link to={`/admin/partners/${partnerId}/offered-bookings`}>
+                  Offered Bookings
+                </Link>
+              </Button>
+            </div>
           </div>
           {/* ================= Partner Info ================= */}
           <Card>
@@ -327,7 +346,7 @@ const PartnerDetails = () => {
             </CardContent>
           </Card>
 
-         <PartnerMetrics />
+          <PartnerMetrics metrics={seller?.metrics} />
 
           {/* ================= Orders + Wallet ================= */}
           <div className="grid grid-cols-5 gap-6">

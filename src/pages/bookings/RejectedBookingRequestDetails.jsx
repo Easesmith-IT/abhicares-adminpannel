@@ -11,6 +11,7 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
+  Fingerprint,
 } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BackLink } from "../../components/shared/back-link";
@@ -51,11 +52,13 @@ const badgeColors = {
 const RejectedBookingRequestDetails = () => {
   const { state } = useLocation();
   const data = state.requestData || "";
+  console.log("data",data);
+  
   const navigate = useNavigate();
 
   return (
     <Wrapper>
-      <div className="max-w-6xl mx-auto p-6 space-y-6">
+      <div className="max-w-6xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-5">
           <div>
@@ -117,6 +120,19 @@ const RejectedBookingRequestDetails = () => {
             <h2 className="font-semibold text-lg mb-5">Seller Information</h2>
 
             <div className="space-y-4">
+              <div className="flex gap-3">
+                <Fingerprint size={18} />
+                <div>
+                  <p className="text-sm text-gray-500">Seller Id</p>
+
+                  <Link
+                    className="hover:text-blue-700 hover:underline font-medium"
+                    to={`/admin/partners/${data?.seller?._id}`}
+                  >
+                    {data.seller._id?.slice(0, 9)}
+                  </Link>
+                </div>
+              </div>
               <div className="flex gap-3">
                 <Store size={18} />
                 <div>

@@ -24,6 +24,7 @@ import SeoModal from "../../components/modals/SeoModal";
 import UpdateReferEarnModal from "../../components/modals/UpdateReferEarnModal";
 import { PaginationComp } from "../../components/shared/PaginationComp";
 import Wrapper from "../../components/wrappers/Wrapper";
+import AutoAssignSetting from "../../components/settings/AutoAssignSetting";
 
 const Settings = () => {
   const {
@@ -49,6 +50,7 @@ const Settings = () => {
     useState(false);
   const [pageCount, setPageCount] = useState(1);
   const [page, setPage] = useState(1);
+  const [isUpdateAutoModeModalOpen, setIsUpdateAutoModeModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -129,9 +131,10 @@ const Settings = () => {
               >
                 Update Password
               </Button>
-
             </div>
           </div>
+
+          <AutoAssignSetting />
 
           {/* Content */}
           <div className="table-container">

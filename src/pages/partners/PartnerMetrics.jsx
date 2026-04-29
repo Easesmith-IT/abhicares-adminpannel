@@ -1,89 +1,125 @@
-import { BadgeCheck, Briefcase, CheckCircle2, Clock3, Percent, ShieldCheck, TrendingUp, XCircle } from 'lucide-react';
-import React from 'react'
-import { Card, CardContent } from '../../components/ui/card';
-import { Badge } from '../../components/ui/badge';
-import { Progress } from '../../components/ui/progress';
+import {
+  BadgeCheck,
+  Briefcase,
+  CheckCircle2,
+  Clock3,
+  Percent,
+  ShieldCheck,
+  TrendingUp,
+  XCircle,
+} from "lucide-react";
+import React, { useEffect } from "react";
+import { Card, CardContent } from "../../components/ui/card";
+import { Badge } from "../../components/ui/badge";
+import { Progress } from "../../components/ui/progress";
+import useGetApiReq from "../../hooks/useGetApiReq";
+import { useParams } from "react-router-dom";
+import { Button } from "../../components/ui/button";
+import { Spinner } from "../../components/ui/spinner";
+import usePostApiReq from "../../hooks/usePostApiReq";
 
-const PartnerMetrics = () => {
-     const metrics = {
-        acceptanceRate: 83.33,
-        acceptedOffers: 5,
-        approvedRejectRequests: 1,
-        completedBookings: 10,
-        completionRate: 83.33,
-        expiredOffers: 1,
-        offerExpiryRate: 14.29,
-        offerRejectionRate: 16.67,
-        rejectRequests: 2,
-        rejectedOffers: 1,
-        releaseApprovalRate: 50,
-        releaseRequestRate: 16.67,
-        totalAssignedBookings: 12,
-        totalOffers: 7,
-      };
-    
-      const stats = [
-        {
-          title: "Assigned Bookings",
-          value: metrics.totalAssignedBookings,
-          icon: Briefcase,
-        },
-        {
-          title: "Completed",
-          value: metrics.completedBookings,
-          icon: CheckCircle2,
-        },
-        {
-          title: "Offers Accepted",
-          value: metrics.acceptedOffers,
-          icon: BadgeCheck,
-        },
-        {
-          title: "Reject Requests",
-          value: metrics.rejectRequests,
-          icon: ShieldCheck,
-        },
-      ];
-    
-      const rates = [
-        {
-          label: "Acceptance Rate",
-          value: metrics.acceptanceRate,
-          color: "bg-green-500",
-        },
-        {
-          label: "Completion Rate",
-          value: metrics.completionRate,
-          color: "bg-blue-500",
-        },
-        {
-          label: "Offer Expiry",
-          value: metrics.offerExpiryRate,
-          color: "bg-amber-500",
-        },
-        {
-          label: "Offer Rejection",
-          value: metrics.offerRejectionRate,
-          color: "bg-red-500",
-        },
-        {
-          label: "Release Approval",
-          value: metrics.releaseApprovalRate,
-          color: "bg-purple-500",
-        },
-      ];
+const metricsData = {
+  acceptanceRate: 0,
+  acceptedOffers: 0,
+  approvedRejectRequests: 0,
+  completedBookings: 0,
+  completionRate: 0,
+  expiredOffers: 0,
+  offerExpiryRate: 0,
+  offerRejectionRate: 0,
+  rejectRequests: 0,
+  rejectedOffers: 0,
+  releaseApprovalRate: 0,
+  releaseRequestRate: 0,
+  totalAssignedBookings: 0,
+  totalOffers: 0,
+};
+const PartnerMetrics = ({ metrics = metricsData }) => {
+  const { res, fetchData, isLoading } = usePostApiReq();
+  const { partnerId } = useParams();
+
+  const stats = [
+    {
+      title: "Assigned Bookings",
+      value: metrics.totalAssignedBookings,
+      icon: Briefcase,
+    },
+    {
+      title: "Completed",
+      value: metrics.completedBookings,
+      icon: CheckCircle2,
+    },
+    {
+      title: "Offers Accepted",
+      value: metrics.acceptedOffers,
+      icon: BadgeCheck,
+    },
+    {
+      title: "Reject Requests",
+      value: metrics.rejectRequests,
+      icon: ShieldCheck,
+    },
+  ];
+
+  const rates = [
+    {
+      label: "Acceptance Rate",
+      value: metrics.acceptanceRate,
+      color: "bg-green-500",
+    },
+    {
+      label: "Completion Rate",
+      value: metrics.completionRate,
+      color: "bg-blue-500",
+    },
+    {
+      label: "Offer Expiry",
+      value: metrics.offerExpiryRate,
+      color: "bg-amber-500",
+    },
+    {
+      label: "Offer Rejection",
+      value: metrics.offerRejectionRate,
+      color: "bg-red-500",
+    },
+    {
+      label: "Release Approval",
+      value: metrics.releaseApprovalRate,
+      color: "bg-purple-500",
+    },
+  ];
+
+  const recalculateMetrics = () => {
+    fetchData(`/admin/recalculate-seller-metrics/${partnerId}`);
+  };
+
+  useEffect(() => {
+    if (res?.status === 200 || res?.status === 201) {
+      console.log("res", res);
+    }
+  }, [res]);
 
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3">
-        <TrendingUp className="w-7 h-7 text-primary" />
-        <div>
-          <h2 className="text-2xl font-bold">Performance Metrics</h2>
-          <p className="text-muted-foreground text-sm">
-            Partner performance and offer analytics
-          </p>
+      <div className="flex justify-between gap-5">
+        <div className="flex items-center gap-3">
+          <TrendingUp className="w-7 h-7 text-primary" />
+          <div>
+            <h2 className="text-2xl font-bold">Performance Metrics</h2>
+            <p className="text-muted-foreground text-sm">
+              Partner performance and offer analytics
+            </p>
+          </div>
         </div>
+        <Button
+          className=""
+          variant="abhicares"
+          disabled={isLoading}
+          onClick={recalculateMetrics}
+        >
+          {isLoading ? <Spinner /> : "Recalculate Metrics"}
+        </Button>
       </div>
 
       {/* Top KPI cards */}
@@ -174,6 +210,6 @@ const PartnerMetrics = () => {
       </div>
     </div>
   );
-}
+};
 
-export default PartnerMetrics
+export default PartnerMetrics;

@@ -68,6 +68,13 @@ import UpdateProductPage from "./pages/services/UpdateProductPage";
 import UpdateServicePage from "./pages/services/UpdateServicePage";
 import Settings from "./pages/settings/Settings";
 import RejectedBookingRequestDetails from "./pages/bookings/RejectedBookingRequestDetails";
+import Metrics from "./pages/partners/Metrics";
+import OfferMetrics from "./pages/partners/Offer-metrics";
+import OfferedBookings from "./pages/offered-bookings/OfferedBookings";
+import OfferedBookingDetails from "./pages/offered-bookings/OfferedBookingDetails";
+import PartnerOfferedBookings from "./pages/partners/PartnerOfferedBookings";
+import PartnerOfferedBookingDetails from "./pages/partners/PartnerOfferedBookingDetails";
+import UnassignedBookings from "./pages/offered-bookings/UnassignedBookings";
 // import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
@@ -83,9 +90,25 @@ function App() {
           <Route path="/admin/orders/:id" element={<OrderDetails />} />
 
           <Route path="/admin/bookings" element={<Bookings />} />
-          <Route path="/admin/bookings/rejected-request" element={<RejectedBookingRequests />} />
-          <Route path="/admin/bookings/rejected-request/:requestId" element={<RejectedBookingRequestDetails />} />
+          <Route
+            path="/admin/bookings/rejected-request"
+            element={<RejectedBookingRequests />}
+          />
+          <Route
+            path="/admin/bookings/rejected-request/:requestId"
+            element={<RejectedBookingRequestDetails />}
+          />
           <Route path="/admin/bookings/:id" element={<BookingDetails />} />
+
+          <Route path="/admin/offered-bookings" element={<OfferedBookings />} />
+          <Route
+            path="/admin/offered-bookings/unassigned"
+            element={<UnassignedBookings />}
+          />
+          <Route
+            path="/admin/offered-bookings/:offerId"
+            element={<OfferedBookingDetails />}
+          />
 
           <Route path="/admin/categories" element={<Categories />} />
           <Route
@@ -143,6 +166,7 @@ function App() {
           /> */}
 
           <Route path="/admin/partners" element={<Partners />} />
+          <Route path="/admin/partners/metrics" element={<Metrics />} />
           <Route path="/admin/partners/create" element={<CreateSeller />} />
           <Route
             path="/admin/partners/:partnerId/update"
@@ -151,6 +175,18 @@ function App() {
           <Route
             path="/admin/partners/:partnerId"
             element={<PartnerDetails />}
+          />
+          <Route
+            path="/admin/partners/:partnerId/offered-bookings"
+            element={<PartnerOfferedBookings />}
+          />
+          <Route
+            path="/admin/partners/:partnerId/offered-bookings/:offerId"
+            element={<PartnerOfferedBookingDetails />}
+          />
+          <Route
+            path="/admin/partners/:partnerId/offer-metrics"
+            element={<OfferMetrics />}
           />
           <Route
             path="/admin/partners/:partnerId/cash-submission"

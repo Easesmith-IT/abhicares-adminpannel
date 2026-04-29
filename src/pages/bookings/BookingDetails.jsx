@@ -24,6 +24,7 @@ import { BackLink } from "../../components/shared/back-link";
 import { H2 } from "../../components/shared/typography";
 import BookingDetailsSkeleton from "../../components/booking/BookingDetailsSkeleton";
 import RefundStatusModal from "../../components/booking/RefundStatusModal";
+import AutoAsignedCard from "../../components/booking/AutoAsignedCard";
 
 const statusVariantMap = {
   cancelled: "destructive",
@@ -58,8 +59,8 @@ const BookingDetails = () => {
 
   useEffect(() => {
     if (res?.status === 200) {
-      setBooking(res.data.bookingDetails);
-      setStatus(res.data.bookingDetails.status);
+      setBooking(res.data?.bookingDetails);
+      setStatus(res.data?.bookingDetails?.status);
     }
   }, [res]);
   console.log("booking", booking);
@@ -364,6 +365,8 @@ const BookingDetails = () => {
             />
           </CardContent>
         </Card>
+
+        <AutoAsignedCard booking={booking}  />
       </Wrapper>
 
       {isPartnerModalOpen && (

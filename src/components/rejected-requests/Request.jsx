@@ -22,7 +22,7 @@ const getRequestStatusClasses = (status) => {
 const Request = ({ item, refetch }) => {
   const [approveOpen, setApproveOpen] = useState(false);
   const [rejectOpen, setRejectOpen] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <>
@@ -64,13 +64,13 @@ const Request = ({ item, refetch }) => {
           className="w-[200px] whitespace-pre-wrap"
           title={item.reason}
         >
-          {item.reason}
+          {item.reason || "-"}
         </TableCell>
         <TableCell
           className="w-[200px] whitespace-pre-wrap"
           title={item.adminNote}
         >
-          {item.adminNote}
+          {item.adminNote || "-"}
         </TableCell>
 
         <TableCell>
@@ -125,6 +125,7 @@ const Request = ({ item, refetch }) => {
           requestId={item.requestId}
           mode="approve"
           refetch={refetch}
+          bookingId={item?.booking?._id||""}
         />
       )}
 

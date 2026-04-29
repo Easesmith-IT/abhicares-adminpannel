@@ -29,6 +29,7 @@ import {
   Globe2Icon,
   WalletIcon,
   LayoutGridIcon,
+  ClipboardList,
 } from "lucide-react";
 import logo from "../../assets/logo .png";
 import { SidebarHeader } from "../ui/sidebar";
@@ -110,6 +111,12 @@ const SideNav = () => {
             "/admin/bookings",
             "Bookings",
             CalendarCheck,
+            permissions.bookings !== "none",
+          )}
+          {menuItem(
+            "/admin/offered-bookings",
+            "Offered Bookings",
+            ClipboardList,
             permissions.bookings !== "none",
           )}
           {menuItem(
