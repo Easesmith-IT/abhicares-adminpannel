@@ -74,16 +74,19 @@ const Bookings = () => {
 
   useEffect(() => {
     if (filterRes?.status === 200) {
+      console.log("filterRes", filterRes);
+      
       setBookings(filterRes.data.data);
       setPageCount(filterRes.data.pagination.totalPages);
     }
   }, [filterRes]);
-
+  
   useEffect(() => {
     if (searchRes?.status === 200) {
       console.log("searchRes", searchRes);
-
+      
       setBookings([searchRes.data.data[0]]);
+      setPageCount(0);
     }
   }, [searchRes]);
 

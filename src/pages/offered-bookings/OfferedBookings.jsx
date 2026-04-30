@@ -56,8 +56,9 @@ export default function OfferedBookings() {
 
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
+  const [status, setStatus] = useState("all");
   const [source, setSource] = useState("");
+  const [lastFiveHours, setLastFiveHours] = useState(false);
 
   const { res, isLoading, error, fetchData } = useGetApiReq();
 
@@ -65,6 +66,7 @@ export default function OfferedBookings() {
     const query = new URLSearchParams({
       page,
       limit: 10,
+      lastFiveHours,
       ...(search && { search }),
       ...(status && { status }),
       ...(source && { source }),
@@ -73,18 +75,19 @@ export default function OfferedBookings() {
     fetchData(`/admin/getAdminAllSellerOfferHistory?${query}`, {
       screenName: "OfferedBookings",
     });
-  }, [page, search, status, source]);
+  }, [page, search, status, source,lastFiveHours]);
 
   console.log("res", res);
-  
+
   const offers = res?.data?.data || [];
   const pagination = res?.data?.pagination || {};
-  
+
   console.log("offers", offers);
   const handleReset = () => {
     setSearch("");
-    setStatus("");
+    setStatus("all");
     setSource("");
+    setLastFiveHours(false);
     setPage(1);
   };
 
@@ -94,9 +97,9 @@ export default function OfferedBookings() {
         <div className="flex justify-between items-center">
           <H2>Offered Bookings</H2>
 
-          <Button variant="abhicares" className="w-auto px-4">
+          <Button asChild variant="abhicares" className="w-auto px-4">
             <Link to={`/admin/offered-bookings/unassigned`}>
-              Auto UnAssigned Bookings
+             Auto Assign Failed Bookings
             </Link>
           </Button>
         </div>
@@ -104,7 +107,7 @@ export default function OfferedBookings() {
         {/* Filters */}
 
         <div className="flex flex-wrap gap-3 mt-6 mb-6">
-          <Input
+          {/* <Input
             placeholder="Search booking..."
             value={search}
             onChange={(e) => {
@@ -112,7 +115,7 @@ export default function OfferedBookings() {
               setPage(1);
             }}
             className="max-w-xs"
-          />
+          /> */}
 
           <Select
             value={status}
@@ -126,17 +129,18 @@ export default function OfferedBookings() {
             </SelectTrigger>
 
             <SelectContent>
-              <SelectItem value="offered">Offered</SelectItem>
+              <SelectItem value="all">All</SelectItem>
 
               <SelectItem value="accepted">Accepted</SelectItem>
 
               <SelectItem value="rejected">Rejected</SelectItem>
 
-              <SelectItem value="expired">Expired</SelectItem>
             </SelectContent>
           </Select>
 
-          <Select
+<Button variant={lastFiveHours?"abhicares":"outline"} onClick={()=> setLastFiveHours((prev)=> !prev)}>Get Last Five Hours Data</Button>
+
+          {/* <Select
             value={source}
             onValueChange={(v) => {
               setSource(v);
@@ -154,12 +158,12 @@ export default function OfferedBookings() {
 
               <SelectItem value="system">System</SelectItem>
             </SelectContent>
-          </Select>
+          </Select> */}
 
           <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
         </div>
 
-        <div className="table-container">
+        <div className="table-container mt-6">
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-200">
@@ -194,8 +198,7 @@ export default function OfferedBookings() {
                 </>
               )}
 
-              { !isLoading &&
-                offers.length === 0 && (
+              {!isLoading && offers.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={10} className="text-center">
                     No offered bookings found
@@ -204,10 +207,15 @@ export default function OfferedBookings() {
               )}
 
               {!isLoading &&
-                offers.map((offer) => (
+                offers?.map((offer) => (
                   <TableRow key={offer._id}>
                     <TableCell className="font-medium">
-                      {offer.bookingId?.bookingId}
+                      <Link
+                        className="hover:text-blue-700 hover:underline font-medium"
+                        to={`/admin/bookings/${offer?.bookingId?._id}`}
+                      >
+                        {offer.bookingId.bookingId}
+                      </Link>
                     </TableCell>
 
                     <TableCell>{offer.sellerId?.name || "-"}</TableCell>
@@ -218,19 +226,23 @@ export default function OfferedBookings() {
                       </Badge>
                     </TableCell>
 
-                    <TableCell>{offer.score}</TableCell>
+                    <TableCell>{offer.score || "-"}</TableCell>
 
-                    <TableCell>#{offer.attemptNo}</TableCell>
+                    <TableCell>#{offer.attemptNo || "0"}</TableCell>
 
-                    <TableCell className="uppercase">{offer.source}</TableCell>
+                    <TableCell className="uppercase">
+                      {offer.source || "-"}
+                    </TableCell>
 
                     <TableCell>
                       <div className="flex flex-wrap gap-2">
-                        {offer.reasonCodes?.map((code) => (
-                          <Badge key={code} variant="outline">
-                            {code}
-                          </Badge>
-                        ))}
+                        {offer?.reasonCodes?.length > 0
+                          ? offer.reasonCodes?.map((code) => (
+                              <Badge key={code} variant="outline">
+                                {code}
+                              </Badge>
+                            ))
+                          : "-"}
                       </div>
                     </TableCell>
 

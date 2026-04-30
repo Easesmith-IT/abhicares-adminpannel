@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import Wrapper from "../../components/wrappers/Wrapper";
 import { BackLink } from "../../components/shared/back-link";
@@ -60,6 +60,8 @@ export default function PartnerOfferedBookingDetails() {
   const navigate = useNavigate();
 
   const offer = state?.offer;
+  console.log("offer", offer);
+  
 
   if (!offer) {
     navigate(-1);
@@ -143,10 +145,10 @@ export default function PartnerOfferedBookingDetails() {
         <div className="grid md:grid-cols-4 gap-5">
           {summaryCards.map((item) => (
             <Card key={item.label} className="rounded-2xl shadow-md border-0">
-              <CardContent className="p-6">
+              <CardContent className="p-6 py-2">
                 <p className="text-sm text-muted-foreground">{item.label}</p>
 
-                <h3 className="text-3xl font-bold mt-2">{item.value}</h3>
+                <h3 className="text-2xl font-bold mt-2">{item.value}</h3>
               </CardContent>
             </Card>
           ))}
@@ -163,7 +165,14 @@ export default function PartnerOfferedBookingDetails() {
             <div className="grid md:grid-cols-2 gap-6">
               <Info label="Partner">{seller?.name}</Info>
 
-              <Info label="Partner ID">{seller?.partnerId}</Info>
+              <Info label="Partner ID">
+                <Link
+                  className="hover:text-blue-700 hover:underline font-medium"
+                  to={`/admin/bookings/${seller?._id}`}
+                >
+                  {seller?.partnerId}
+                </Link>
+              </Info>
 
               <Info label="Partner Phone">{seller?.phone}</Info>
 
@@ -264,7 +273,7 @@ export default function PartnerOfferedBookingDetails() {
         </Card>
 
         {/* AUTO EVENTS */}
-        <Card className="rounded-2xl shadow-md border-0">
+        {/* <Card className="rounded-2xl shadow-md border-0">
           <CardContent className="p-8">
             <div className="flex items-center gap-3 mb-6">
               <Activity />
@@ -288,7 +297,7 @@ export default function PartnerOfferedBookingDetails() {
               </div>
             )}
           </CardContent>
-        </Card>
+        </Card> */}
 
         {/* TIMELINE */}
         <Card className="rounded-2xl shadow-md border-0">

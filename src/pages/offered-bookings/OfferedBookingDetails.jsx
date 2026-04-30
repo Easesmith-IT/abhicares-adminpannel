@@ -103,7 +103,7 @@ const OfferedBookingDetails = () => {
             <CardContent className="p-6">
               <p className="text-muted-foreground text-sm">Offer Score</p>
 
-              <h3 className="text-4xl font-bold mt-2">{offer?.score}</h3>
+              <h3 className="text-4xl font-bold mt-2">{offer?.score || 0}</h3>
             </CardContent>
           </Card>
 
@@ -168,7 +168,7 @@ const OfferedBookingDetails = () => {
                 <p className="text-muted-foreground text-sm">Idempotency Key</p>
 
                 <p className="font-medium mt-1 break-all">
-                  {offer?.idempotencyKey}
+                  {offer?.idempotencyKey || "-"}
                 </p>
               </div>
             </div>
@@ -191,7 +191,7 @@ const OfferedBookingDetails = () => {
                   <p className="text-sm text-muted-foreground">{label}</p>
 
                   <div className="flex items-center justify-between mt-3">
-                    <span className="text-3xl font-bold">{val}</span>
+                    <span className="text-3xl font-bold">{val || 0}</span>
 
                     <div className="w-24 bg-slate-100 rounded-full h-2">
                       <div
@@ -209,24 +209,26 @@ const OfferedBookingDetails = () => {
         </Card>
 
         {/* WEIGHTS */}
-        <Card className="rounded-2xl shadow-md border-0">
-          <CardContent className="p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <Scale />
-              <h3 className="text-xl font-semibold">Weight Snapshot</h3>
-            </div>
+        {weights.length > 0 && (
+          <Card className="rounded-2xl shadow-md border-0">
+            <CardContent className="p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <Scale />
+                <h3 className="text-xl font-semibold">Weight Snapshot</h3>
+              </div>
 
-            <div className="grid md:grid-cols-2 gap-5">
-              {weights.map(([k, v]) => (
-                <div key={k} className="flex justify-between border-b pb-3">
-                  <span>{formatLabel(k)}</span>
+              <div className="grid md:grid-cols-2 gap-5">
+                {weights.map(([k, v]) => (
+                  <div key={k} className="flex justify-between border-b pb-3">
+                    <span>{formatLabel(k)}</span>
 
-                  <span className="font-semibold">{v * 100}%</span>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+                    <span className="font-semibold">{v * 100}%</span>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* REASON CODES */}
         <Card className="rounded-2xl shadow-md border-0">
@@ -246,37 +248,41 @@ const OfferedBookingDetails = () => {
             <div className="rounded-xl bg-muted p-5">
               <p className="text-sm text-muted-foreground">Assignment Reason</p>
 
-              <p className="font-medium mt-2">{offer?.assignmentReason}</p>
+              <p className="font-medium mt-2">
+                {offer?.assignmentReason || "-"}
+              </p>
             </div>
           </CardContent>
         </Card>
 
         {/* ELIGIBILITY */}
-        <Card className="rounded-2xl shadow-md border-0">
-          <CardContent className="p-8">
-            <div className="flex items-center gap-3 mb-6">
-              <ShieldCheck />
-              <h3 className="text-xl font-semibold">Eligibility Snapshot</h3>
-            </div>
+        {offer?.eligibilitySnapshot?.length > 0 && (
+          <Card className="rounded-2xl shadow-md border-0">
+            <CardContent className="p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <ShieldCheck />
+                <h3 className="text-xl font-semibold">Eligibility Snapshot</h3>
+              </div>
 
-            <div className="grid md:grid-cols-2 gap-5">
-              {Object.entries(offer?.eligibilitySnapshot || {}).map(
-                ([key, val]) => (
-                  <div
-                    key={key}
-                    className="flex justify-between rounded-xl border p-4"
-                  >
-                    <span>{formatLabel(key)}</span>
+              <div className="grid md:grid-cols-2 gap-5">
+                {Object.entries(offer?.eligibilitySnapshot || {}).map(
+                  ([key, val]) => (
+                    <div
+                      key={key}
+                      className="flex justify-between rounded-xl border p-4"
+                    >
+                      <span>{formatLabel(key)}</span>
 
-                    <Badge variant={val ? "success" : "destructive"}>
-                      {val ? "Yes" : "No"}
-                    </Badge>
-                  </div>
-                ),
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                      <Badge variant={val ? "success" : "destructive"}>
+                        {val ? "Yes" : "No"}
+                      </Badge>
+                    </div>
+                  ),
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* TIMELINE */}
         <Card className="rounded-2xl shadow-md border-0">

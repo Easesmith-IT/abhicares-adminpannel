@@ -72,7 +72,7 @@ export default function PartnerOfferedBookings() {
     }).toString();
 
     fetchData(
-      `/admin/seller-offer-history-admin/${params?.partnerId}`,
+      `/admin/seller-offer-history-admin/${params?.partnerId}?${query}`,
       {
         screenName: "OfferedBookings",
       },
@@ -124,7 +124,7 @@ export default function PartnerOfferedBookings() {
 
         {/* Filters */}
 
-        <div className="flex flex-wrap gap-3 mt-6 mb-6">
+        <div className="hidden flex-wrap gap-3 mt-6 mb-6">
           <Input
             placeholder="Search booking..."
             value={search}
@@ -180,13 +180,13 @@ export default function PartnerOfferedBookings() {
           <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
         </div>
 
-        <div className="table-container">
+        <div className="table-container mt-6">
           <Table>
             <TableHeader>
               <TableRow className="bg-slate-200">
                 <TableHead>Booking</TableHead>
 
-                <TableHead>Seller</TableHead>
+                {/* <TableHead>Seller</TableHead> */}
 
                 <TableHead>Status</TableHead>
 
@@ -214,15 +214,7 @@ export default function PartnerOfferedBookings() {
                   ))}
                 </>
               )}
-
-              {error && (
-                <TableRow>
-                  <TableCell colSpan={10} className="text-center">
-                    Failed to load offered bookings
-                  </TableCell>
-                </TableRow>
-              )}
-
+              
               {!isLoading && offers.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={10} className="text-center">
@@ -244,9 +236,9 @@ export default function PartnerOfferedBookings() {
                       </Link>
                     </TableCell>
 
-                    <TableCell>
+                    {/* <TableCell>
                       {offer.booking?.sellerId?.name || "-"}
-                    </TableCell>
+                    </TableCell> */}
 
                     <TableCell>
                       <Badge
@@ -277,7 +269,7 @@ export default function PartnerOfferedBookings() {
                       )}
                     </TableCell>
 
-                    <TableCell className="max-w-[220px]">
+                    <TableCell className="max-w-[200px]">
                       {offer.reasonMeta?.offerRejectReason || "-"}
                     </TableCell>
 

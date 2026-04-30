@@ -150,6 +150,10 @@ const BookingDetails = () => {
 
               <CardContent className="grid grid-cols-2 gap-4 text-sm">
                 <p>
+                  <span className="font-medium">Status:</span>{" "}
+                  {booking.status}
+                </p>
+                <p>
                   <span className="font-medium">Payment Status:</span>{" "}
                   {booking.paymentStatus}
                 </p>

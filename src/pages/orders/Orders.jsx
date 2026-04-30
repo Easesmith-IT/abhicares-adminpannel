@@ -76,6 +76,7 @@ const Orders = () => {
   useEffect(() => {
     if (getOrderByIDRes?.status === 200) {
       setAllOrders([getOrderByIDRes.data.data]);
+      setPageCount(0)
     }
   }, [getOrderByIDRes]);
 

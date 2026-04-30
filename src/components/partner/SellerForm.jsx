@@ -55,6 +55,8 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
 
   const [categories, setCategories] = useState([]);
   const [servicesList, setServicesList] = useState([]);
+  console.log("servicesList", servicesList);
+  
   const [cities, setCities] = useState([]);
   const refs = {
     profilePhoto: useRef(null),
@@ -138,6 +140,11 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
     },
   });
 
+  console.log("form.getvalues",form.getValues());
+  console.log("services", form.watch("services"));
+  console.log("initialData", initialData);
+  
+
   useEffect(() => {
     if (initialData && isEdit) {
       form.reset({
@@ -155,8 +162,12 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
 
         categoryId: initialData.categoryId?._id,
 
-        services: initialData.services?.map((s) => s.serviceId?._id) || [],
+        // services: initialData.services?.map((s) => s.serviceId?._id) || [],
 
+services:
+  initialData.services?.map((s) =>
+    s?.serviceId?._id || s?.serviceId || null
+  ).filter(Boolean) || [],
         legalName: initialData.legalName,
         gstNumber: initialData.gstNumber,
 
@@ -382,10 +393,15 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
     onSubmit(formData);
   };
 
+  const handleError = (error)=> {
+    console.log("error",error);
+    
+  }
+
   /* ---------------- UI ---------------- */
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(handleSubmit,handleError)} className="space-y-6">
         {/* BASIC */}
         <Section title="Basic Information">
           <div className="grid grid-cols-2 gap-4">
