@@ -14,6 +14,8 @@ const SellerOrderInfoModal = ({
   sellerOrder,
 }) => {
   if (!sellerOrder) return null;
+  console.log("sellerOrder", sellerOrder);
+  
 
   const isPackage = Boolean(sellerOrder.package);
 
@@ -46,7 +48,7 @@ const SellerOrderInfoModal = ({
             {format(new Date(sellerOrder.bookingDate), "dd-MM-yyyy")}
           </p>
           <p>
-            <b>Booking Time:</b> {sellerOrder.bookingTime}
+            <b>Booking Time:</b> {format(new Date(sellerOrder.bookingTime), "hh:mm aa")}
           </p>
           <p>
             <b>Order Total:</b> ₹{sellerOrder.orderValue}
@@ -70,6 +72,9 @@ const SellerOrderInfoModal = ({
 
             <div className="flex-1">
               <p className="font-medium">
+                {isPackage ? sellerOrder?.package?.name : sellerOrder?.product?.name}
+              </p>
+              <p className="text-sm">
                 {isPackage ? "Package" : "Product"}
               </p>
               <p className="text-sm text-muted-foreground">

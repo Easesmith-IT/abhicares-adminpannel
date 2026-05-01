@@ -439,7 +439,7 @@ const PartnerDetails = () => {
 
                     <Separator className="my-4" />
 
-                    <ScrollArea className="h-48">
+                    <ScrollArea className="h-100">
                       <div className="space-y-5 p-1">
                         {cashouts.length === 0 ? (
                           <p className="text-sm text-muted-foreground">
@@ -508,7 +508,7 @@ const DocCard = ({ title, file }) => {
 
       <img
         src={`${import.meta.env.VITE_APP_IMAGE_URL}/${file.url}`}
-        className="h-24 w-full object-cover rounded"
+        className="h-24 object-cover rounded"
       />
 
       <p className="mt-1 text-xs">

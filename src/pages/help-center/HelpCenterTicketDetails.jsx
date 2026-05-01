@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { format } from "date-fns";
 import {
   Calendar,
@@ -102,20 +102,20 @@ const HelpCenterTicketDetails = () => {
                     <User className="h-4 w-4 text-muted-foreground" />
                     <span className="font-medium">Raised By:</span>
                     {ticketDetails?.raisedBy === "customer"
-                      ? ticketDetails?.userId?.name
-                      : ticketDetails?.sellerId?.name}
+                      ? ticketDetails?.userId?.name || "-"
+                      : ticketDetails?.sellerId?.name || "-"}
                   </div>
 
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-muted-foreground" />
-                    {ticketDetails?.userId?.phone}
+                    {ticketDetails?.userId?.phone || "-"}
                   </div>
 
                   <div className="flex items-start gap-2">
                     <FileText className="h-4 w-4 mt-1 text-muted-foreground" />
                     <p>
                       <span className="font-medium">Concern:</span>{" "}
-                      {ticketDetails?.description}
+                      {ticketDetails?.description || "-"}
                     </p>
                   </div>
                 </CardContent>
@@ -129,11 +129,11 @@ const HelpCenterTicketDetails = () => {
                 <CardContent className="space-y-2 text-sm">
                   <p>
                     <User className="inline h-4 w-4 mr-2" />
-                    {ticketDetails?.userId?.name}
+                    {ticketDetails?.userId?.name ||"-"}
                   </p>
                   <p>
                     <Phone className="inline h-4 w-4 mr-2" />
-                    {ticketDetails?.userId?.phone}
+                    {ticketDetails?.userId?.phone ||"-"}
                   </p>
                   {userAddress.addressLine &&
                     userAddress.landmark &&
@@ -182,13 +182,13 @@ const HelpCenterTicketDetails = () => {
                     <CardTitle>Booking Details</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3 text-sm">
-                    <p>
-                      <Badge variant="secondary">
+                    <Link to={`/admin/bookings/${ticketDetails?.bookingId?._id}`}>
+                      <Badge variant="secondary" className="hover:underline hover:text-blue-600">
                         {ticketDetails?.bookingId?.bookingId}
                       </Badge>
-                    </p>
+                    </Link>
 
-                    {ticketDetails?.serviceId && (
+                    {/* {ticketDetails?.serviceId && (
                       <div className="flex items-center gap-2">
                         <Wrench className="h-4 w-4" />
                         {ticketDetails?.serviceId?.name}
@@ -202,9 +202,9 @@ const HelpCenterTicketDetails = () => {
                           </Button>
                         )}
                       </div>
-                    )}
+                    )} */}
 
-                    <p>
+                    <p className="mt-4">
                       <Clock className="inline h-4 w-4 mr-2" />
                       {ticketDetails?.bookingId?.bookingTime &&
                         format(

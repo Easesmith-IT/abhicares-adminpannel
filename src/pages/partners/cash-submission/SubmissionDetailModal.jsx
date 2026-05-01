@@ -75,7 +75,7 @@ function DetailItem({
   return (
     <div className="flex justify-between items-center">
       <span className="text-muted-foreground">{label}</span>
-      <span className="font-medium text-right">{value}</span>
+      <span className="font-medium text-right">{value || "-"}</span>
     </div>
   );
 }

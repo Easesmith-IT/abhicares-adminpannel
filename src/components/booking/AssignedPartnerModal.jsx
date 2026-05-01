@@ -15,33 +15,38 @@ import { Input } from "@/components/ui/input";
 
 import useGetApiReq from "../../hooks/useGetApiReq";
 import usePatchApiReq from "../../hooks/usePatchApiReq";
+import { Spinner } from "../ui/spinner";
 
 const AssignedPartnerModal = ({
   setIsModalOpen,
   serviceId = "",
   bookingId,
   getBooking,
+  assignedSellerId,
 }) => {
   console.log("serviceId", serviceId);
-  
+
   const [sellers, setSellers] = useState([]);
   const [search, setSearch] = useState("");
+  const [index, setIndex] = useState(null);
 
   const { res: sellerRes, fetchData: getSellers, isLoading } = useGetApiReq();
 
-  const { res: assignRes, fetchData: assignSeller } = usePatchApiReq();
+  const {
+    res: assignRes,
+    fetchData: assignSeller,
+    isLoading: isAssignSellerLoading,
+  } = usePatchApiReq();
 
   /* ================= Initial Fetch ================= */
 
-  
   useEffect(() => {
     if (serviceId) {
       getSellers(`/admin/get-seller-list/${serviceId}?search=${search}`);
     }
-  }, [serviceId,search]);
+  }, [serviceId, search]);
 
   /* ================= Search (API Driven) ================= */
-
 
   /* ================= Response ================= */
 
@@ -49,13 +54,13 @@ const AssignedPartnerModal = ({
     if (sellerRes?.status === 200) {
       setSellers(sellerRes.data.data || []);
       console.log("sellerRes", sellerRes);
-
     }
   }, [sellerRes]);
 
   /* ================= Assign ================= */
 
-  const handleAssign = async (sellerId) => {
+  const handleAssign = async (sellerId, index) => {
+    setIndex(index);
     await assignSeller(`/admin/allot-seller-order/${sellerId}`, {
       bookingId,
     });
@@ -66,7 +71,6 @@ const AssignedPartnerModal = ({
       // toast.success("Order assigned to seller successfully");
       getBooking();
       setIsModalOpen(false);
-      
     }
   }, [assignRes]);
 
@@ -105,12 +109,13 @@ const AssignedPartnerModal = ({
 
         {/* Sellers */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
-          {sellers.map((seller) => {
-            const servedServices = seller.services?.map(
-              (item) => item.serviceName,
-            ).join(", ");
+          {sellers.map((seller, i) => {
+            const servedServices = seller.services
+              ?.map((item) => item.serviceName)
+              .join(", ");
 
-            
+            console.log("i", i);
+            console.log("index", index);
 
             return (
               <Card
@@ -138,13 +143,21 @@ const AssignedPartnerModal = ({
                     <Button
                       variant="abhicares"
                       size="sm"
-                      disabled={!seller.online}
+                      disabled={
+                        !seller.online ||
+                        seller?._id === assignedSellerId ||
+                        (index === i && isAssignSellerLoading)
+                      }
                       title={
                         !seller.online ? "Partner is offline" : "Assign partner"
                       }
-                      onClick={() => handleAssign(seller._id)}
+                      onClick={() => handleAssign(seller._id, i)}
                     >
-                      Assign
+                      {index === i && isAssignSellerLoading ? (
+                        <Spinner />
+                      ) : (
+                        "Assign"
+                      )}
                     </Button>
                   </div>
 

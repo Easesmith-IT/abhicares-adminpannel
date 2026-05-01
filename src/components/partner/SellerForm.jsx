@@ -60,9 +60,10 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
   const [cities, setCities] = useState([]);
   const refs = {
     profilePhoto: useRef(null),
+    aadhaarFront: useRef(null),
+    documentFront: useRef(null),
+    aadhaarBack: useRef(null),
     panCard: useRef(null),
-    addressProof: useRef(null),
-    gstCertificate: useRef(null),
     shopLicense: useRef(null),
   };
 
@@ -123,20 +124,20 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
       },
 
       profilePhoto: null,
+      aadhaarFront: null,
+      documentFront: null,
+      aadhaarBack: null,
       panCard: null,
-      addressProof: null,
-      gstCertificate: null,
       shopLicense: null,
       otherDocuments: [],
 
       profilePhotoPreview: "",
+      aadhaarFrontPreview: "",
+      documentFrontPreview: "",
+      aadhaarBackPreview: "",
       panCardPreview: "",
-      addressProofPreview: "",
-      gstCertificatePreview: "",
       shopLicensePreview: "",
       otherDocumentsPreview: [],
-
-      addressProofType: "AADHAAR",
     },
   });
 
@@ -164,10 +165,10 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
 
         // services: initialData.services?.map((s) => s.serviceId?._id) || [],
 
-services:
-  initialData.services?.map((s) =>
-    s?.serviceId?._id || s?.serviceId || null
-  ).filter(Boolean) || [],
+        services:
+          initialData.services
+            ?.map((s) => s?.serviceId?._id || s?.serviceId || null)
+            .filter(Boolean) || [],
         legalName: initialData.legalName,
         gstNumber: initialData.gstNumber,
 
@@ -178,9 +179,10 @@ services:
         },
 
         profilePhotoPreview: initialData?.profilePhoto?.url,
+        aadhaarFrontPreview: initialData?.documents?.aadhaarFront?.url,
+        documentFrontPreview: initialData?.documents?.documentFront?.url,
+        aadhaarBackPreview: initialData?.documents?.aadhaarBack?.url,
         panCardPreview: initialData?.documents?.panCard?.url,
-        addressProofPreview: initialData?.documents?.profilePhoto?.url,
-        gstCertificatePreview: initialData?.documents?.gstCertificate?.url,
         shopLicensePreview: initialData?.documents?.shopLicense?.url,
 
         otherDocumentsPreview: initialData?.documents?.otherDocuments.map(
@@ -202,7 +204,7 @@ services:
           src={
             file ? preview : `${import.meta.env.VITE_APP_IMAGE_URL}/${preview}`
           }
-          className="h-[120px] w-[120px] rounded border object-cover"
+          className="h-[180px] w-[340px] rounded border object-cover"
         />
 
         <Button
@@ -374,9 +376,10 @@ services:
     /* -------- FILES -------- */
     [
       "profilePhoto",
+      "aadhaarFront",
+      "documentFront",
+      "aadhaarBack",
       "panCard",
-      "addressProof",
-      "gstCertificate",
       "shopLicense",
     ].forEach((field) => {
       if (values[field]) {
@@ -388,7 +391,6 @@ services:
       formData.append("otherDocuments", file);
     });
 
-    formData.append("addressProofType", values.addressProofType);
 
     onSubmit(formData);
   };
@@ -401,7 +403,10 @@ services:
   /* ---------------- UI ---------------- */
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit,handleError)} className="space-y-6">
+      <form
+        onSubmit={form.handleSubmit(handleSubmit, handleError)}
+        className="space-y-6"
+      >
         {/* BASIC */}
         <Section title="Basic Information">
           <div className="grid grid-cols-2 gap-4">
@@ -433,7 +438,7 @@ services:
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
-                  <Input {...field} />
+                  <Input type="email" {...field} />
                   <FormMessage />
                 </FormItem>
               )}
@@ -723,7 +728,8 @@ services:
 
         {/* DOCUMENTS */}
         <Section title="Documents">
-          {/* PROFILE PHOTO */}
+          <div className="grid grid-cols-3 gap-5">
+
           <FormItem>
             <FormLabel>Profile Photo</FormLabel>
             <p className="text-sm text-muted-foreground">
@@ -739,6 +745,69 @@ services:
             {form.watch("profilePhotoPreview") && (
               <Preview
                 field="profilePhoto"
+                form={form}
+                removeSingle={removeSingle}
+              />
+            )}
+          </FormItem>
+
+          <FormItem>
+            <FormLabel>Aadhaar Front</FormLabel>
+            <p className="text-sm text-muted-foreground">
+              Max 2MB • JPG PNG WEBP
+            </p>
+            <Input
+              ref={refs.aadhaarFront}
+              type="file"
+              accept=".png,.jpg,.jpeg,.webp"
+              onChange={(e) => handleSingleFile("aadhaarFront", e)}
+            />
+
+            {form.watch("aadhaarFrontPreview") && (
+              <Preview
+                field="aadhaarFront"
+                form={form}
+                removeSingle={removeSingle}
+              />
+            )}
+          </FormItem>
+
+          <FormItem>
+            <FormLabel>Aadhaar Back</FormLabel>
+            <p className="text-sm text-muted-foreground">
+              Max 2MB • JPG PNG WEBP
+            </p>
+            <Input
+              ref={refs.aadhaarBack}
+              type="file"
+              accept=".png,.jpg,.jpeg,.webp"
+              onChange={(e) => handleSingleFile("aadhaarBack", e)}
+            />
+
+            {form.watch("aadhaarBackPreview") && (
+              <Preview
+                field="aadhaarBack"
+                form={form}
+                removeSingle={removeSingle}
+              />
+            )}
+          </FormItem>
+          
+          <FormItem>
+            <FormLabel>Document Front</FormLabel>
+            <p className="text-sm text-muted-foreground">
+              Max 2MB • JPG PNG WEBP
+            </p>
+            <Input
+              ref={refs.documentFront}
+              type="file"
+              accept=".png,.jpg,.jpeg,.webp"
+              onChange={(e) => handleSingleFile("documentFront", e)}
+            />
+
+            {form.watch("documentFrontPreview") && (
+              <Preview
+                field="documentFront"
                 form={form}
                 removeSingle={removeSingle}
               />
@@ -761,75 +830,6 @@ services:
             {form.watch("panCardPreview") && (
               <Preview
                 field="panCard"
-                form={form}
-                removeSingle={removeSingle}
-              />
-            )}
-          </FormItem>
-
-          {/* ADDRESS PROOF */}
-          <FormItem>
-            <FormLabel>Address Proof</FormLabel>
-            <p className="text-sm text-muted-foreground">
-              PDF/JPG/PNG • Max 5MB
-            </p>
-            <Input
-              ref={refs.addressProof}
-              type="file"
-              accept=".jpg,.jpeg,.png"
-              onChange={(e) => handleSingleFile("addressProof", e)}
-            />
-
-            {form.watch("addressProofPreview") && (
-              <Preview
-                field="addressProof"
-                form={form}
-                removeSingle={removeSingle}
-              />
-            )}
-          </FormItem>
-
-          {/* ADDRESS PROOF TYPE */}
-          <FormField
-            control={form.control}
-            name="addressProofType"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Address Proof Type</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select Type" />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="AADHAAR">Aadhaar</SelectItem>
-                    <SelectItem value="VOTER_ID">Voter ID</SelectItem>
-                    <SelectItem value="DRIVING_LICENSE">
-                      Driving License
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </FormItem>
-            )}
-          />
-
-          {/* GST */}
-          <FormItem>
-            <FormLabel>GST Certificate</FormLabel>
-            <p className="text-sm text-muted-foreground">
-              PDF/JPG/PNG • Max 5MB
-            </p>
-            <Input
-              ref={refs.gstCertificate}
-              type="file"
-              accept=".jpg,.jpeg,.png"
-              onChange={(e) => handleSingleFile("gstCertificate", e)}
-            />
-
-            {form.watch("gstCertificatePreview") && (
-              <Preview
-                field="gstCertificate"
                 form={form}
                 removeSingle={removeSingle}
               />
@@ -891,6 +891,8 @@ services:
               ))}
             </div>
           </FormItem>
+          </div>
+
         </Section>
 
         <div className="flex justify-end">

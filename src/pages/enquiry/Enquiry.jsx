@@ -77,7 +77,7 @@ const Enquiry = () => {
 
   useEffect(() => {
     if (deleteInquiryRes?.status === 200 || deleteInquiryRes?.status === 201) {
-      toast.success("Enquiry deleted successfully");
+      // toast.success("Enquiry deleted successfully");
       setIsDeleteModalOpen(false);
       getAllInquiries();
     }

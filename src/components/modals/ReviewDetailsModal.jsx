@@ -34,6 +34,9 @@ const ReviewDetailsModal = ({ setIsModalOpen, review }) => {
     getReviewDetails(`/admin/review-detail?reviewId=${review._id}`);
   };
 
+  console.log("reviewDetails", reviewDetails);
+  
+
   useEffect(() => {
     getReviews();
   }, []);
@@ -139,15 +142,15 @@ const ReviewDetailsModal = ({ setIsModalOpen, review }) => {
                     <div className="flex gap-3 font-medium">
                       <span className="line-through text-muted-foreground">
                         ₹
-                        {reviewDetails?.productId
-                          ? reviewDetails.productId.price
-                          : reviewDetails?.packageId?.price}
+                        {reviewDetails?.bookingId?.product
+                          ? reviewDetails?.bookingId?.product.price
+                          : reviewDetails?.bookingId?.package?.price}
                       </span>
                       <span>
                         ₹
                         {reviewDetails?.productId
-                          ? reviewDetails.productId.offerPrice
-                          : reviewDetails?.packageId?.offerPrice}
+                          ? reviewDetails.bookingId?.product.offerPrice
+                          : reviewDetails?.bookingId?.package?.offerPrice}
                       </span>
                     </div>
                   </div>
@@ -214,7 +217,10 @@ const ReviewDetailsModal = ({ setIsModalOpen, review }) => {
                     </p>
                     <p>
                       <span className="font-medium">Booking Time:</span>{" "}
-                      {reviewDetails.bookingId.bookingTime}
+                      {format(
+                        new Date(reviewDetails.bookingId.bookingTime),
+                        "hh:mm aa",
+                      )}
                     </p>
                   </div>
                 )}

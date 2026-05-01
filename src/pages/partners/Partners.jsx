@@ -157,7 +157,7 @@ const Partners = () => {
               Add Partner
             </Button>
             <div className="flex gap-5 items-center">
-              <Button variant="abhicares" className="w-auto px-4">
+              <Button asChild variant="abhicares" className="w-auto px-4">
                 <Link to={`/admin/partners/metrics`}>Metrics</Link>
               </Button>
             </div>
@@ -210,15 +210,20 @@ const Partners = () => {
                 {isLoading ? (
                   <PartnersTableSkeleton />
                 ) : sellers.length === 0 ? (
-                  <p className="text-center text-muted-foreground">
-                    No partners found
-                  </p>
+                  <TableRow>
+                    <TableCell
+                      colSpan={8}
+                      className="text-center text-muted-foreground"
+                    >
+                      No partners found
+                    </TableCell>
+                  </TableRow>
                 ) : (
                   sellers.map((s) => (
                     <TableRow key={s._id}>
                       <TableCell>{s.name}</TableCell>
                       <TableCell>{s.partnerId || "-"}</TableCell>
-                      <TableCell>{s.categoryId?.name}</TableCell>
+                      <TableCell>{s.categoryId?.name || "-"}</TableCell>
                       <TableCell>{s.phone}</TableCell>
                       <TableCell className="capitalize">
                         {s?.city?.cityId?.name || "-"}

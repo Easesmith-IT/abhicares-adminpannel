@@ -67,7 +67,7 @@ const Offers = () => {
   const [pageCount, setPageCount] = useState(0);
 
   const getOffers = () => {
-    fetchData(`/offers/get-offers?page=${page}`);
+    fetchData(`/offers/get-all-offers?page=${page}`);
   };
 
   /* Fetch */

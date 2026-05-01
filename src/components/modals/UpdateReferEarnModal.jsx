@@ -60,7 +60,7 @@ const UpdateReferEarnModal = ({ setIsModalOpen }) => {
       updateReferAmountRes?.status === 200 ||
       updateReferAmountRes?.status === 201
     ) {
-      toast.success(updateReferAmountRes?.data?.message);
+      // toast.success(updateReferAmountRes?.data?.message);
       setIsModalOpen(false);
     }
   }, [updateReferAmountRes]);

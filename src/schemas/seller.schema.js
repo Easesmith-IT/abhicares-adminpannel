@@ -47,12 +47,11 @@ export const sellerSchema = z.object({
 
   /* 🟡 FILES */
   profilePhoto: z.any().optional(),
+  aadhaarFront: z.any().optional(),
+  aadhaarBack: z.any().optional(),
+  documentFront: z.any().optional(),
   panCard: z.any().optional(),
-  addressProof: z.any().optional(),
   gstCertificate: z.any().optional(),
   shopLicense: z.any().optional(),
   otherDocuments: z.array(z.any()).optional(),
-
-  /* 🟡 EXTRA */
-  addressProofType: z.string().optional(),
 });

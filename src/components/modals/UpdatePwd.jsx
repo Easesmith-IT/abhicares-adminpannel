@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Spinner } from "../ui/spinner";
 
 const UpdatePwd = ({ setIsModalOpen, adminId }) => {
   const adminInfo = readCookie("adminInfo");
@@ -23,7 +24,7 @@ const UpdatePwd = ({ setIsModalOpen, adminId }) => {
   const updatePwdRef = useRef(null);
   const [errorMessage, setErrorMessage] = useState(null);
 
-  const { res: updatePwdRes, fetchData: updatePwdFetchData } = usePatchApiReq();
+  const { res: updatePwdRes, fetchData: updatePwdFetchData,isLoading } = usePatchApiReq();
 
   const handleOnSubmit = async (e) => {
     e.preventDefault();
@@ -79,8 +80,8 @@ const UpdatePwd = ({ setIsModalOpen, adminId }) => {
           </div>
 
           <div className="flex justify-end">
-            <Button variant="abhicares" type="submit">
-              Update
+            <Button disabled={isLoading} variant="abhicares" type="submit">
+              {isLoading?<Spinner />:"Update"}
             </Button>
           </div>
         </form>

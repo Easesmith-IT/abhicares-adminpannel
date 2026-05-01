@@ -150,13 +150,13 @@ const SellerCashoutDetails = () => {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>Cashout Details</CardTitle>
-              <Button
+              {cashout?.status === "PENDING" && <Button
                 variant="abhicares"
                 size="sm"
                 onClick={() => setIsUpdateModalOpen(true)}
               >
                 Update
-              </Button>
+              </Button>}
             </CardHeader>
 
             <CardContent className="space-y-2 text-sm">
@@ -170,7 +170,8 @@ const SellerCashoutDetails = () => {
                 <b>Status:</b>{" "}
                 <Badge
                   variant={
-                    cashout?.status === "completed"
+                    cashout?.status === "completed" ||
+                    cashout?.status === "Completed"
                       ? "success"
                       : cashout?.status === "cancelled"
                         ? "destructive"

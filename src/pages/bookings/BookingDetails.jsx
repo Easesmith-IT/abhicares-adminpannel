@@ -150,8 +150,7 @@ const BookingDetails = () => {
 
               <CardContent className="grid grid-cols-2 gap-4 text-sm">
                 <p>
-                  <span className="font-medium">Status:</span>{" "}
-                  {booking.status}
+                  <span className="font-medium">Status:</span> {booking.status}
                 </p>
                 <p>
                   <span className="font-medium">Payment Status:</span>{" "}
@@ -278,16 +277,16 @@ const BookingDetails = () => {
               <CardContent className="space-y-2 text-sm">
                 <p>
                   <span className="font-medium">Name:</span>{" "}
-                  {booking.userId?.name}
+                  {booking.userId?.name || "-"}
                 </p>
                 <p>
                   <span className="font-medium">Phone:</span>{" "}
-                  {booking.userId?.phone}
+                  {booking.userId?.phone ||"-"}
                 </p>
                 <p>
                   <div>
                     <span className="font-medium">Address Line:</span>{" "}
-                    {booking.userAddress.addressLine}
+                    {booking.userAddress.addressLine ||"-"}
                   </div>
                   <div>
                     <span className="font-medium">Landmark:</span>{" "}
@@ -370,7 +369,7 @@ const BookingDetails = () => {
           </CardContent>
         </Card>
 
-        <AutoAsignedCard booking={booking}  />
+        <AutoAsignedCard booking={booking} />
       </Wrapper>
 
       {isPartnerModalOpen && (
@@ -383,6 +382,7 @@ const BookingDetails = () => {
           }
           bookingId={booking._id}
           getBooking={() => getBooking(`/admin/get-booking-details/${id}`)}
+          assignedSellerId={booking?.assignedSellerId}
         />
       )}
     </>

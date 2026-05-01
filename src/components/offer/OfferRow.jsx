@@ -86,7 +86,7 @@ const OfferRow = ({ offer, refetch, onEdit }) => {
 
         <TableCell>
           <Badge
-            onClick={toggleStatus}
+            // onClick={toggleStatus}
             className={`cursor-pointer ${
               status ? "bg-green-600" : "bg-gray-400"
             }`}

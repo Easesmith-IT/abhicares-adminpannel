@@ -101,6 +101,7 @@ export default function CampaignList() {
       city: "",
       status: "",
     });
+    setSelectedCity("")
   };
 
   useEffect(() => {
@@ -220,7 +221,7 @@ export default function CampaignList() {
             </TableHeader>
 
             <TableBody>
-              {isLoading && <CampaignListSkeleton rows={6} />}
+              {isLoading && <CampaignListSkeleton rows={7} />}
 
               {!isLoading && campaigns.length === 0 && (
                 <TableRow>
