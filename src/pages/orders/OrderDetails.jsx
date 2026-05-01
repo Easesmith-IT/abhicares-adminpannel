@@ -52,6 +52,8 @@ const OrderDetails = () => {
 
   useEffect(() => {
     if (getOrderRes?.status === 200 || getOrderRes?.status === 201) {
+      console.log("getOrderRes", getOrderRes);
+      
       setState(getOrderRes.data.data);
       setStatus(getOrderRes.data.data.status);
     }
@@ -94,26 +96,26 @@ const OrderDetails = () => {
                 </p>
               </div>
 
-                <div>
-                  <p className="text-sm font-medium mb-1">Update Status</p>
-                  <Select
-                    disabled={status === "Cancelled" || status === "cancelled"}
-                    value={status}
-                    onValueChange={handleStatusChange}
-                  >
-                    <SelectTrigger className="w-[180px]">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Pending">Pending</SelectItem>
-                      <SelectItem value="OutOfDelivery">
-                        Out Of Delivery
-                      </SelectItem>
-                      <SelectItem value="Completed">Completed</SelectItem>
-                      <SelectItem value="Cancelled">Cancelled</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+              <div>
+                <p className="text-sm font-medium mb-1">Update Status</p>
+                <Select
+                  disabled={status === "Cancelled" || status === "cancelled"}
+                  value={status}
+                  onValueChange={handleStatusChange}
+                >
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="Select status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="OutOfDelivery">
+                      Out Of Delivery
+                    </SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
+                    <SelectItem value="Cancelled">Cancelled</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </CardHeader>
 
             <CardContent className="grid grid-cols-2 gap-4 text-sm">
@@ -230,6 +232,10 @@ const OrderDetails = () => {
                 <span>₹{state?.itemTotal}</span>
               </div>
 
+              <div className="flex justify-between">
+                <span>Total Convenience</span>
+                <span>₹{state?.totalConvenience ||0}</span>
+              </div>
               <div className="flex justify-between">
                 <span>Tax</span>
                 <span>₹{state?.tax}</span>

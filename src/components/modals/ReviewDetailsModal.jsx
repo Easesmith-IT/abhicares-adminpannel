@@ -205,7 +205,7 @@ const ReviewDetailsModal = ({ setIsModalOpen, review }) => {
                     </h5>
                     <p>
                       <span className="font-medium">Order Value:</span>{" "}
-                      {reviewDetails.bookingId.orderValue}
+                      {reviewDetails.bookingId.itemTotalValue}
                     </p>
                     <p>
                       <span className="font-medium">Booking Date:</span>{" "}
