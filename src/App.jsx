@@ -75,6 +75,7 @@ import OfferedBookingDetails from "./pages/offered-bookings/OfferedBookingDetail
 import PartnerOfferedBookings from "./pages/partners/PartnerOfferedBookings";
 import PartnerOfferedBookingDetails from "./pages/partners/PartnerOfferedBookingDetails";
 import UnassignedBookings from "./pages/offered-bookings/UnassignedBookings";
+import CreateOrder from "./pages/customers/create-order/CreateOrder";
 // import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
@@ -202,6 +203,10 @@ function App() {
           <Route
             path="/admin/customers/:customerId"
             element={<CustomerDetails />}
+          />
+          <Route
+            path="/admin/customers/:customerId/create-order/*"
+            element={<CreateOrder />}
           />
           <Route
             path="/admin/customers/:customerId/reward-points"

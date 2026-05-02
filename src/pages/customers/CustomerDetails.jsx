@@ -79,8 +79,13 @@ const CustomerDetails = () => {
           <Button asChild variant="abhicares">
             <Link to={`/admin/customers/${user?._id}/wallet`}>Wallet Info</Link>
           </Button>
+          
           <Button asChild variant="abhicares">
             <Link to={`/admin/customers/${user?._id}/reward-points`} state={user}>Reward Points Info</Link>
+          </Button>
+
+          <Button asChild variant="abhicares">
+            <Link to={`/admin/customers/${user?._id}/create-order`}>Create Order</Link>
           </Button>
           </div>
         </div>
