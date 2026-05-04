@@ -203,8 +203,8 @@ const BookingDetails = () => {
                       className="h-16 w-16 rounded object-cover"
                       src={`${import.meta.env.VITE_APP_IMAGE_URL}/${
                         booking.package
-                          ? booking.package.imageUrl[0]
-                          : booking.product.imageUrl[0]
+                          ? booking?.package?.imageUrl?.[0]
+                          : booking?.product?.imageUrl?.[0]
                       }`}
                       alt="product"
                     />
