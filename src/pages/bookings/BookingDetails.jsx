@@ -45,6 +45,8 @@ const BookingDetails = () => {
   const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [mapData, setMapData] = useState({ distance: "", time: "" });
+  const [ledger, setLedger] = useState("");
+  const [bookingPayment, setBookingPayment] = useState("");
 
   /* ================= Fetch ================= */
 
@@ -61,6 +63,9 @@ const BookingDetails = () => {
     if (res?.status === 200) {
       setBooking(res.data?.bookingDetails);
       setStatus(res.data?.bookingDetails?.status);
+      setLedger(res.data?.paymentLedger);
+      setBookingPayment(res.data?.bookingPayment);
+      console.log("booking res", res);
     }
   }, [res]);
   console.log("booking", booking);
@@ -77,7 +82,7 @@ const BookingDetails = () => {
   useEffect(() => {
     if (updateRes?.status === 200) {
       // toast.success("Booking status updated");
-      getBooking(`/admin/get-booking-details/${id}`);
+      getBookingDetails();
     }
   }, [updateRes]);
 
@@ -233,6 +238,93 @@ const BookingDetails = () => {
                 </div>
               </CardContent>
             </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Payment Ledger</CardTitle>
+              </CardHeader>
+
+              <CardContent className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span>Last Method</span>
+                  <span className="font-medium">
+                    {ledger?.lastMethod || "-"}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Last Paid At</span>
+                  <span className="font-medium">
+                    {ledger?.lastPaidAt
+                      ? format(
+                          new Date(ledger.lastPaidAt),
+                          "dd MMM yyyy hh:mm aa",
+                        )
+                      : "-"}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Transaction Status</span>
+                  <span className="font-medium">
+                    {ledger?.lastTransactionStatus || "-"}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Payment Status</span>
+                  <span className="font-medium text-orange-500">
+                    {ledger?.paymentStatus || "-"}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Total Bill</span>
+                  <span className="font-medium">
+                    ₹{ledger?.totalBillAmount ?? 0}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Total Paid</span>
+                  <span className="font-medium text-green-600">
+                    ₹{ledger?.totalPaid ?? 0}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Total Refunded</span>
+                  <span className="font-medium text-red-500">
+                    ₹{ledger?.totalRefunded ?? 0}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Remaining Balance</span>
+                  <span className="font-medium">
+                    ₹{ledger?.remainingBalance ?? 0}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Required Amount</span>
+                  <span className="font-medium">
+                    ₹{ledger?.requiredAmount ?? 0}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Settled</span>
+                  <span
+                    className={`font-medium ${
+                      ledger?.settled ? "text-green-600" : "text-red-500"
+                    }`}
+                  >
+                    {ledger?.settled ? "Yes" : "No"}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* ================= RIGHT ================= */}
@@ -281,12 +373,12 @@ const BookingDetails = () => {
                 </p>
                 <p>
                   <span className="font-medium">Phone:</span>{" "}
-                  {booking.userId?.phone ||"-"}
+                  {booking.userId?.phone || "-"}
                 </p>
                 <p>
                   <div>
                     <span className="font-medium">Address Line:</span>{" "}
-                    {booking.userAddress.addressLine ||"-"}
+                    {booking.userAddress.addressLine || "-"}
                   </div>
                   <div>
                     <span className="font-medium">Landmark:</span>{" "}
@@ -319,7 +411,19 @@ const BookingDetails = () => {
               </CardHeader>
 
               <CardContent>
-                {!booking.sellerId ? (
+                {booking.assignedSellerId && (
+                  <Button
+                    variant="abhicares"
+                    onClick={() => setIsPartnerModalOpen(true)}
+                    disabled={
+                      booking.status === "cancelled" ||
+                      booking.currentLocation.status === "cancelled"
+                    }
+                  >
+                    Reassign to Partner
+                  </Button>
+                )}
+                {!booking.assignedSellerId ? (
                   <Button
                     variant="abhicares"
                     onClick={() => setIsPartnerModalOpen(true)}
@@ -332,10 +436,53 @@ const BookingDetails = () => {
                   </Button>
                 ) : (
                   <div className="text-sm space-y-1">
-                    <p className="font-medium">{booking.sellerId.name}</p>
-                    <p>{booking.sellerId.phone}</p>
+                    {/* <p className="font-medium">{booking.sellerId.name}</p>
+                    <p>{booking.sellerId.phone}</p> */}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Payment Ledger</CardTitle>
+              </CardHeader>
+
+              <CardContent className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span>Allocated Paid Amount</span>
+                  <span className="font-medium">
+                    ₹{bookingPayment?.allocatedPaidAmount || 0}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Allocated Commission</span>
+                  <span className="font-medium">
+                    ₹{bookingPayment?.allocatedCommission || 0}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Allocated Convenience</span>
+                  <span className="font-medium">
+                    ₹{bookingPayment?.allocatedConvenience || 0}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Allocated Earning</span>
+                  <span className="font-medium">
+                    ₹{bookingPayment?.allocatedEarning || 0}
+                  </span>
+                </div>
+
+                <div className="flex justify-between">
+                  <span>Booking Settled</span>
+                  <span className="font-medium">
+                    {bookingPayment?.bookingSettled ? "Yes" : "No"}
+                  </span>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -381,7 +528,7 @@ const BookingDetails = () => {
               : booking.package.serviceId
           }
           bookingId={booking._id}
-          getBooking={() => getBooking(`/admin/get-booking-details/${id}`)}
+          getBooking={getBookingDetails}
           assignedSellerId={booking?.assignedSellerId}
         />
       )}

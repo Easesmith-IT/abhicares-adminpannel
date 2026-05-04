@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Wrapper from "../../components/wrappers/Wrapper";
 import useGetApiReq from "../../hooks/useGetApiReq";
@@ -24,6 +24,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { H2 } from "../../components/shared/typography";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { Button } from "../../components/ui/button";
 
 const Payments = () => {
   const navigate = useNavigate();
@@ -56,7 +57,21 @@ const Payments = () => {
   return (
     <Wrapper>
       <div className="w-full font-poppins">
-        <H2>Payments</H2>
+        <div className="flex justify-between gap-5">
+          <H2>Payments</H2>
+          <div className="flex gap-5">
+            <Button asChild variant="abhicares">
+              <Link to="/admin/payments/platform-financials">
+                Platform Financials
+              </Link>
+            </Button>
+            <Button asChild variant="abhicares">
+              <Link to="/admin/payments/platform-financials-breakdown">
+                Platform Financials Breakdown
+              </Link>
+            </Button>
+          </div>
+        </div>
 
         {/* Table container */}
         <div className="mt-6 table-container">

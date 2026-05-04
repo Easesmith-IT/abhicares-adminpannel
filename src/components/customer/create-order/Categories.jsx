@@ -4,6 +4,7 @@ import { Category } from "./Category";
 import CategoryCardSkeleton from "./CategoryCardSkeleton";
 import useGetApiReq from "../../../hooks/useGetApiReq";
 import { H2 } from "../../shared/typography";
+import { useLocation } from "react-router-dom";
 
 const dummyCategories = [
   {
@@ -67,16 +68,25 @@ const dummyCategories = [
 const Categories = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
   const [categories, setCategories] = useState([...dummyCategories]);
+  const {state} = useLocation();
+  console.log("state",state);
 
-  // useEffect(() => {
-  //   fetchData("/categories/get-categories");
-  // }, []);
+  const getCategories = ()=>{
 
-  // useEffect(() => {
-  //   if (res?.status === 200 || res?.status === 201) {
-  //     setCategories(res.data.data || []);
-  //   }
-  // }, [res]);
+      fetchData(`/categories/app/get-categories?cityId=${state?.address?.cityBoundary}`);
+  }
+
+  useEffect(() => {
+    getCategories();
+  }, [state]);
+
+  useEffect(() => {
+    if (res?.status === 200 || res?.status === 201) {
+      setCategories(res.data.categories || []);
+      console.log("res",res);
+      
+    }
+  }, [res]);
 
   return (
       <div className="w-full font-poppins space-y-6">

@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "../ui/skeleton";
 
 export const AddressSkeleton = ({ count = 3 }) => (
-  <div className="space-y-4 grid grid-cols-2 gap-5">
+  <div className="space-y-4 grid grid-cols-2 gap-5 items-center">
     {Array.from({ length: count }).map((_, i) => (
       <Card key={i}>
         <CardContent className="p-4 space-y-2">

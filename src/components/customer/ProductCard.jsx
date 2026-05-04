@@ -8,14 +8,14 @@ export const ProductCard = ({
   onDecrease,
   quantity = 0,
 }) => {
-  const { name, imageUrl, price } = item;
+  const { name, imageUrl, price,offerPrice } = item;
 
   return (
     <Card className="overflow-hidden pt-0 rounded-2xl shadow-sm hover:shadow-md transition">
       {/* Image */}
       <div className="w-full h-40 bg-gray-100">
         <img
-          src={imageUrl || "/placeholder.png"}
+          src={imageUrl ? `${import.meta.env.VITE_APP_IMAGE_URL}/${imageUrl}`:null}
           alt={name}
           className="w-full h-full object-cover"
         />
@@ -25,7 +25,12 @@ export const ProductCard = ({
       <CardContent className="p-4 space-y-2">
         <h3 className="text-sm font-semibold line-clamp-1">{name}</h3>
 
-        <p className="text-base font-semibold">₹{price}</p>
+        <div className="flex gap-2 items-center">
+          <p className="text-base font-semibold">₹{offerPrice}</p>
+          <p className="text-sm text-muted-foreground font-semibold line-through">
+            ₹{price}
+          </p>
+        </div>
 
         {/* Actions */}
         {quantity > 0 ? (
@@ -49,7 +54,11 @@ export const ProductCard = ({
             </Button>
           </div>
         ) : (
-          <Button variant="abhicares" onClick={() => onAdd(item)} className="w-full">
+          <Button
+            variant="abhicares"
+            onClick={() => onAdd(item)}
+            className="w-full"
+          >
             Add
           </Button>
         )}

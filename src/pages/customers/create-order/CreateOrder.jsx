@@ -13,6 +13,8 @@ import Categories from "../../../components/customer/create-order/Categories";
 import Services from "../../../components/customer/create-order/Services";
 import ProductsAndPackages from "../../../components/customer/create-order/ProductsAndPackages";
 import Checkout from "../../../components/customer/create-order/Checkout";
+import CustomerAddresses from "../../../components/customer/CustomerAddresses";
+import { useSelector } from "react-redux";
 
 const routeToStep = {
   "/categories": 1,
@@ -26,22 +28,25 @@ const stepToRoute = ["categories", "services", "products", "checkout"];
 const CreateOrder = () => {
   const navigate = useNavigate();
   const location = useLocation();
+ const cartItems = useSelector((state) => state.cart.items);
 
   const [isCartSheetOpen, setIsCartSheetOpen] = useState(false);
 
- const path = location.pathname;
+  const path = location.pathname;
 
- let step = 1;
+  let step = 1;
 
- if (path.includes("/checkout")) {
-   step = 4;
- } else if (path.includes("/products")) {
-   step = 3;
- } else if (path.includes("/services")) {
-   step = 2;
- } else {
-   step = 1;
- }
+  if (path.includes("/checkout")) {
+    step = 5;
+  } else if (path.includes("/products")) {
+    step = 4;
+  } else if (path.includes("/services")) {
+    step = 3;
+  } else if (path.includes("/categories")) {
+    step = 2;
+  } else {
+    step = 1;
+  }
 
   return (
     <Wrapper>
@@ -52,8 +57,17 @@ const CreateOrder = () => {
             <H2>Create Order</H2>
           </BackLink>
 
-          <Button variant="abhicares" onClick={() => setIsCartSheetOpen(true)}>
+          <Button
+            className="relative"
+            variant="abhicares"
+            onClick={() => setIsCartSheetOpen(true)}
+          >
             <ShoppingCartIcon />
+            {cartItems.length > 0 && (
+              <p className="absolute bg-red-500 -top-2.5 -right-1 size-5 rounded-full">
+                {cartItems.length || 0}
+              </p>
+            )}
           </Button>
         </div>
 
@@ -62,8 +76,9 @@ const CreateOrder = () => {
 
         {/* ✅ ROUTES MUST BE HERE */}
         <div className="mt-8">
-          <Routes>
-            <Route path="/" element={<Categories />} />
+          {/* <Routes>
+            <Route path="/" element={<CustomerAddresses />} />
+            <Route path="userAddresses" element={<CustomerAddresses />} />
             <Route path="categories" element={<Categories />} />
             <Route
               path="categories/:categoryId/services"
@@ -73,6 +88,24 @@ const CreateOrder = () => {
               path="categories/:categoryId/services/:serviceId/products"
               element={<ProductsAndPackages />}
             />
+            <Route path="checkout" element={<Checkout />} />
+          </Routes> */}
+          <Routes>
+            <Route path="/" element={<CustomerAddresses />} />
+            <Route path="userAddresses" element={<CustomerAddresses />} />
+
+            {/* FIXED */}
+            <Route path="userAddresses/categories" element={<Categories />} />
+
+            <Route
+              path="userAddresses/categories/:categoryId/services"
+              element={<Services />}
+            />
+            <Route
+              path="userAddresses/categories/:categoryId/services/:serviceId/products"
+              element={<ProductsAndPackages />}
+            />
+
             <Route path="checkout" element={<Checkout />} />
           </Routes>
         </div>

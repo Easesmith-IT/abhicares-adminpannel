@@ -4,6 +4,8 @@ import { ServiceCard } from "./ServiceCard";
 import useGetApiReq from "../../../hooks/useGetApiReq";
 import { H2 } from "../../shared/typography";
 import ServiceCardSkeleton from "../ServiceCardSkeleton";
+import { useLocation, useParams } from "react-router-dom";
+import { PaginationComp } from "../../shared/PaginationComp";
 
 const dummyServices = [
   {
@@ -35,17 +37,30 @@ const dummyServices = [
 const Services = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
   const [services, setServices] = useState([...dummyServices]);
+  const [page, setPage] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
 
-  // useEffect(() => {
-  //   fetchData("/services/get-services");
-  // }, []);
+  const params = useParams();
+  const { state } = useLocation();
+  console.log("state", state);
 
-  // enable when API ready
-  // useEffect(() => {
-  //   if (res?.status === 200 || res?.status === 201) {
-  //     setServices(res.data.data || []);
-  //   }
-  // }, [res]);
+  const getServices = () => {
+    fetchData(
+      `/services/get-services/${params?.categoryId}?cityId=${state?.address?.cityBoundary}&page=${page}`,
+    );
+  };
+
+  useEffect(() => {
+    getServices();
+  }, [state, page]);
+
+  useEffect(() => {
+    if (res?.status === 200 || res?.status === 201) {
+      setServices(res.data.data || []);
+      setPageCount(res?.data?.pagination?.totalPages || 0);
+      console.log("res", res);
+    }
+  }, [res]);
 
   return (
     <div className="w-full font-poppins space-y-6">
@@ -75,13 +90,17 @@ const Services = () => {
             <ServiceCard
               key={service._id}
               service={service}
-              onClick={() => {
-                console.log("Selected service:", service);
-              }}
             />
           ))}
         </div>
       )}
+
+      <PaginationComp
+        className="mt-5"
+        page={page}
+        pageCount={pageCount}
+        setPage={setPage}
+      />
     </div>
   );
 };

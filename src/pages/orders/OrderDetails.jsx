@@ -35,6 +35,7 @@ const OrderDetails = () => {
 
   const [state, setState] = useState(locationState || {});
   const [status, setStatus] = useState(locationState?.status || "");
+  const [ledger, setLedger] = useState("");
 
   const { res: changeOrderStatusRes, fetchData: changeOrderStatus } =
     usePostApiReq();
@@ -52,10 +53,11 @@ const OrderDetails = () => {
 
   useEffect(() => {
     if (getOrderRes?.status === 200 || getOrderRes?.status === 201) {
-      console.log("getOrderRes", getOrderRes);
+      console.log("getOrderDetails Res", getOrderRes);
       
       setState(getOrderRes.data.data);
       setStatus(getOrderRes.data.data.status);
+      setLedger(getOrderRes.data.paymentLedger);
     }
   }, [getOrderRes]);
 
@@ -162,8 +164,8 @@ const OrderDetails = () => {
                       className="h-14 w-14 rounded object-cover"
                       src={`${import.meta.env.VITE_APP_IMAGE_URL}/${
                         item.package
-                          ? item.package.imageUrl[0]
-                          : item.product.imageUrl[0]
+                          ? item.package?.imageUrl?.[0]
+                          : item.product?.imageUrl?.[0]
                       }`}
                       alt="product"
                     />
@@ -216,6 +218,88 @@ const OrderDetails = () => {
               ))}
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Payment Ledger</CardTitle>
+            </CardHeader>
+
+            <CardContent className="space-y-3 text-sm">
+              <div className="flex justify-between">
+                <span>Last Method</span>
+                <span className="font-medium">{ledger?.lastMethod || "-"}</span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Last Paid At</span>
+                <span className="font-medium">
+                  {ledger?.lastPaidAt
+                    ? format(new Date(ledger.lastPaidAt),"dd MMM yyyy hh:mm aa")
+                    : "-"}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Transaction Status</span>
+                <span className="font-medium">
+                  {ledger?.lastTransactionStatus || "-"}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Payment Status</span>
+                <span className="font-medium text-orange-500">
+                  {ledger?.paymentStatus || "-"}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Total Bill</span>
+                <span className="font-medium">
+                  ₹{ledger?.totalBillAmount ?? 0}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Total Paid</span>
+                <span className="font-medium text-green-600">
+                  ₹{ledger?.totalPaid ?? 0}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Total Refunded</span>
+                <span className="font-medium text-red-500">
+                  ₹{ledger?.totalRefunded ?? 0}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Remaining Balance</span>
+                <span className="font-medium">
+                  ₹{ledger?.remainingBalance ?? 0}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Required Amount</span>
+                <span className="font-medium">
+                  ₹{ledger?.requiredAmount ?? 0}
+                </span>
+              </div>
+
+              <div className="flex justify-between">
+                <span>Settled</span>
+                <span
+                  className={`font-medium ${
+                    ledger?.settled ? "text-green-600" : "text-red-500"
+                  }`}
+                >
+                  {ledger?.settled ? "Yes" : "No"}
+                </span>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* ================= RIGHT ================= */}
@@ -234,7 +318,7 @@ const OrderDetails = () => {
 
               <div className="flex justify-between">
                 <span>Total Convenience</span>
-                <span>₹{state?.totalConvenience ||0}</span>
+                <span>₹{state?.totalConvenience || 0}</span>
               </div>
               <div className="flex justify-between">
                 <span>Tax</span>

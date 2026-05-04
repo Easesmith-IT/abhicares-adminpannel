@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import {
   increaseQty,
@@ -25,11 +25,16 @@ export default function CartSheet({ open, onOpenChange = () => {} }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const params = useParams();
+  const { state } = useLocation();
 
   const cartItems = useSelector((state) => state.cart.items);
+  console.log("cartItems", cartItems);
 
   const total = useMemo(() => {
-    return cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    return cartItems.reduce(
+      (acc, item) => acc + item.offerPrice * item.quantity,
+      0,
+    );
   }, [cartItems]);
 
   return (
@@ -54,7 +59,17 @@ export default function CartSheet({ open, onOpenChange = () => {} }) {
                 {/* Info */}
                 <div className="flex-1">
                   <p className="font-medium text-sm">{item.name}</p>
-                  <p className="text-xs text-muted-foreground">₹{item.price}</p>
+                  <p className="font-medium text-xs text-muted-foreground">
+                    {item.type}
+                  </p>
+                  <div className="flex gap-2 items-center">
+                    <p className="text-base font-semibold">
+                      ₹{item?.offerPrice}
+                    </p>
+                    <p className="text-sm text-muted-foreground font-semibold line-through">
+                      ₹{item?.price}
+                    </p>
+                  </div>
 
                   {/* Quantity Controls */}
                   <div className="flex items-center gap-2 mt-2">
@@ -79,7 +94,7 @@ export default function CartSheet({ open, onOpenChange = () => {} }) {
                 {/* Price + Remove */}
                 <div className="flex flex-col items-end gap-2">
                   <p className="font-semibold text-sm">
-                    ₹{item.price * item.quantity}
+                    ₹{item.offerPrice * item.quantity}
                   </p>
 
                   <button
@@ -108,9 +123,9 @@ export default function CartSheet({ open, onOpenChange = () => {} }) {
             variant="abhicares"
             onClick={() => {
               onOpenChange(false);
-               navigate(
-                 `/admin/customers/${params?.customerId}/create-order/checkout`,
-               );
+              navigate(
+                `/admin/customers/${params?.customerId}/create-order/checkout`,{state}
+              );
             }}
             className="w-full"
           >

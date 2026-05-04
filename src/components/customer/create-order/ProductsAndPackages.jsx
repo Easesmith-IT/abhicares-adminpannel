@@ -6,6 +6,7 @@ import { addToCart, increaseQty, decreaseQty } from "../../../store/slices/cartS
 import { ProductCard } from "../ProductCard";
 import useGetApiReq from "../../../hooks/useGetApiReq";
 import ProductCardSkeleton from "../../ProductCardSkeleton";
+import { useLocation, useParams } from "react-router-dom";
 
 const dummyItems = [
   {
@@ -28,18 +29,30 @@ const dummyItems1 = [
 
 const ProductsAndPackages = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
-  const [products, setProducts] = useState([...dummyItems]);
-  const [packages, setPackages] = useState([...dummyItems1]);
+  const [products, setProducts] = useState([]);
+  const [packages, setPackages] = useState([]);
+  const params = useParams();
+  const { state } = useLocation();
+  console.log("state", state);
 
-  // useEffect(() => {
-  //   fetchData("/services/get-products");
-  // }, []);
+  const getServiceScreen = ()=>{
+    fetchData(
+      `/services/get-service-screen/${params?.serviceId}?cityId=${state?.address?.cityBoundary}`,
+    );
+  }
 
-  // useEffect(() => {
-  //   if (res?.status === 200 || res?.status === 201) {
-  //     setCategories(res.data.data || []);
-  //   }
-  // }, [res]);
+  useEffect(() => {
+    getServiceScreen();
+  }, [state]);
+
+  useEffect(() => {
+    if (res?.status === 200 || res?.status === 201) {
+      setProducts(res.data.products || []);
+      setPackages(res.data.packages || []);
+      console.log("res", res);
+    }
+  }, [res]);
+
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.cart.items);
 
@@ -89,7 +102,15 @@ const ProductsAndPackages = () => {
               key={item._id}
               item={item}
               quantity={getQty(item._id)}
-              onAdd={(item) => dispatch(addToCart(item))}
+              onAdd={(item) =>
+                dispatch(
+                  addToCart({
+                    ...item,
+                    type: "Product",
+                    serviceId: params?.serviceId,
+                  }),
+                )
+              }
               onIncrease={(item) => dispatch(increaseQty(item._id))}
               onDecrease={(item) => dispatch(decreaseQty(item._id))}
             />
@@ -123,7 +144,15 @@ const ProductsAndPackages = () => {
               key={item._id}
               item={item}
               quantity={getQty(item._id)}
-              onAdd={(item) => dispatch(addToCart(item))}
+              onAdd={(item) =>
+                dispatch(
+                  addToCart({
+                    ...item,
+                    type: "Package",
+                    serviceId: params?.serviceId,
+                  }),
+                )
+              }
               onIncrease={(item) => dispatch(increaseQty(item._id))}
               onDecrease={(item) => dispatch(decreaseQty(item._id))}
             />

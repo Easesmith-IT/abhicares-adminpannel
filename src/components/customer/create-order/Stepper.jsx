@@ -1,10 +1,11 @@
 import React from "react";
 
 const steps = [
-  { id: 1, label: "Categories" },
-  { id: 2, label: "Services" },
-  { id: 3, label: "Products & Packages" },
-  { id: 4, label: "Checkout" },
+  { id: 1, label: "User Addresses" },
+  { id: 2, label: "Categories" },
+  { id: 3, label: "Services" },
+  { id: 4, label: "Products & Packages" },
+  { id: 5, label: "Checkout" },
 ];
 
 export default function Stepper({ currentStep, onStepClick }) {

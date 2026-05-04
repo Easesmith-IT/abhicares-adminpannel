@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import useGetApiReq from "../../hooks/useGetApiReq";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { AddressSkeleton } from "../shared/AddressSkeleton";
 
-const CustomerAddresses = ({ selectedId, onSelect }) => {
-    console.log("selectedId",selectedId);
-    
+const CustomerAddresses = ({ selectedId, onSelect = () => {} }) => {
+  console.log("selectedId", selectedId);
+
   const {
     res: getAddressesRes,
     fetchData: getAddresses,
@@ -15,7 +16,16 @@ const CustomerAddresses = ({ selectedId, onSelect }) => {
   } = useGetApiReq();
 
   const params = useParams();
+  const navigate = useNavigate();
   const [allAddresses, setAllAddresses] = useState([]);
+
+  const handleAddressSelect = (address) => {
+    onSelect(address?._id);
+    navigate(
+      `/admin/customers/${params?.customerId}/create-order/userAddresses/categories`,
+      { state: { address } },
+    );
+  };
 
   useEffect(() => {
     getAddresses(`/admin/get-all-addresses/${params?.customerId}`);
@@ -36,7 +46,7 @@ const CustomerAddresses = ({ selectedId, onSelect }) => {
 
   return (
     <div>
-      {isLoading && <p className="text-sm text-muted-foreground">Loading...</p>}
+      {isLoading && <AddressSkeleton count={2} />}
 
       {!isLoading && allAddresses.length === 0 && (
         <p className="text-center text-muted-foreground py-10">
@@ -51,7 +61,7 @@ const CustomerAddresses = ({ selectedId, onSelect }) => {
           return (
             <Card
               key={address._id}
-              onClick={() => onSelect(address._id)}
+              onClick={() => handleAddressSelect(address)}
               className={`cursor-pointer transition border
           ${
             isSelected

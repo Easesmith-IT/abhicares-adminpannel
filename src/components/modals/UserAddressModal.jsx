@@ -33,6 +33,8 @@ const UserAddressModal = ({ setIsModalOpen, userId }) => {
 
   useEffect(() => {
     if (getAddressesRes?.status === 200 || getAddressesRes?.status === 201) {
+      console.log("getAddressesRes", getAddressesRes);
+      
       setAllAddresses(getAddressesRes?.data?.addresses || []);
     }
   }, [getAddressesRes]);

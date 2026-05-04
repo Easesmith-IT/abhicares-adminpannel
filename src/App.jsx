@@ -76,6 +76,8 @@ import PartnerOfferedBookings from "./pages/partners/PartnerOfferedBookings";
 import PartnerOfferedBookingDetails from "./pages/partners/PartnerOfferedBookingDetails";
 import UnassignedBookings from "./pages/offered-bookings/UnassignedBookings";
 import CreateOrder from "./pages/customers/create-order/CreateOrder";
+import PlatformFinancials from "./pages/payments/PlatformFinancials";
+import PlatformFinancialsBreakdown from "./pages/payments/PlatformFinancialsBreakdown";
 // import PackageInfo from "./pages/services/PackageInfo";
 
 function App() {
@@ -233,6 +235,14 @@ function App() {
           />
 
           <Route path="/admin/payments" element={<Payments />} />
+          <Route
+            path="/admin/payments/platform-financials"
+            element={<PlatformFinancials />}
+          />
+          <Route
+            path="/admin/payments/platform-financials-breakdown"
+            element={<PlatformFinancialsBreakdown />}
+          />
 
           <Route path="/admin/help-center" element={<AdminHelpCenter />} />
           <Route

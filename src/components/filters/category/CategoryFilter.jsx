@@ -1,0 +1,89 @@
+import { Check, ChevronLeft, ChevronRight, ChevronsUpDown } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+import useCategories from "./useCategories";
+
+const CategoryFilter = ({ value, onChange }) => {
+  const { categories, page, totalPages, isLoading, nextPage, prevPage, } = useCategories();
+
+  const selectedCategory = categories.find((c) => c.id === value);
+
+  return (
+    <Popover>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          className="w-[220px] justify-between capitalize"
+        >
+          {selectedCategory ? selectedCategory.name : "Filter by category"}
+          <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+
+      <PopoverContent className="w-[220px] p-0">
+        <Command shouldFilter={false}>
+          {/* <CommandInput
+            placeholder="Search category..."
+          /> */}
+
+          <CommandEmpty>
+            {isLoading ? "Loading..." : "No category found."}
+          </CommandEmpty>
+
+          <CommandGroup>
+            {categories.map((cat) => (
+              <CommandItem key={cat._id} onSelect={() => onChange(cat._id)}>
+                <Check
+                  className={`mr-2 h-4 w-4 ${
+                    value === cat._id ? "opacity-100" : "opacity-0"
+                  }`}
+                />
+                {cat.name}
+              </CommandItem>
+            ))}
+          </CommandGroup>
+
+          {/* Pagination controls */}
+                    <div className="flex items-center justify-between border-t px-2 py-1">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        disabled={page === 1 || isLoading}
+                        onClick={prevPage}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+          
+                      <span className="text-xs text-muted-foreground">
+                        Page {page} / {totalPages}
+                      </span>
+          
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        disabled={page === totalPages || isLoading}
+                        onClick={nextPage}
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+};
+
+export default CategoryFilter;

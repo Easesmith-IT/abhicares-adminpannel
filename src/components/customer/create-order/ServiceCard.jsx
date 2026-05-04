@@ -1,16 +1,18 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
-export const ServiceCard = ({ service, onClick }) => {
-  const { name, imageUrl, startingPrice,_id } = service;
-   const navigate = useNavigate();
-   const params = useParams();
+export const ServiceCard = ({ service }) => {
+  const { name, imageUrl, startingPrice, _id } = service;
+  const navigate = useNavigate();
+  const params = useParams();
+  const { state } = useLocation();
+  console.log("state", state);
 
-   const handleNavigate = () => {
-     navigate(
-       `/admin/customers/${params?.customerId}/create-order/categories/${params?.categoryId}/services/${_id}/products`,
-     );
-   };
+  const handleNavigate = () => {
+    navigate(
+      `/admin/customers/${params?.customerId}/create-order/userAddresses/categories/${params?.categoryId}/services/${_id}/products`, {state}
+    );
+  };
 
   return (
     <Card
@@ -20,7 +22,7 @@ export const ServiceCard = ({ service, onClick }) => {
       {/* Image */}
       <div className="w-full h-40 bg-gray-100">
         <img
-          src={imageUrl || "/placeholder.png"}
+          src={imageUrl ? `${import.meta.env.VITE_APP_IMAGE_URL}/${imageUrl}`:null}
           alt={name}
           className="w-full h-full object-cover"
         />
@@ -28,7 +30,9 @@ export const ServiceCard = ({ service, onClick }) => {
 
       {/* Content */}
       <CardContent className="p-4">
-        <h3 className="text-sm font-semibold cursor-pointer hover:underline hover:text-blue-700 line-clamp-1">{name}</h3>
+        <h3 className="text-sm font-semibold cursor-pointer hover:underline hover:text-blue-700 line-clamp-1">
+          {name}
+        </h3>
 
         <p className="text-xs text-muted-foreground mt-1">Starts from</p>
 

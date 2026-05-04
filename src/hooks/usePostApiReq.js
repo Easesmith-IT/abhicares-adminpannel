@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import {
   changeAdminStatus
@@ -7,6 +6,7 @@ import {
 import { axiosInstance } from "../utils/axiosInstance";
 import { readCookie } from "../utils/readCookie";
 import useCrashReporter from "./useCrashReporter";
+import { toast } from "sonner";
 
 const usePostApiReq = () => {
   const [res, setRes] = useState(null);
