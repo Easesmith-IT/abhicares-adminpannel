@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -423,7 +423,7 @@ const BookingDetails = () => {
                     Reassign to Partner
                   </Button>
                 )}
-                {(!booking.assignedSellerId && !booking?.sellerId ) ? (
+                {!booking.assignedSellerId && !booking?.sellerId ? (
                   <Button
                     variant="abhicares"
                     onClick={() => setIsPartnerModalOpen(true)}
@@ -436,8 +436,22 @@ const BookingDetails = () => {
                   </Button>
                 ) : (
                   <div className="text-sm space-y-1">
-                    <p className="font-medium">{booking?.sellerId?.name}</p>
+                    {booking?.sellerId?._id && booking?.sellerId?.partnerId && (
+                      <Link
+                        to={`/admin/partners/${booking?.sellerId?._id}`}
+                        className="font-medium hover:text-blue-700 hover:underline"
+                      >
+                        {booking?.sellerId?._id}
+                      </Link>
+                    )}
+                    <Link
+                      to={`/admin/partners/${booking?.sellerId?._id}`}
+                      className="font-medium hover:text-blue-700 hover:underline"
+                    >
+                      {booking?.sellerId?.name}
+                    </Link>
                     <p>{booking?.sellerId?.phone}</p>
+                    <p>{booking?.sellerId?.email}</p>
                   </div>
                 )}
               </CardContent>
