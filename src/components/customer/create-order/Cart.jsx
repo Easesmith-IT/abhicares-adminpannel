@@ -28,7 +28,7 @@ export default function CartSheet({ open, onOpenChange = () => {} }) {
   const { state } = useLocation();
 
   const cartItems = useSelector((state) => state.cart.items);
-  console.log("cartItems", cartItems);
+
 
   const total = useMemo(() => {
     return cartItems.reduce(

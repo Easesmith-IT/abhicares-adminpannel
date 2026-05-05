@@ -28,6 +28,8 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
 
+    console.log("cartItems", cartItems);
+
   const [orderType, setOrderType] = useState("COD");
 
   // slot
@@ -120,12 +122,14 @@ const Checkout = () => {
           type: i.type.toLowerCase(),
           quantity: i.quantity,
           prod: {
+            ...i,
             _id: i._id,
             name: i.name,
           },
           ...(i?.type?.toLowerCase() === "package"
             ? {
                 package: {
+                  ...i,
                   _id: i._id,
                   name: i.name,
                 },
@@ -153,9 +157,9 @@ const Checkout = () => {
       },
     };
 
+    console.log("payload",payload);
     createOrder("admin/create-cod-order-for-user", payload);
 
-    console.log(payload);
   };
 
   useEffect(() => {
