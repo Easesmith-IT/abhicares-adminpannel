@@ -1,7 +1,7 @@
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +19,9 @@ import usePostApiReq from "../../hooks/usePostApiReq";
 import { BackLink } from "../../components/shared/back-link";
 import { H1, H2 } from "../../components/shared/typography";
 import RefundInfoCard from "../../components/customer/RefundInfoCard";
+import { Button } from "../../components/ui/button";
+import { Spinner } from "../../components/ui/spinner";
+import InvoiceDialog from "./InvoiceDialog";
 
 const statusVariantMap = {
   cancelled: "destructive",
@@ -36,6 +39,30 @@ const OrderDetails = () => {
   const [state, setState] = useState(locationState || {});
   const [status, setStatus] = useState(locationState?.status || "");
   const [ledger, setLedger] = useState("");
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState(null);
+
+  const { res: invoiceRes, fetchData: getInvoice, isLoading } = useGetApiReq();
+
+  const handleViewInvoice = () => {
+    if (!state?._id) return;
+
+    getInvoice(`/invoice/download/${state._id}`);
+  };
+
+  useEffect(() => {
+    if (invoiceRes?.status === 200 || invoiceRes?.status === 201) {
+      const url = invoiceRes?.data?.pdfUrl;
+
+      if (!url) {
+        toast.error("No PDF URL received");
+        return;
+      }
+
+      setPdfUrl(url);
+      setIsInvoiceOpen(true); // open dialog
+    }
+  }, [invoiceRes]);
 
   const { res: changeOrderStatusRes, fetchData: changeOrderStatus } =
     usePostApiReq();
@@ -54,7 +81,7 @@ const OrderDetails = () => {
   useEffect(() => {
     if (getOrderRes?.status === 200 || getOrderRes?.status === 201) {
       console.log("getOrderDetails Res", getOrderRes);
-      
+
       setState(getOrderRes.data.data);
       setStatus(getOrderRes.data.data.status);
       setLedger(getOrderRes.data.paymentLedger);
@@ -81,9 +108,20 @@ const OrderDetails = () => {
 
   return (
     <Wrapper>
-      <BackLink href={-1}>
-        <H2>Order Details</H2>
-      </BackLink>
+      <div className="flex gap-5 items-center justify-between">
+        <BackLink href={-1}>
+          <H2>Order Details</H2>
+        </BackLink>
+
+        <Button
+          variant="abhicares"
+          onClick={handleViewInvoice}
+          disabled={isLoading}
+        >
+          {isLoading ? <Spinner /> : " View Invoice"}
+        </Button>
+      </div>
+
       <div className="mt-10 grid grid-cols-1 gap-4 xl:grid-cols-3">
         {/* ================= LEFT ================= */}
         <div className="xl:col-span-2 space-y-4">
@@ -234,7 +272,10 @@ const OrderDetails = () => {
                 <span>Last Paid At</span>
                 <span className="font-medium">
                   {ledger?.lastPaidAt
-                    ? format(new Date(ledger.lastPaidAt),"dd MMM yyyy hh:mm aa")
+                    ? format(
+                        new Date(ledger.lastPaidAt),
+                        "dd MMM yyyy hh:mm aa",
+                      )
                     : "-"}
                 </span>
               </div>
@@ -372,6 +413,14 @@ const OrderDetails = () => {
 
           <RefundInfoCard order={state} />
         </div>
+
+        {isInvoiceOpen && (
+          <InvoiceDialog
+            open={isInvoiceOpen}
+            setOpen={setIsInvoiceOpen}
+            pdfUrl={pdfUrl}
+          />
+        )}
       </div>
     </Wrapper>
   );
