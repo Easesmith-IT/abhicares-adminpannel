@@ -303,6 +303,18 @@ const PartnerDetails = () => {
                           file={seller.documents.panCard}
                         />
                       )}
+                      {seller.documents?.aadhaarFront?.url && (
+                        <DocCard
+                          title="Aadhaar Front"
+                          file={seller.documents.aadhaarFront}
+                        />
+                      )}
+                      {seller.documents?.aadhaarBack?.url && (
+                        <DocCard
+                          title="Aadhaar Back"
+                          file={seller.documents.aadhaarBack}
+                        />
+                      )}
 
                       {/* ADDRESS PROOF */}
                       {seller.documents?.addressProof?.url && (
