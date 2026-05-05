@@ -348,6 +348,7 @@ const AppHomeBanner = () => {
                     type="file"
                     accept="video/*"
                     onChange={(e) => handleBannerChange(e, item.bannerName)}
+                    className="border! border-2! p-1 rounded-md"
                   />
 
                   <Button

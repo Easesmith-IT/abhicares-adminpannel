@@ -407,6 +407,10 @@ export default function BannerForm({
                                   </SelectContent>
                                 </Select>
 
+<p className="font-bold text-muted-foreground">
+                                  Choose image to update banners
+                                </p>
+
                                 {/* image */}
                                 <Input
                                   disabled={!city.isActive}
@@ -477,7 +481,7 @@ export default function BannerForm({
                                 <p className="text-xs text-muted-foreground">
                                   Max 2MB • Recommended 1280x720
                                 </p>
-
+                                
                                 {(banner.preview || banner.existingImage) && (
                                   <img
                                     src={
