@@ -423,7 +423,7 @@ const BookingDetails = () => {
                     Reassign to Partner
                   </Button>
                 )}
-                {!booking.assignedSellerId ? (
+                {(!booking.assignedSellerId && !booking?.sellerId ) ? (
                   <Button
                     variant="abhicares"
                     onClick={() => setIsPartnerModalOpen(true)}
@@ -436,8 +436,8 @@ const BookingDetails = () => {
                   </Button>
                 ) : (
                   <div className="text-sm space-y-1">
-                    {/* <p className="font-medium">{booking.sellerId.name}</p>
-                    <p>{booking.sellerId.phone}</p> */}
+                    <p className="font-medium">{booking?.sellerId?.name}</p>
+                    <p>{booking?.sellerId?.phone}</p>
                   </div>
                 )}
               </CardContent>

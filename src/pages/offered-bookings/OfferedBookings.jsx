@@ -214,7 +214,7 @@ export default function OfferedBookings() {
                         className="hover:text-blue-700 hover:underline font-medium"
                         to={`/admin/bookings/${offer?.bookingId?._id}`}
                       >
-                        {offer.bookingId.bookingId}
+                        {offer?.bookingId?.bookingId || "-"}
                       </Link>
                     </TableCell>
 
