@@ -10,7 +10,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import CityFilter from "../../components/filters/city/CityFilter";
 import useCities from "../../components/filters/city/useCities";
-import { CategoryFilter, useCategories } from "../../components/filters/category";
+import {
+  CategoryFilter,
+  useCategories,
+} from "../../components/filters/category";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
 import {
   Table,
@@ -29,16 +32,16 @@ const PlatformFinancialsBreakdown = () => {
     to: "",
   });
 
-//   console.log("filters",filters);
-  
+  //   console.log("filters",filters);
+
   const [data, setData] = useState(null);
   const [selectedCity, setSelectedCity] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const { cities } = useCities();
-//   console.log("categories", categories);
-  
- const handleReset = () => {
+  //   console.log("categories", categories);
+
+  const handleReset = () => {
     setSelectedCity("");
     setSelectedCategory("");
   };
@@ -52,9 +55,9 @@ const PlatformFinancialsBreakdown = () => {
   };
 
   useEffect(() => {
-  ( selectedCity || selectedCategory )&& handleFetch(selectedCity,selectedCategory)
-  }, [selectedCity,selectedCategory])
-  
+    (selectedCity || selectedCategory) &&
+      handleFetch(selectedCity, selectedCategory);
+  }, [selectedCity, selectedCategory]);
 
   useEffect(() => {
     if (res?.status === 200) {
@@ -126,7 +129,12 @@ const PlatformFinancialsBreakdown = () => {
               />
             </div>
 
-            <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
+            <div className="flex items-end">
+              <TooltipIconButton
+                tooltip="Reset Filters"
+                onClick={handleReset}
+              />
+            </div>
           </div>
         </div>
 

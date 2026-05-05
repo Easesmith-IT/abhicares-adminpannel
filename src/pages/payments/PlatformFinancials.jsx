@@ -166,11 +166,11 @@ const PlatformFinancials = () => {
         </div>
 
         {/* Empty State */}
-        {!isLoading && data && data.rows === 0 && (
+        {/* {!isLoading && data && data.rows === 0 && (
           <p className="text-center mt-10 text-muted-foreground">
             No financial data found for selected range
           </p>
-        )}
+        )} */}
       </div>
     </Wrapper>
   );
