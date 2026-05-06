@@ -437,6 +437,7 @@ const handleImage = async (e) => {
                                       disabled={!isActive}
                                     />
                                   </FormControl>
+                                  <FormMessage />
                                 </FormItem>
                               )}
                             />

@@ -25,6 +25,7 @@ import { H2 } from "../../components/shared/typography";
 import BookingDetailsSkeleton from "../../components/booking/BookingDetailsSkeleton";
 import RefundStatusModal from "../../components/booking/RefundStatusModal";
 import AutoAsignedCard from "../../components/booking/AutoAsignedCard";
+import { CardDescription } from "../../components/ui/card";
 
 const statusVariantMap = {
   cancelled: "destructive",
@@ -338,12 +339,16 @@ const BookingDetails = () => {
               <CardContent className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span>Sub Total</span>
-                  <span>₹{booking.orderValue}</span>
+                  <span>₹{booking.itemTotalValue}</span>
                 </div>
 
                 <div className="flex justify-between">
                   <span>Tax</span>
                   <span>₹{booking.itemTotalTax}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Convenience Amount</span>
+                  <span>₹{booking.convenienceAmount}</span>
                 </div>
 
                 <div className="flex justify-between text-green-600">
@@ -355,7 +360,7 @@ const BookingDetails = () => {
 
                 <div className="flex justify-between font-semibold">
                   <span>Total</span>
-                  <span>₹{booking.itemTotalValue}</span>
+                  <span>₹{booking.orderValue}</span>
                 </div>
               </CardContent>
             </Card>
@@ -459,7 +464,8 @@ const BookingDetails = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Payment Ledger</CardTitle>
+                <CardTitle>Booking Payment</CardTitle>
+                <CardDescription>Booking Payment Settelment</CardDescription>
               </CardHeader>
 
               <CardContent className="space-y-3 text-sm">

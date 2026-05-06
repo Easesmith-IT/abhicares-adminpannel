@@ -46,13 +46,15 @@ const formatDate = (value) => {
 
 const STATUS_VARIANT = {
   "not-alloted": "destructive",
+  "assigned-pending": "inprogress",
+  "completed": "success",
 };
 
 const UnassignedBookings = () => {
   const navigate = useNavigate();
   const { cities } = useCities();
 
-  const [status, setStatus] = useState("not-alloted");
+  const [status, setStatus] = useState("all");
   const [cityId, setCityId] = useState("");
   const [page, setPage] = useState(1);
 

@@ -20,16 +20,33 @@ export const categorySchema = z.object({
     }),
 });
 
-export const cityConfigSchema = z.object({
-  cityId: z.string(),
-  isActive: z.boolean(),
+export const cityConfigSchema = z
+  .object({
+    cityId: z.string(),
+    isActive: z.boolean(),
 
-  startingPrice: z.coerce.number().min(0, "Price must be >= 0"),
+    // startingPrice: z.coerce.number().min(1, "Price must be > 0"),
+    startingPrice: z.coerce.number().optional(),
 
-  appHomepage: z.boolean(),
-  webHomepage: z.boolean(),
-  isTrending: z.boolean(),
-});
+    appHomepage: z.boolean(),
+    webHomepage: z.boolean(),
+    isTrending: z.boolean(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.isActive) {
+      if (
+        data.startingPrice === undefined ||
+        data.startingPrice === null ||
+        data.startingPrice < 1
+      ) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["startingPrice"],
+          message: "Starting price is required when city is active",
+        });
+      }
+    }
+  });
 
 export const serviceSchema = z.object({
   name: z.string().min(1, "Name is required"),

@@ -127,7 +127,7 @@ const Orders = () => {
 
                 <SelectContent>
                   <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="OutOfDelivery">Out Of Delivery</SelectItem>
+                  <SelectItem value="OutOfDelivery">Out for Delivery</SelectItem>
                   <SelectItem value="Completed">Completed</SelectItem>
                   <SelectItem value="Cancelled">Cancelled</SelectItem>
                 </SelectContent>

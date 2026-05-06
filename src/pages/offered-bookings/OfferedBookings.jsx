@@ -36,7 +36,7 @@ const STATUS_VARIANT = {
   accepted: "success",
   rejected: "destructive",
   expired: "outline",
-  cancelled: "secondary",
+  cancelled: "inprogress",
 };
 
 const formatDate = (value) => {
@@ -99,7 +99,7 @@ export default function OfferedBookings() {
 
           <Button asChild variant="abhicares" className="w-auto px-4">
             <Link to={`/admin/offered-bookings/unassigned`}>
-             Auto Assign Failed Bookings
+              Auto Assign Failed Bookings
             </Link>
           </Button>
         </div>
@@ -130,15 +130,20 @@ export default function OfferedBookings() {
 
             <SelectContent>
               <SelectItem value="all">All</SelectItem>
-
               <SelectItem value="accepted">Accepted</SelectItem>
-
               <SelectItem value="rejected">Rejected</SelectItem>
-
+              <SelectItem value="offered">Offered</SelectItem>
+              <SelectItem value="expired">Expired</SelectItem>
+              <SelectItem value="cancelled">Cancelled</SelectItem>
             </SelectContent>
           </Select>
 
-<Button variant={lastFiveHours?"abhicares":"outline"} onClick={()=> setLastFiveHours((prev)=> !prev)}>Get Last Five Hours Data</Button>
+          <Button
+            variant={lastFiveHours ? "abhicares" : "outline"}
+            onClick={() => setLastFiveHours((prev) => !prev)}
+          >
+            Get Last Five Hours Data
+          </Button>
 
           {/* <Select
             value={source}

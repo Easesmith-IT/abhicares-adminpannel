@@ -37,6 +37,7 @@ const Bookings = () => {
 
   const [filters, setFilters] = useState({
     date: "",
+    endDate: "",
     status: "",
   });
 
@@ -44,6 +45,7 @@ const Bookings = () => {
     setFilters({
       date: "",
       status: "",
+      endDate: "",
     });
 
     setLimit("10");
@@ -75,16 +77,16 @@ const Bookings = () => {
   useEffect(() => {
     if (filterRes?.status === 200) {
       console.log("filterRes", filterRes);
-      
+
       setBookings(filterRes.data.data);
       setPageCount(filterRes.data.pagination.totalPages);
     }
   }, [filterRes]);
-  
+
   useEffect(() => {
     if (searchRes?.status === 200) {
       console.log("searchRes", searchRes);
-      
+
       setBookings([searchRes.data.data[0]]);
       setPageCount(0);
     }
@@ -122,6 +124,14 @@ const Bookings = () => {
             value={filters.date}
             onChange={(e) =>
               setFilters((p) => ({ ...p, date: e.target.value }))
+            }
+            className="w-[160px]"
+          />
+          <Input
+            type="date"
+            value={filters.endDate}
+            onChange={(e) =>
+              setFilters((p) => ({ ...p, endDate: e.target.value }))
             }
             className="w-[160px]"
           />

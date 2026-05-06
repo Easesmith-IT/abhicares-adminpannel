@@ -28,12 +28,15 @@ const formatDate = (value) => {
   });
 };
 
-const getResponseMinutes = (offeredAt, respondedAt) => {
+const getResponseTime = (offeredAt, respondedAt) => {
   if (!offeredAt || !respondedAt) return "-";
 
-  const diff = (new Date(respondedAt) - new Date(offeredAt)) / 60000;
+  const diffMs = new Date(respondedAt) - new Date(offeredAt);
 
-  return `${Math.round(diff)} mins`;
+  const minutes = Math.floor(diffMs / 60000);
+  const seconds = Math.floor((diffMs % 60000) / 1000);
+
+  return `${minutes} min ${seconds} sec`;
 };
 
 const statusVariant = (status) => {
@@ -100,7 +103,7 @@ const OfferedBookingDetails = () => {
         {/* SUMMARY */}
         <div className="grid md:grid-cols-4 gap-5">
           <Card className="rounded-2xl shadow-md border-0">
-            <CardContent className="p-6">
+            <CardContent className="p-6 py-1">
               <p className="text-muted-foreground text-sm">Offer Score</p>
 
               <h3 className="text-4xl font-bold mt-2">{offer?.score || 0}</h3>
@@ -108,7 +111,7 @@ const OfferedBookingDetails = () => {
           </Card>
 
           <Card className="rounded-2xl shadow-md border-0">
-            <CardContent className="p-6">
+            <CardContent className="p-6 py-1">
               <p className="text-muted-foreground text-sm">Attempt No</p>
 
               <h3 className="text-4xl font-bold mt-2">#{offer?.attemptNo}</h3>
@@ -116,7 +119,7 @@ const OfferedBookingDetails = () => {
           </Card>
 
           <Card className="rounded-2xl shadow-md border-0">
-            <CardContent className="p-6">
+            <CardContent className="p-6 py-1">
               <p className="text-muted-foreground text-sm">Source</p>
 
               <h3 className="text-2xl font-semibold mt-3 uppercase">
@@ -130,7 +133,7 @@ const OfferedBookingDetails = () => {
               <p className="text-muted-foreground text-sm">Response Time</p>
 
               <h3 className="text-2xl font-semibold mt-3">
-                {getResponseMinutes(offer?.offeredAt, offer?.respondedAt)}
+                {getResponseTime(offer?.offeredAt, offer?.respondedAt)}
               </h3>
             </CardContent>
           </Card>
