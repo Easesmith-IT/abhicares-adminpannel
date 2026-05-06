@@ -61,7 +61,7 @@ const UpdateServicePage = () => {
           previewImage: service?.imageUrl || "",
           bannerPreview: service?.bannerUrl || "",
           cityConfigs:
-            service?.cityConfigs.map((item) => ({ ...item, isTrending:item?.isTrending || false})) || [],
+            service?.cityConfigs?.map((item) => ({ ...item, isTrending:item?.isTrending || false})) || [],
         }}
         onSubmit={onSubmit}
         isLoading={isLoading}
