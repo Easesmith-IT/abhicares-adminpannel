@@ -111,7 +111,7 @@ const Bookings = () => {
             variant="abhicares"
             onClick={() => navigate("/admin/bookings/rejected-request")}
           >
-            Rejected Bokkings
+            Rejected Bookings
           </Button>
         </div>
 
