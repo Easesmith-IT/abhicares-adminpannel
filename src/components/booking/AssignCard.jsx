@@ -81,7 +81,11 @@ const AssignCard = ({
             title={!seller.online ? "Partner is offline" : "Assign partner"}
             onClick={() => handleAssign(seller._id, i)}
           >
-            {index === i && isAssignSellerLoading ? <Spinner /> : "Assign"}
+            {seller.online ? index === i && isAssignSellerLoading ? (
+              <Spinner />
+            ) : (
+              "Assign"
+            ):"Offline"}
           </Button>
         </div>
 
