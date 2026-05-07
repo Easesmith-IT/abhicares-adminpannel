@@ -100,6 +100,8 @@ const OfferDetail = () => {
         {/* Usage */}
         <InfoCard title="Usage">
           <Detail label="Used Count" value={offer.usesCount} />
+          <Detail label="Max Uses Per User" value={offer.maxUsesPerUser} />
+          <Detail label="Max Uses" value={offer.maxUses} />
           <Detail label="Priority" value={offer.priority} />
         </InfoCard>
 

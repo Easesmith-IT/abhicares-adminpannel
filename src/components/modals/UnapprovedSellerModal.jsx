@@ -81,6 +81,7 @@ const UnapprovedSellerModal = ({
       // toast.success("Partner deleted");
       setDeleteOpen(false);
       fetchInReview();
+      getSellers();
     }
   }, [deleteRes]);
 
@@ -117,9 +118,11 @@ const UnapprovedSellerModal = ({
                     <TableRow key={s._id}>
                       <TableCell>{s.name}</TableCell>
                       <TableCell>
-                        {s.services.map((x) => x.name).join(", ")}
+                        <div className="whitespace-pre-wrap w-100">
+                          {s.services?.length > 0? s.services.map((x) => x.name).join(", "):"-"}
+                        </div>
                       </TableCell>
-                      <TableCell>{s.category}</TableCell>
+                      <TableCell>{s.category || "-"}</TableCell>
                       <TableCell>{s.phone}</TableCell>
                       <TableCell>
                         <Badge variant="secondary">IN-REVIEW</Badge>

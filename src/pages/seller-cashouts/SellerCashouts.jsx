@@ -149,9 +149,13 @@ const SellerCashouts = () => {
                 <SelectValue placeholder="Select Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Created">Created</SelectItem>
+                {/* <SelectItem value="Created">Created</SelectItem> */}
+                {/* <SelectItem value="Completed">Completed</SelectItem> */}
+                {/* <SelectItem value="Cancelled">Cancelled</SelectItem> */}
+                <SelectItem value="PENDING">Pending</SelectItem>
+                <SelectItem value="APPROVED">Approved</SelectItem>
+                <SelectItem value="REJECTED">Rejected</SelectItem>
                 <SelectItem value="Completed">Completed</SelectItem>
-                <SelectItem value="Cancelled">Cancelled</SelectItem>
               </SelectContent>
             </Select>
 
@@ -163,10 +167,7 @@ const SellerCashouts = () => {
               className="w-[200px]!"
             />
 
-            <TooltipIconButton
-                tooltip="Reset Filters"
-                onClick={handleReset}
-              />
+            <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
           </div>
         </div>
 

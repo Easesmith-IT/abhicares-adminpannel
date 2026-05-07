@@ -46,6 +46,8 @@ const Banners = () => {
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
+      console.log("banner res", res);
+      
       setBanners(res.data.data || []);
 
       const total = res?.data?.total || 0;
@@ -81,18 +83,18 @@ const Banners = () => {
             </Select>
             <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
 
-            <Button asChild variant="abhicares">
+            {/* <Button asChild variant="abhicares">
               <Link to="/admin/banners/create">Create</Link>
-            </Button>
+            </Button> */}
           </div>
         </div>
 
         {/* Loading */}
         {isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
+            {Array.from({ length: 3 }).map((_, i) => (
               <Card key={i}>
-                <CardContent className="p-4 h-40 animate-pulse bg-muted" />
+                <CardContent className="p-4 h-20 animate-pulse bg-muted" />
               </Card>
             ))}
           </div>
@@ -112,16 +114,19 @@ const Banners = () => {
               <Card key={banner._id}>
                 <CardContent className="p-4 space-y-2">
                   <div className="flex justify-between">
-                    <span className="font-medium">Type:</span>
-                    <span>{banner.type}</span>
-                  </div>
+                    <div className="flex gap-5">
 
-                  <div className="text-xs text-muted-foreground">
-                    ID: {banner._id}
-                  </div>
+                    <span className="font-medium">Type:</span>
+                    <span>{banner.type} Banner</span>
+                    </div>
                   <Button asChild>
                     <Link to={`/admin/banners/${banner._id}/update`}>Edit</Link>
                   </Button>
+                  </div>
+
+                  {/* <div className="text-xs text-muted-foreground">
+                    ID: {banner._id}
+                  </div> */}
                 </CardContent>
               </Card>
             ))}

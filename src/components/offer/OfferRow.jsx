@@ -18,7 +18,7 @@ import { Spinner } from "../ui/spinner";
 
 const OfferRow = ({ offer, refetch, onEdit }) => {
   const { fetchData: deleteOffer, res: deleteRes } = useDeleteApiReq();
-  const { fetchData: updateStatus } = usePostApiReq();
+  const { res:incrementRes,fetchData,isLoading:isIncrementLoading } = usePostApiReq();
   const { res, fetchData: hideUnhideOffer, isLoading } = usePatchApiReq();
 
   const [openDelete, setOpenDelete] = useState(false);
@@ -40,18 +40,18 @@ const OfferRow = ({ offer, refetch, onEdit }) => {
 
   /* ---------------- Status Toggle ---------------- */
 
-  const toggleStatus = async () => {
-    setStatus((prev) => !prev); // optimistic
+  const incrementUsage = async () => {
 
-    const res = await updateStatus(`/admin/update-offer-status/${offer._id}`, {
-      isActive: !status,
+    await fetchData(`/offers/increment-usage`, {
+      offerId: offer._id,
     });
-
-    if (!res?.success) {
-      setStatus((prev) => !prev);
-      toast.error("Failed to update status");
-    }
   };
+
+   useEffect(() => {
+    if (incrementRes?.status === 200 || incrementRes?.status === 201) {
+      refetch();
+    }
+  }, [incrementRes]);
 
   const toggleHidden = () => {
     setIsHidden((prev) => !prev);
@@ -107,9 +107,19 @@ const OfferRow = ({ offer, refetch, onEdit }) => {
             checked={isHidden}
             onCheckedChange={toggleHidden}
             // className="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-orange-500"
-          />
+            />
         </TableCell>
 
+        <TableCell className="text-center space-x-2">
+          <p className="text-sm mb-1">Uses Count:{offer?.usesCount || 0}</p>
+          <Button
+            variant="abhicares"
+            size="xs"
+            onClick={incrementUsage}
+            >
+            {isIncrementLoading ? <Spinner /> : "Increment Usage"}
+          </Button>
+            </TableCell>
         <TableCell className="text-right space-x-2">
           {/* Details */}
           <Button variant="outline" size="icon" asChild>

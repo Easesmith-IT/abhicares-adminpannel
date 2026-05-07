@@ -61,50 +61,83 @@ import { z } from "zod";
 //   });
 
 
-export const offerSchema = z.object({
-  name: z.string().min(1),
-  code: z.string().regex(/^[A-Z0-9]{4,10}$/),
-  type: z.enum(["FLAT", "PERCENTAGE", "COMBO"]),
-  description: z.string().optional(),
+export const offerSchema = z
+  .object({
+    name: z.string().min(1),
+    code: z.string().regex(/^[A-Z0-9]{4,10}$/),
+    type: z.enum(["FLAT", "PERCENTAGE", "COMBO"]),
+    description: z.string().optional(),
 
-  discountValue: z.coerce.number().optional(),
-  maxDiscountAmount: z.coerce.number().optional(),
-  minOrderValue: z.coerce.number().default(0),
+    discountValue: z.coerce.number().optional(),
+    maxDiscountAmount: z.coerce.number().optional(),
+    minOrderValue: z.coerce.number().default(0),
+    maxUsesPerUser: z.coerce.number().min(1),
+    maxUses: z.coerce.number().min(1),
 
-  validFrom: z.date({ required_error: "Valid from is required" }),
-  validTo: z.date({ required_error: "Valid to is required" }),
+    validFrom: z.date({ required_error: "Valid from is required" }),
+    validTo: z.date({ required_error: "Valid to is required" }),
 
-  applicableTo: z.object({
-    services: z.array(z.string()).default([]),
-    products: z.array(z.string()).default([]),
-    packages: z.array(z.string()).default([]),
-  }),
+    applicableTo: z.object({
+      services: z.array(z.string()).default([]),
+      products: z.array(z.string()).default([]),
+      packages: z.array(z.string()).default([]),
+    }),
 
-  applicableCities: z
-    .array(
-      z.object({
-        cityId: z.string(),
-        isActive: z.boolean().optional(),
-      }),
-    )
-    .default([]),
+    applicableCities: z
+      .array(
+        z.object({
+          cityId: z.string(),
+          isActive: z.boolean().optional(),
+        }),
+      )
+      .default([]),
 
-  applicableUserTypes: z.array(z.enum(["NEW", "RETURNING", "ALL"])),
+    applicableUserTypes: z.array(z.enum(["NEW", "RETURNING", "ALL"])),
 
-  flat: z
-    .object({
-      currency: z.enum(["INR", "USD"]),
-    })
-    .optional(),
+    flat: z
+      .object({
+        currency: z.enum(["INR", "USD"]),
+      })
+      .optional(),
 
-  combo: z
-    .object({
-      buyQuantity: z.number(),
-      getQuantity: z.number(),
-      discountOn: z.enum(["GET_ITEMS", "ALL_ITEMS"]),
-    })
-    .optional(),
+    combo: z
+      .object({
+        // buyQuantity: z.number(),
+        // getQuantity: z.number(),
+        // discountOn: z.enum(["GET_ITEMS", "ALL_ITEMS"]),
+        buyQuantity: z.coerce.number().optional(),
+        getQuantity: z.coerce.number().optional(),
+        discountOn: z.enum(["GET_ITEMS", "ALL_ITEMS"]).optional(),
+      })
+      .optional(),
 
-  priority: z.coerce.number().default(0),
-  isActive: z.boolean().default(true),
-});
+    priority: z.coerce.number().default(0),
+    isActive: z.boolean().default(true),
+  })
+  .superRefine((data, ctx) => {
+    if (data.type === "COMBO") {
+      if (!data.combo?.buyQuantity) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["combo", "buyQuantity"],
+          message: "Buy quantity is required",
+        });
+      }
+
+      if (!data.combo?.getQuantity) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["combo", "getQuantity"],
+          message: "Get quantity is required",
+        });
+      }
+
+      if (!data.combo?.discountOn) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["combo", "discountOn"],
+          message: "Discount type is required",
+        });
+      }
+    }
+  });

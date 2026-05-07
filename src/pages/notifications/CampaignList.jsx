@@ -114,6 +114,9 @@ export default function CampaignList() {
     if (selectedCity) {
       queryParams.append("city", selectedCity);
     }
+    if (page) {
+      queryParams.append("page", page);
+    }
 
     if (filters.status && filters.status !== "all") {
       queryParams.append("status", filters.status);
@@ -122,7 +125,7 @@ export default function CampaignList() {
     fetchData(`/notifications/get-notifications?${queryParams.toString()}`, {
       screenName: "CampaignList",
     });
-  }, [filters, selectedCity]);
+  }, [filters, selectedCity,page]);
 
   /* 🔹 Sync response */
   useEffect(() => {
@@ -338,6 +341,9 @@ export function CampaignListSkeleton({ rows = 5 }) {
             <Skeleton className="h-4 w-[140px]" />
           </TableCell>
 
+          <TableCell>
+            <Skeleton className="h-4 w-[160px]" />
+          </TableCell>
           <TableCell>
             <Skeleton className="h-4 w-[160px]" />
           </TableCell>

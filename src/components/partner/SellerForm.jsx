@@ -64,6 +64,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
     documentFront: useRef(null),
     aadhaarBack: useRef(null),
     panCard: useRef(null),
+    policeVerificationCertificate: useRef(null),
     shopLicense: useRef(null),
   };
 
@@ -109,7 +110,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
       services: [],
 
       legalName: "",
-      gstNumber: "",
+      // gstNumber: "",
       contactPerson: {
         name: "",
         phone: "",
@@ -128,6 +129,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
       documentFront: null,
       aadhaarBack: null,
       panCard: null,
+      policeVerificationCertificate: null,
       shopLicense: null,
       otherDocuments: [],
 
@@ -136,6 +138,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
       documentFrontPreview: "",
       aadhaarBackPreview: "",
       panCardPreview: "",
+      policeVerificationCertificatePreview: "",
       shopLicensePreview: "",
       otherDocumentsPreview: [],
     },
@@ -170,7 +173,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
             ?.map((s) => s?.serviceId?._id || s?.serviceId || null)
             .filter(Boolean) || [],
         legalName: initialData.legalName,
-        gstNumber: initialData.gstNumber,
+        // gstNumber: initialData.gstNumber,
 
         contactPerson: {
           name: initialData.contactPerson?.name,
@@ -183,6 +186,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
         documentFrontPreview: initialData?.documents?.documentFront?.url,
         aadhaarBackPreview: initialData?.documents?.aadhaarBack?.url,
         panCardPreview: initialData?.documents?.panCard?.url,
+        policeVerificationCertificatePreview: initialData?.documents?.policeVerificationCertificate?.url,
         shopLicensePreview: initialData?.documents?.shopLicense?.url,
 
         otherDocumentsPreview: initialData?.documents?.otherDocuments.map(
@@ -296,27 +300,31 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
     form.setValue("otherDocumentsPreview", [...previews]);
   };
 
+   const cityId = form.watch("cityId");
   /* ---------------- FETCH ---------------- */
   useEffect(() => {
-    getCategories("/admin/get-all-category");
-  }, []);
+    cityId && getCategories(`/categories/app/get-categories/${categoryId}?cityId=${cityId}`);
+  }, [cityId]);
 
   useEffect(() => {
     if (catRes?.status === 200) {
-      setCategories(catRes.data.data);
+      setCategories(catRes.data.categories);
+      
     }
   }, [catRes]);
-
+  
   const categoryId = form.watch("categoryId");
-
+  
   useEffect(() => {
-    if (categoryId) {
-      getServices(`/admin/get-category-service/${categoryId}`);
+    if (categoryId && cityId) {
+      // getServices(`/admin/get-category-service/${categoryId}`);
+      getServices(`/services/get-services/${categoryId}?cityId=${cityId}`);
     }
-  }, [categoryId]);
-
+  }, [categoryId,cityId]);
+  
   useEffect(() => {
     if (serviceRes?.status === 200) {
+      console.log("serviceRes", serviceRes);
       setServicesList(serviceRes.data.data);
     }
   }, [serviceRes]);
@@ -351,7 +359,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
       "categoryId",
       "subCategoryId",
       "legalName",
-      "gstNumber",
+      // "gstNumber",
     ].forEach((key) => {
       if (values[key]) formData.append(key, values[key]);
     });
@@ -380,6 +388,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
       "documentFront",
       "aadhaarBack",
       "panCard",
+      "policeVerificationCertificate",
       "shopLicense",
     ].forEach((field) => {
       if (values[field]) {
@@ -475,6 +484,35 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
         <Section title="Business Information">
           <div className="grid grid-cols-2 gap-4">
             <FormField
+              name="cityId"
+              control={form.control}
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>City</FormLabel>
+                  <Select
+                    key={field.value}
+                    value={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select city" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {cities.map((c) => (
+                        <SelectItem key={c._id} value={c._id}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+           {form.watch("cityId") && <FormField
               name="categoryId"
               control={form.control}
               render={({ field }) => (
@@ -495,7 +533,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                     </FormControl>
                     <SelectContent>
                       {categories.map((c) => (
-                        <SelectItem key={c._id} value={c._id}>
+                        <SelectItem key={c._id ||c.id} value={c._id||c.id}>
                           {c.name}
                         </SelectItem>
                       ))}
@@ -504,7 +542,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            />}
 
             {form.watch("categoryId") && (
               <FormField
@@ -531,6 +569,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                           {s.name}
                         </label>
                       ))}
+                      {servicesList?.length === 0 && <p className="text-sm text-muted-foreground">No Services for selected category</p>}
                     </div>
                     <FormMessage />
                   </FormItem>
@@ -550,7 +589,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
               )}
             />
 
-            <FormField
+            {/* <FormField
               name="gstNumber"
               control={form.control}
               render={({ field }) => (
@@ -560,7 +599,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <FormField
               name="contactPerson.name"
@@ -645,34 +684,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
                 </FormItem>
               )}
             />
-            <FormField
-              name="cityId"
-              control={form.control}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>City</FormLabel>
-                  <Select
-                    key={field.value}
-                    value={field.value}
-                    onValueChange={field.onChange}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select city" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {cities.map((c) => (
-                        <SelectItem key={c._id} value={c._id}>
-                          {c.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            
           </div>
         </Section>
 
@@ -830,6 +842,27 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
             {form.watch("panCardPreview") && (
               <Preview
                 field="panCard"
+                form={form}
+                removeSingle={removeSingle}
+              />
+            )}
+          </FormItem>
+
+          <FormItem>
+            <FormLabel>Police Verification Certificate</FormLabel>
+            <p className="text-sm text-muted-foreground">
+              PDF/JPG/PNG • Max 5MB
+            </p>
+            <Input
+              ref={refs.policeVerificationCertificate}
+              type="file"
+              accept=".jpg,.jpeg,.png"
+              onChange={(e) => handleSingleFile("policeVerificationCertificate", e)}
+            />
+
+            {form.watch("policeVerificationCertificatePreview") && (
+              <Preview
+                field="policeVerificationCertificate"
                 form={form}
                 removeSingle={removeSingle}
               />

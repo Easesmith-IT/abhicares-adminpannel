@@ -21,7 +21,7 @@ export const sellerSchema = z.object({
   services: z.array(z.string()).optional(),
 
   legalName: z.string().optional(),
-  gstNumber: z.string().optional(),
+  // gstNumber: z.string().optional(),
 
   /* 🟡 CONTACT PERSON */
   contactPerson: z
@@ -38,7 +38,7 @@ export const sellerSchema = z.object({
       accountNumber: z.string().optional(),
       ifscCode: z
         .string()
-        .regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC")
+        // .regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, "Invalid IFSC")
         .optional(),
       accountHolderName: z.string().optional(),
       bankName: z.string().optional(),
@@ -51,7 +51,7 @@ export const sellerSchema = z.object({
   aadhaarBack: z.any().optional(),
   documentFront: z.any().optional(),
   panCard: z.any().optional(),
-  gstCertificate: z.any().optional(),
+  policeVerificationCertificate: z.any().optional(),
   shopLicense: z.any().optional(),
   otherDocuments: z.array(z.any()).optional(),
 });

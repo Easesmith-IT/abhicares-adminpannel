@@ -42,17 +42,36 @@ const BannerItemSchema = z.object({
   file: z.any().optional().nullable(),
 });
 
-const bannerSchema = z.object({
-  type: z.enum(["HOME", "OFFER", "REFER"]),
-  cityConfigs: z.array(
-    z.object({
-      cityId: z.string(),
-      cityName: z.string().optional(),
-      isActive: z.boolean(),
-      banners: z.array(BannerItemSchema),
-    }),
-  ),
-});
+const bannerSchema = z
+  .object({
+    type: z.enum(["HOME", "OFFER", "REFER"]),
+
+    cityConfigs: z.array(
+      z.object({
+        cityId: z.string(),
+        cityName: z.string().optional(),
+        isActive: z.boolean(),
+        banners: z.array(BannerItemSchema),
+      }),
+    ),
+  })
+  .superRefine((data, ctx) => {
+    data.cityConfigs.forEach((city, cityIndex) => {
+      if (!city.isActive) return;
+
+      city.banners.forEach((banner, bannerIndex) => {
+        const hasImage = banner.file || banner.existingImage;
+
+        if (!hasImage) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["cityConfigs", cityIndex, "banners", bannerIndex, "file"],
+            message: "Banner image is required",
+          });
+        }
+      });
+    });
+  });
 
 const makeEmptyBanner = () => ({
   categoryId: "",
@@ -316,7 +335,10 @@ export default function BannerForm({
                     length: 6,
                   }).map((_, i) => <CityCardCategorySkeleton key={i} />)
                 : visibleConfigs.map((city, cityIndex) => (
-                    <div key={city.cityId} className="bg-white border rounded-md">
+                    <div
+                      key={city.cityId}
+                      className="bg-white border rounded-md"
+                    >
                       <CardContent className="pt-5 space-y-5">
                         <div className="flex justify-between">
                           <h3 className="font-semibold capitalize">
@@ -407,7 +429,7 @@ export default function BannerForm({
                                   </SelectContent>
                                 </Select>
 
-<p className="font-bold text-muted-foreground">
+                                <p className="font-bold text-muted-foreground">
                                   Choose image to update banners
                                 </p>
 
@@ -478,10 +500,18 @@ export default function BannerForm({
                                     }
                                   }}
                                 />
+
+                                <FormMessage>
+                                  {
+                                    form.formState.errors?.cityConfigs?.[
+                                      cityIndex
+                                    ]?.banners?.[bannerIndex]?.file?.message
+                                  }
+                                </FormMessage>
                                 <p className="text-xs text-muted-foreground">
                                   Max 2MB • Recommended 1280x720
                                 </p>
-                                
+
                                 {(banner.preview || banner.existingImage) && (
                                   <img
                                     src={

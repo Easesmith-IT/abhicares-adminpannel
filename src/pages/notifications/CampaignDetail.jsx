@@ -91,6 +91,8 @@ export default function CampaignDetail() {
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
+      console.log("res", res);
+      
       setCampaign(res.data.data); // ✅ correct mapping
     }
   }, [res]);
@@ -108,12 +110,12 @@ export default function CampaignDetail() {
       <div className="space-y-6">
         <BackLink href={-1}></BackLink>
         {/* 🔹 Campaign Info */}
-        <Card>
+        <Card className="gap-0">
           <CardHeader>
-            <CardTitle>{campaign.title}</CardTitle>
+            <CardTitle className="text-lg">{campaign.title}</CardTitle>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 pt-0">
             <p className="text-gray-700">{campaign.body}</p>
 
             {campaign.image_url && (
@@ -121,6 +123,15 @@ export default function CampaignDetail() {
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-600">
+              <p>
+                <strong>Total Users:</strong> {campaign.total_users}
+              </p>
+              <p>
+                <strong>Sent Count:</strong> {campaign.sent_count}
+              </p>
+              <p>
+                <strong>Failed Count:</strong> {campaign.failed_count}
+              </p>
               <p>
                 <strong>Audience:</strong> {campaign.target_type}
               </p>

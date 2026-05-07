@@ -46,6 +46,8 @@ const defaultValues = {
   validTo: "",
   isActive: true,
   priority: 0,
+  maxUsesPerUser: 1,
+  maxUses: 1,
 
   applicableTo: {
     services: [],
@@ -425,6 +427,29 @@ const OfferForm = ({
               <FormItem>
                 <FormLabel>Min Order Value</FormLabel>
                 <Input type="number" {...field} />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="maxUsesPerUser"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Max Uses Per User</FormLabel>
+                <Input type="number" {...field} />
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            name="maxUses"
+            control={form.control}
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Max Uses</FormLabel>
+                <Input type="number" {...field} />
+                <FormMessage />
               </FormItem>
             )}
           />

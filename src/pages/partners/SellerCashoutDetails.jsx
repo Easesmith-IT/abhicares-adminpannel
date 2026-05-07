@@ -128,15 +128,15 @@ const SellerCashoutDetails = () => {
                 </p>
 
                 <p>
-                  <b>Contact Person Name:</b> {state?.contactPerson?.name}
+                  <b>Contact Person Name:</b> {state?.contactPerson?.name || "-"}
                 </p>
                 <p>
-                  <b>Contact Person Phone:</b> {state?.contactPerson?.phone}
+                  <b>Contact Person Phone:</b> {state?.contactPerson?.phone || "-"}
                 </p>
                 <p className="col-span-2">
                   <b>Contact Person Email:</b>{" "}
-                  <span className="underline">
-                    {state?.contactPerson?.email}
+                  <span>
+                    {state?.contactPerson?.email || "-"}
                   </span>
                 </p>
               </div>
@@ -203,7 +203,7 @@ const SellerCashoutDetails = () => {
 
             <CardContent>
               <p className="text-lg font-semibold">
-                Balance: ₹{wallet?.balance || 0}
+                Balance: ₹{wallet?.balance?.toFixed(2) || 0}
               </p>
 
               <Separator className="my-4" />

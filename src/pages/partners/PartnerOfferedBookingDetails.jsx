@@ -256,11 +256,11 @@ export default function PartnerOfferedBookingDetails() {
                           {formatDate(event?.createdAt)}
                         </Info>
 
-                        <Info label="Metadata">
+                        {/* <Info label="Metadata">
                           {event?.metadata
                             ? JSON.stringify(event.metadata)
                             : "-"}
-                        </Info>
+                        </Info> */}
                       </div>
                     </div>
                   ))}

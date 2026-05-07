@@ -197,7 +197,7 @@ const SideNav = () => {
           {menuItem("/admin/cash-management", "Cash Management", WalletIcon)}
           {menuItem(
             "/admin/item-categories",
-            "Item Categories",
+            "Invoice Item Categories",
             LayoutGridIcon,
           )}
         </SidebarMenu>

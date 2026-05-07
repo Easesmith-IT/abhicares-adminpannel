@@ -185,8 +185,12 @@ const Partners = () => {
             <CityFilter value={cityId} onChange={setCityId} />
             <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
 
-            <Button variant="secondary" onClick={() => setUnapprovedOpen(true)}>
-              Unapproved Partners
+            <Button
+              variant="inprogress"
+              onClick={() => setUnapprovedOpen(true)}
+            >
+              {/* Unapproved Partners */}
+              Pending Approval Request
             </Button>
           </div>
 
@@ -200,7 +204,7 @@ const Partners = () => {
                   <TableHead>Category</TableHead>
                   <TableHead>Phone</TableHead>
                   <TableHead>City</TableHead>
-                  <TableHead>Availabel Status</TableHead>
+                  <TableHead>Available Status</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
