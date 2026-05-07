@@ -132,7 +132,7 @@ const OfferDetail = () => {
       </div>
 
       {/* ---------------- Type Specific ---------------- */}
-      <div className="mt-6">
+      <div className="mt-6 grid grid-cols-2 gap-5">
         <InfoCard title="Offer Configuration">
           {offer.type === "FLAT" && (
             <Detail label="Currency" value={offer.flat.currency} />
@@ -152,6 +152,11 @@ const OfferDetail = () => {
               <Detail label="Discount On" value={offer.combo.discountOn} />
             </>
           )}
+        </InfoCard>
+        <InfoCard title="Applicable User Types">
+          
+              <Detail label="Applicable User Types" value={offer.applicableUserTypes} />
+              
         </InfoCard>
       </div>
     </Wrapper>

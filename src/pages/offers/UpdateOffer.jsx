@@ -16,6 +16,7 @@ import OfferFormSkeleton from "../../components/offer/OfferFormSkeleton";
 const normalizeOfferForForm = (offer) => ({
   ...offer,
 
+  applicableUserTypes:offer.applicableUserTypes?.[0],
   // ✅ Convert dates
   validFrom: offer.validFrom ? new Date(offer.validFrom) : null,
   validTo: offer.validTo ? new Date(offer.validTo) : null,

@@ -17,7 +17,7 @@ const CreateOffer = () => {
   const handleCreate = async (data) => {
     console.log("data",data);
     
-     await fetchData("/offers/create-offer", data);
+     await fetchData("/offers/create-offer", { ...data, applicableUserTypes: [data?.applicableUserTypes]});
   };
   
   useEffect(() => {

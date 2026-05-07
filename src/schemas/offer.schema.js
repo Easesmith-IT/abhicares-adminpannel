@@ -92,7 +92,8 @@ export const offerSchema = z
       )
       .default([]),
 
-    applicableUserTypes: z.array(z.enum(["NEW", "RETURNING", "ALL"])),
+    // applicableUserTypes: z.array(z.enum(["NEW", "RETURNING", "ALL"])),
+    applicableUserTypes: z.enum(["NEW", "RETURNING", "ALL"]),
 
     flat: z
       .object({

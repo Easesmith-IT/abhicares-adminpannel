@@ -391,7 +391,7 @@ const OfferForm = ({
         </div>
 
         {/* USER TYPES */}
-        <FormField
+        {/* <FormField
           name="applicableUserTypes"
           control={form.control}
           render={({ field }) => (
@@ -414,6 +414,36 @@ const OfferForm = ({
                   </label>
                 ))}
               </div>
+            </FormItem>
+          )}
+        /> */}
+
+        <FormField
+          name="applicableUserTypes"
+          control={form.control}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>User Type</FormLabel>
+
+              <div className="flex gap-4">
+                {["NEW", "RETURNING", "ALL"].map((type) => (
+                  <label
+                    key={type}
+                    className="flex items-center gap-2 cursor-pointer"
+                  >
+                    <input
+                      type="radio"
+                      name="applicableUserTypes"
+                      value={type}
+                      checked={field.value === type}
+                      onChange={() => field.onChange(type)}
+                    />
+
+                    <span>{type}</span>
+                  </label>
+                ))}
+              </div>
+              <FormMessage />
             </FormItem>
           )}
         />
