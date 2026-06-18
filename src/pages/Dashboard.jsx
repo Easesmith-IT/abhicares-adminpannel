@@ -80,7 +80,8 @@ const Dashboard = () => {
     getCities("/admin/get-availabe-city?limit=1");
     getPartners(`/sellers/get-all-seller?limit=1${cityQuery}`);
     getCustomers(`/users/get-all-user?limit=1${cityQuery}`);
-    getFinancials(`/admin/platform-financials?limit=1${cityQuery}`);
+    const today = new Date().toISOString().split("T")[0];
+    getFinancials(`/admin/platform-financials?from=2020-01-01&to=${today}&limit=1${cityQuery}`);
     getCategories(`/categories/get-categories?limit=1${cityQuery}`);
     getServices("/admin/get-all-service");
     getUnverifiedPartners(`/sellers/get-all-seller?status=IN-REVIEW&limit=1${cityQuery}`);
