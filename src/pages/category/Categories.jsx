@@ -3,93 +3,101 @@ import { useNavigate } from "react-router-dom";
 
 import useGetApiReq from "../../hooks/useGetApiReq";
 
-import { CityFilter, useCities } from "@/components/filters/city";
-import { PlusIcon } from "lucide-react";
+import { PlusIcon, RefreshCw, LayoutGrid } from "lucide-react";
 import { Category } from "../../components/category/Category";
 import CategoryCardSkeleton from "../../components/category/CategoryCardSkeleton";
-import AddCategoryModal from "../../components/modals/AddCategoryModal";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
 import { H2 } from "../../components/shared/typography";
 import { Button } from "../../components/ui/button";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { buildQuery } from "../../utils/buildQuery";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { useCustomSidebar } from "@/components/layout/sidebarContext";
 
 const Categories = () => {
   const navigate = useNavigate();
   const { res, fetchData, isLoading } = useGetApiReq();
   const [categories, setCategories] = useState([]);
-  const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
 
-  const [selectedCity, setSelectedCity] = useState(null);
+  const { selectedCityId } = useCustomSidebar();
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
-  const { cities } = useCities();
 
   const handleAddCategory = () => {
     navigate("/admin/categories/add-category");
   };
 
-  const handleReset = () => {
-    setSelectedCity("");
-  };
-
   const getCategories = useCallback(() => {
-    const query = buildQuery({ cityId: selectedCity,page });
-
+    const query = buildQuery({ cityId: selectedCityId, page });
     fetchData(`/categories/get-categories?${query}`);
-  }, [selectedCity, fetchData,page]);
+  }, [selectedCityId, fetchData, page]);
 
   useEffect(() => {
     getCategories();
-  }, [selectedCity]);
+  }, [getCategories]);
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("res", res);
-      
-      setCategories(res.data.data || []);
-      setPageCount(res?.data?.pagination?.totalPages || 0);
+      const data = res.data.data || [];
+      const totalPages = res?.data?.pagination?.totalPages || 1;
+      setTimeout(() => {
+        setCategories(data);
+        setPageCount(totalPages);
+      }, 0);
     }
   }, [res]);
 
   return (
     <Wrapper>
-      <div className="w-full font-poppins">
-        <div className="pb-6 flex justify-between gap-5 items-center">
-          <H2>Categories</H2>
+      <div className="space-y-6 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 text-slate-900 bg-[#F8FAFC] min-h-screen">
+        
+        {/* Header Block */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-5">
+          <div>
+            <H2 className="text-2xl font-bold tracking-tight text-slate-900">Marketplace Catalogues</H2>
+            <p className="text-xs text-slate-500 mt-1">Configure service domains, baseline commissions, and category mappings.</p>
+          </div>
 
-          <div className="flex gap-3">
-            <CityFilter
-              cities={cities}
-              value={selectedCity}
-              onChange={setSelectedCity}
-            />
-            <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
-
-            <Button onClick={handleAddCategory} variant="abhicares">
-              <PlusIcon />
-              Add Category
+          <div className="flex items-center gap-3">
+            <Button variant="outline" size="sm" onClick={getCategories} className="bg-white border-slate-200">
+              <RefreshCw className="size-3.5" />
+            </Button>
+            <Button
+              variant="abhicares"
+              size="sm"
+              onClick={handleAddCategory}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
+            >
+              <PlusIcon className="mr-1.5 size-4" />
+              <span>Add Category</span>
             </Button>
           </div>
         </div>
 
+        {/* Loading skeleton state */}
         {isLoading && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <CategoryCardSkeleton key={i} />
             ))}
           </div>
         )}
 
+        {/* Empty state */}
         {!isLoading && categories.length === 0 && (
-          <div className="flex h-[200px] items-center justify-center text-sm text-muted-foreground">
-            No category found
+          <div className="flex flex-col items-center justify-center py-20 text-slate-400 bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
+            <LayoutGrid className="size-10 stroke-[1.5] mb-3 text-slate-300" />
+            <p className="text-sm font-semibold">No marketplace categories registered</p>
+            <p className="text-xs text-slate-400 mt-1 mb-4">Add a category to populate the services menu.</p>
+            <Button size="sm" onClick={handleAddCategory} className="bg-blue-600 text-white hover:bg-blue-700 font-semibold text-xs">
+              Create New Category
+            </Button>
           </div>
         )}
 
+        {/* Category card grid */}
         {!isLoading && categories.length > 0 && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {categories.map((category) => (
               <Category
                 key={category._id}
@@ -100,20 +108,11 @@ const Categories = () => {
           </div>
         )}
 
-        <PaginationComp
-          className="mt-5"
-          page={page}
-          pageCount={pageCount}
-          setPage={setPage}
-        />
-
-        {isAddCategoryModalOpen && (
-          <AddCategoryModal
-            isOpen={isAddCategoryModalOpen}
-            onClose={handleAddCategory}
-            getCategories={getCategories}
-          />
-        )}
+        {/* Pagination controls */}
+        <div className="flex justify-between items-center pt-4">
+          <span className="text-xs text-slate-400 font-medium">Page {page} of {pageCount}</span>
+          <PaginationComp page={page} pageCount={pageCount} setPage={setPage} />
+        </div>
       </div>
     </Wrapper>
   );

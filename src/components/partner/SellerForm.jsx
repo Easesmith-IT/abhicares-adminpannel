@@ -40,9 +40,9 @@ const DOC_TYPES = ["image/jpeg", "image/png"];
 
 /* ---------------- SECTION ---------------- */
 const Section = ({ title, children }) => (
-  <Card>
-    <CardContent className="pt-6 space-y-5">
-      <h3 className="text-lg font-semibold">{title}</h3>
+  <Card className="border border-slate-200/80 shadow-sm rounded-2xl overflow-hidden bg-white">
+    <CardContent className="p-6 md:p-8 space-y-6">
+      <h3 className="text-lg font-bold text-slate-800 border-b border-slate-100 pb-3">{title}</h3>
       {children}
     </CardContent>
   </Card>
@@ -303,7 +303,7 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
    const cityId = form.watch("cityId");
   /* ---------------- FETCH ---------------- */
   useEffect(() => {
-    cityId && getCategories(`/categories/app/get-categories/${categoryId}?cityId=${cityId}`);
+    cityId && getCategories(`/categories/app/get-categories?cityId=${cityId}`);
   }, [cityId]);
 
   useEffect(() => {

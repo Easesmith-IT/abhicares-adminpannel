@@ -1,9 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { getSecureItem, setSecureItem } from '../../utils/secureStorage';
 
 const initialState = {
     userId: null,
-    isAuthenticated: JSON.parse(localStorage.getItem("user-status")) || false,
-    isAdminAuthenticated: JSON.parse(localStorage.getItem("admin-status")) || false,
+    isAuthenticated: getSecureItem("user-status", false) || false,
+    isAdminAuthenticated: getSecureItem("admin-status", true) || false,
 }
 
 const userSlice = createSlice({
@@ -16,11 +17,11 @@ const userSlice = createSlice({
             }
         },
         changeUserAuthStatus(state, action) {
-            localStorage.setItem("user-status", action.payload.isAuthenticated);
+            setSecureItem("user-status", action.payload.isAuthenticated, false);
             state.isAuthenticated = action.payload.isAuthenticated;
         },
         changeAdminStatus(state, action) {
-            localStorage.setItem("admin-status", action.payload.isAdminAuthenticated)
+            setSecureItem("admin-status", action.payload.isAdminAuthenticated, true);
             state.isAdminAuthenticated = action.payload.isAdminAuthenticated;
         }
     },

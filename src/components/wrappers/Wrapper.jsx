@@ -1,21 +1,39 @@
+import React from "react";
+import { useLocation } from "react-router-dom";
 import Header from "../layout/Header";
 import SideNav from "../layout/SideNav";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { useCustomSidebar } from "@/components/layout/sidebarContext";
 
-const Wrapper = ({ children }) => {
+const WrapperContent = ({ children }) => {
+  const { isCollapsed } = useCustomSidebar();
+  const location = useLocation();
+
   return (
-    <SidebarProvider>
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-[#F8FAFC]">
+      {/* Redesigned Sidebar Nav */}
       <SideNav />
 
       {/* Main content area */}
-      <SidebarInset className="min-h-screen bg-gradient-to-br from-main/30 via-white/20 to-main/50">
+      <div
+        className={`flex flex-col flex-1 min-h-screen w-full transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          isCollapsed ? "pl-[104px]" : "pl-[332px]"
+        }`}
+      >
         <Header />
 
-        <main className="px-[30px] pt-[40px] pb-[30px]">{children}</main>
-      </SidebarInset>
-    </SidebarProvider>
+        {/* Page content with slide-up and fade transition keyed by pathname to trigger on route change */}
+        <main className="px-[30px] pt-[20px] pb-[30px] flex-1">
+          <div key={location.pathname} className="animate-page-transition">
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
   );
+};
+
+const Wrapper = ({ children }) => {
+  return <WrapperContent>{children}</WrapperContent>;
 };
 
 export default Wrapper;

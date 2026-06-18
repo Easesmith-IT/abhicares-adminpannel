@@ -97,14 +97,13 @@ if (isLoading) {
 }
 
 
-  // ----------------------------
-  // Not found
-  // ----------------------------
   if (!crash) {
     return (
-      <div className="text-sm text-muted-foreground">
-        Crash report not found
-      </div>
+      <Wrapper>
+        <div className="py-12 text-center text-slate-500 font-medium">
+          Crash report not found
+        </div>
+      </Wrapper>
     );
   }
 

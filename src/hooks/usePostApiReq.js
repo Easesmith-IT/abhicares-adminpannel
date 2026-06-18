@@ -1,12 +1,9 @@
-import { useRef, useState } from "react";
-import { useDispatch } from "react-redux";
-import {
-  changeAdminStatus
-} from "../store/slices/userSlice";
-import { axiosInstance } from "../utils/axiosInstance";
+import { useState, useCallback } from "react";
+import { toast } from "sonner";
 import { readCookie } from "../utils/readCookie";
 import useCrashReporter from "./useCrashReporter";
-import { toast } from "sonner";
+import useAuthActions from "./useAuthActions";
+import { axiosInstance } from "../utils/axiosInstance";
 
 const usePostApiReq = () => {
   const [res, setRes] = useState(null);
@@ -14,103 +11,21 @@ const usePostApiReq = () => {
   const [error, setError] = useState(null);
 
   const { reportCrash } = useCrashReporter();
-  const dispatch = useDispatch();
+  const { getAdminStatus } = useAuthActions();
 
-  // Read cookies
-  const adminInfo = readCookie("adminInfo");
-
-  const getAdminStatus = async () => {
-    try {
-      const res1 = await axiosInstance.get("/admin/status");
-      if (res1?.status === 200 || res1?.status === 201) {
-        // dispatch(changeAdminStatus({ isAdminAuthenticated: res1?.data?.isAuthenticated }));
-        console.log("Admin status response:", res1);
-        if (res1?.data?.shouldLogOut) {
-          await handleAdminLogout();
-        } else if (!res1?.data?.isAuthenticated) {
-          await refreshAdminToken();
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching admin status:", error);
-      reportCrash({
-        error,
-        screenName: "",
-        severity: "HIGH",
-        request: {
-          url: "/admin/status",
-          method: "GET",
-        },
-        userType: "ADMIN",
-        userId: adminInfo?.id,
-      });
-    }
-  };
-
-  const refreshAdminToken = async () => {
-    try {
-      const res1 = await axiosInstance.post("/admin/refresh", {
-        adminId: adminInfo?.id,
-        role: "admin",
-      });
-      if (res1?.status === 200 || res1?.status === 201) {
-        dispatch(changeAdminStatus({ isAdminAuthenticated: true }));
-        console.log("refresh response:", res1);
-      }
-    } catch (error) {
-      console.error("Error fetching admin refresh token:", error);
-      reportCrash({
-        error,
-        screenName: "",
-        severity: "HIGH",
-        request: {
-          url: "/admin/refresh",
-          method: "POST",
-        },
-        userType: "ADMIN",
-        userId: adminInfo?.id,
-      });
-    }
-  };
-
-  const handleAdminLogout = async () => {
-    try {
-      const logoutRes1 = await axiosInstance.post("/admin/logout-all", {
-        adminId: adminInfo?.id,
-        role: "admin",
-      });
-      if (logoutRes1?.status === 200 || logoutRes1?.status === 201) {
-        console.log("Admin logout response:", logoutRes1);
-        dispatch(changeAdminStatus({ isAdminAuthenticated: false }));
-      }
-    } catch (error) {
-      console.error("Error logging out admin:", error);
-      reportCrash({
-        error,
-        screenName: "",
-        severity: "HIGH",
-        request: {
-          url: "/admin/logout-all",
-          method: "POST",
-        },
-        userType: "ADMIN",
-        userId: adminInfo?.id,
-      });
-    }
-  };
-
-  const fetchData = async (url, sendData, config = {}) => {
+  const fetchData = useCallback(async (url, sendData, config = {}) => {
     const {
       reportCrash: shouldReportCrash = true,
       screenName,
       severity = "HIGH",
       userType = "Admin",
+      ...axiosConfig
     } = config;
 
     try {
       setIsLoading(true);
       const response = await axiosInstance.post(url, sendData, {
-        ...config,
+        ...axiosConfig,
         withCredentials: true,
       });
       console.log("res", response);
@@ -121,7 +36,8 @@ const usePostApiReq = () => {
     } catch (error) {
       setError(error);
       console.log("post api error =>", error);
-      toast.error(error.response?.data?.message || "An error occurred.");
+      toast.error(error?.response?.data?.message || "An error occurred.");
+      const adminInfo = readCookie("adminInfo");
       if (shouldReportCrash) {
         reportCrash({
           error,
@@ -130,18 +46,20 @@ const usePostApiReq = () => {
           request: {
             url,
           },
-          userId: adminInfo.id,
+          userId: adminInfo?.id,
           userType,
         });
       }
 
-      if (error.response.status === 401) {
-        if (adminInfo?.role === "admin") getAdminStatus();
+      if (error?.response?.status === 401) {
+        if (adminInfo?.role === "admin") {
+          await getAdminStatus();
+        }
       }
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [reportCrash, getAdminStatus]);
 
   return { res, isLoading, fetchData, error };
 };

@@ -1,8 +1,8 @@
 "use client";
 
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -22,14 +22,15 @@ import { Input } from "../components/ui/input";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Spinner } from "../components/ui/spinner";
 import useCrashReporter from "../hooks/useCrashReporter";
+import { setSecureItem } from "../utils/secureStorage";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-   const { reportCrash } = useCrashReporter();
+  const { reportCrash } = useCrashReporter();
 
-  const userNameRef = useRef(null);
-  const userPasswordRef = useRef(null);
+  const [adminId, setAdminId] = useState("");
+  const [password, setPassword] = useState("");
 
   const { isAdminAuthenticated } = useSelector((state) => state.user);
 
@@ -45,9 +46,6 @@ const AdminLogin = () => {
   const handleAdminLogin = async (e) => {
     e.preventDefault();
 
-    const adminId = userNameRef.current.value;
-    const password = userPasswordRef.current.value;
-
     try {
       setLoading(true);
 
@@ -57,8 +55,8 @@ const AdminLogin = () => {
         { withCredentials: true },
       );
 
-      localStorage.setItem("perm", JSON.stringify(response.data.perm));
-      localStorage.setItem("admin-status", true);
+      setSecureItem("perm", response.data.perm, true);
+      setSecureItem("admin-status", true, true);
 
       dispatch(changeAdminStatus({ isAdminAuthenticated: true }));
 
@@ -86,16 +84,16 @@ const AdminLogin = () => {
       navigate(`/admin/${firstAllowed}`);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Login failed");
-       reportCrash({
-         error: err,
-         screenName: "Login",
-         severity: "HIGH",
-         request: {
-           url: "/admin/login-Admin",
-         },
-         userId: null,
-         userType: "Admin",
-       });
+      reportCrash({
+        error: err,
+        screenName: "Login",
+        severity: "HIGH",
+        request: {
+          url: "/admin/login-Admin",
+        },
+        userId: null,
+        userType: "Admin",
+      });
 
     } finally {
       setLoading(false);
@@ -127,7 +125,8 @@ const AdminLogin = () => {
               <div className="relative mt-1">
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  ref={userNameRef}
+                  value={adminId}
+                  onChange={(e) => setAdminId(e.target.value)}
                   type="text"
                   placeholder="Enter admin ID"
                   className="pl-10 h-12"
@@ -144,7 +143,8 @@ const AdminLogin = () => {
               <div className="relative mt-1">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                 <Input
-                  ref={userPasswordRef}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter password"
                   className="pl-10 pr-10 h-12"

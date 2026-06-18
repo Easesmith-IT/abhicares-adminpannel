@@ -4,13 +4,10 @@ import "./App.css";
 
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
-import AnnouncementForm from "./components/banner/announcement/AnnouncementFrom";
+import { SidebarLayoutProvider } from "@/components/layout/sidebarContext";
 import PrivateRoute from "./components/protected-route/PrivateRoute";
 import AdminLogin from "./pages/AdminLogin";
-import AppBanner from "./pages/banners/AppBanner";
 import Banners from "./pages/banners/Banners";
-import CreateBanner from "./pages/banners/CreateBanner";
-import UpdateBanner from "./pages/banners/UpdateBanner";
 import BookingDetails from "./pages/bookings/BookingDetails";
 import Bookings from "./pages/bookings/Bookings";
 import RejectedBookingRequests from "./pages/bookings/SellerRejectRequests";
@@ -68,6 +65,7 @@ import UpdateProductPage from "./pages/services/UpdateProductPage";
 import UpdateServicePage from "./pages/services/UpdateServicePage";
 import Settings from "./pages/settings/Settings";
 import RejectedBookingRequestDetails from "./pages/bookings/RejectedBookingRequestDetails";
+import RewardsWorkspace from "./pages/rewards/RewardsWorkspace";
 import Metrics from "./pages/partners/Metrics";
 import OfferMetrics from "./pages/partners/Offer-metrics";
 import OfferedBookings from "./pages/offered-bookings/OfferedBookings";
@@ -83,8 +81,9 @@ import PlatformFinancialsBreakdown from "./pages/payments/PlatformFinancialsBrea
 function App() {
   return (
     <Router>
-      <Toaster richColors position="top-center" />
-      <Routes>
+      <SidebarLayoutProvider>
+        <Toaster richColors position="top-center" />
+        <Routes>
         <Route path="/" element={<AdminLogin />} />
         <Route element={<PrivateRoute />}>
           <Route path="/admin/dashboard" exact element={<AdminPage />} />
@@ -253,6 +252,7 @@ function App() {
           <Route path="/admin/enquiries" element={<Enquiry />} />
 
           <Route path="/admin/settings" element={<Settings />} />
+          <Route path="/admin/rewards" element={<RewardsWorkspace />} />
 
           <Route path="/admin/reviews" element={<Reviews />} />
 
@@ -264,27 +264,6 @@ function App() {
           <Route path="/admin/seller-cashouts" element={<SellerCashouts />} />
 
           <Route path="/admin/banners" exact element={<Banners />} />
-          <Route
-            path="/admin/banner/add-announcement"
-            exact
-            element={<AnnouncementForm />}
-          />
-          <Route
-            path="/admin/banner/update-announcement"
-            exact
-            element={<AnnouncementForm />}
-          />
-          <Route
-            path="/admin/banners/create"
-            exact
-            element={<CreateBanner />}
-          />
-          <Route
-            path="/admin/banners/:id/update"
-            exact
-            element={<UpdateBanner />}
-          />
-          <Route path="/admin/banners/app" exact element={<AppBanner />} />
 
           <Route path="/admin/crash-report" exact element={<CrashReports />} />
           <Route
@@ -339,6 +318,7 @@ function App() {
 
         <Route path="/*" element={<NotFound />} />
       </Routes>
+      </SidebarLayoutProvider>
     </Router>
   );
 }

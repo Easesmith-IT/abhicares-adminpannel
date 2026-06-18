@@ -97,13 +97,28 @@ export default function CampaignDetail() {
     }
   }, [res]);
 
-  if (isLoading || !campaign) {
-  return (
-    <Wrapper>
-      <CampaignSkeleton />
-    </Wrapper>
-  );
-}
+  if (isLoading) {
+    return (
+      <Wrapper>
+        <CampaignSkeleton />
+      </Wrapper>
+    );
+  }
+
+  if (!campaign) {
+    return (
+      <Wrapper>
+        <div className="space-y-6 max-w-7xl mx-auto p-4">
+          <BackLink href={-1}></BackLink>
+          <Card>
+            <CardContent className="p-12 text-center">
+              <p className="text-slate-500 font-medium">Campaign not found</p>
+            </CardContent>
+          </Card>
+        </div>
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper>

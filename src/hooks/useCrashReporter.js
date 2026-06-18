@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { axiosInstance } from "../utils/axiosInstance";
 
 const getOSInfo = () => {
@@ -12,10 +13,10 @@ const getOSInfo = () => {
   return { os: "Unknown" };
 };
 
-const useCrashReporter = () => {
-  const osInfo = getOSInfo();
+const osInfo = getOSInfo();
 
-  const reportCrash = async ({
+const useCrashReporter = () => {
+  const reportCrash = useCallback(async ({
     error,
     screenName,
     severity = "HIGH",
@@ -57,7 +58,7 @@ const useCrashReporter = () => {
       // NEVER toast, NEVER recurse
       console.error("Crash reporting failed:", e);
     }
-  };
+  }, []);
 
   return { reportCrash };
 };

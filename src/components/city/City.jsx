@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2 } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import usePatchApiReq from "../../hooks/usePatchApiReq";
 import useDeleteApiReq from "../../hooks/useDeleteApiReq";
@@ -63,7 +63,7 @@ const SingleCityRow = ({ city, onUpdate, refetchCities }) => {
   return (
     <>
       <TableRow>
-        <TableCell className="capitalize">{city.name}</TableCell>
+        <TableCell className="capitalize pl-6">{city.name}</TableCell>
         <TableCell>{city.latitude}</TableCell>
         <TableCell>{city.longitude}</TableCell>
 
@@ -102,11 +102,12 @@ const SingleCityRow = ({ city, onUpdate, refetchCities }) => {
         </TableCell>
 
         {/* Actions */}
-        <TableCell className="text-right">
-          <div className="flex justify-end gap-2">
+        <TableCell className="text-right pr-6">
+          <div className="flex justify-end gap-1.5">
             <Button
               size="icon"
-              variant="outline"
+              variant="ghost"
+              className="h-8 w-8 text-slate-500 hover:bg-slate-100 rounded-lg"
               onClick={() =>
                 navigate(
                   `/admin/available-cities/${city?._id || city?.id}/update`,
@@ -121,7 +122,8 @@ const SingleCityRow = ({ city, onUpdate, refetchCities }) => {
 
             <Button
               size="icon"
-              variant="destructive"
+              variant="ghost"
+              className="h-8 w-8 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg"
               onClick={() => setIsDeleteOpen(true)}
             >
               <Trash2 className="h-4 w-4" />

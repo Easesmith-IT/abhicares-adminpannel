@@ -1,4 +1,4 @@
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import usePatchApiReq from "@/hooks/usePatchApiReq";

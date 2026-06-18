@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import useGetApiReq from "../../hooks/useGetApiReq";
 import usePatchApiReq from "../../hooks/usePatchApiReq";
@@ -8,6 +8,8 @@ import usePatchApiReq from "../../hooks/usePatchApiReq";
 import CityForm from "../../components/city/CityForm";
 import Wrapper from "../../components/wrappers/Wrapper";
 import usePutApiReq from "../../hooks/usePutApiReq";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 
 const UpdateCityPage = () => {
   const { cityId } = useParams();
@@ -51,12 +53,41 @@ const UpdateCityPage = () => {
   if (isFetching) {
     return (
       <Wrapper>
-        <p>Loading city details...</p>
+        <div className="space-y-6 py-6">
+          <Skeleton className="h-8 w-48" />
+          <Card>
+            <CardContent className="p-6 space-y-6">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-28" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="flex justify-end pt-4">
+                <Skeleton className="h-10 w-32" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </Wrapper>
     );
   }
 
-  if (!city) return null;
+  if (!city) {
+    return (
+      <Wrapper>
+        <div className="py-12 text-center text-slate-500 font-medium">
+          City not found
+        </div>
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper>

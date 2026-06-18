@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import useGetApiReq from "@/hooks/useGetApiReq";
 import usePatchApiReq from "@/hooks/usePatchApiReq";

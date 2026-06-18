@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Eye, EyeOff, X } from "lucide-react";
 
 import usePatchApiReq from "../../hooks/usePatchApiReq";

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import { axiosInstance } from "../../utils/axiosInstance";
 
 // shadcn components
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
@@ -30,7 +30,7 @@ export default function Dashboard() {
 
   const fetchStats = async () => {
     try {
-      const res = await axios.get("/api/notifications/stats");
+      const res = await axiosInstance.get("/notifications/stats");
       setStats(res.data);
     } catch (err) {
       console.error(err);
@@ -39,7 +39,7 @@ export default function Dashboard() {
 
   const fetchRecent = async () => {
     try {
-      const res = await axios.get("/api/notifications/recent");
+      const res = await axiosInstance.get("/notifications/recent");
       setRecent(res.data);
     } catch (err) {
       console.error(err);

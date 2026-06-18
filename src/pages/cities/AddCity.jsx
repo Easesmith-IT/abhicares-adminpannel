@@ -1,4 +1,4 @@
-import toast from "react-hot-toast";
+import { useEffect } from "react";
 import usePostApiReq from "../../hooks/usePostApiReq";
 import CityForm from "../../components/city/CityForm";
 import Wrapper from "../../components/wrappers/Wrapper";
@@ -12,10 +12,11 @@ const AddCityPage = () => {
     fetchData("/cities/admin/cities", payload);
   };
 
-  if (res?.status === 200 || res?.status === 201) {
-    // toast.success("City added successfully");
-    navigate("/admin/available-cities");
-  }
+  useEffect(() => {
+    if (res?.status === 200 || res?.status === 201) {
+      navigate("/admin/available-cities");
+    }
+  }, [res, navigate]);
 
   return (
     <Wrapper>

@@ -5,8 +5,7 @@ export function buildQuery(params) {
     if (
       value === "" ||
       value === null ||
-      value === undefined ||
-      value === "all"
+      value === undefined
     )
       return;
     query.append(key, value);

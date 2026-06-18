@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Eye, Trash2, Star } from "lucide-react";
 import { format } from "date-fns";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import useDeleteApiReq from "../../hooks/useDeleteApiReq";
 import DeleteModal from "../modals/DeleteModal";

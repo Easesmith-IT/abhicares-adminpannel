@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import usePatchApiReq from "../../hooks/usePatchApiReq";
 import usePostApiReq from "../../hooks/usePostApiReq";

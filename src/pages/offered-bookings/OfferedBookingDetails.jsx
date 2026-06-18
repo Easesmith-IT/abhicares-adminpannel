@@ -62,7 +62,7 @@ const OfferedBookingDetails = () => {
   const offer = state?.offer;
 
   if (!offer) {
-    navigate("/admin/bookings-offered");
+    navigate("/admin/offered-bookings");
     return null;
   }
 

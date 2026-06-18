@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import Wrapper from "@/components/wrappers/Wrapper";
 import CategoryForm from "@/components/category/CategoryForm";

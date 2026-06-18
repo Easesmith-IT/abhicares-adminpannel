@@ -16,14 +16,16 @@ const CashOutReq = ({
   item,
   getSellerWallet,
   setIsViewWalletModalOpen,
+  refreshCashouts,
 }) => {
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const navigate = useNavigate();
 
+  const status = String(item?.status || "").toLowerCase();
   const statusVariant =
-    item?.status === "completed"
+    status === "completed" || status === "approved"
       ? "success"
-      : item?.status === "cancelled"
+      : status === "cancelled" || status === "rejected"
         ? "destructive"
         : "secondary";
 
@@ -54,9 +56,10 @@ const CashOutReq = ({
             <Button
               size="icon"
               variant="outline"
-              onClick={() =>
-                navigate(`/admin/seller-cashouts/${item?._id}`)
-              }
+              onClick={() => {
+                if (setIsViewWalletModalOpen) setIsViewWalletModalOpen(false);
+                navigate(`/admin/seller-cashouts/${item?._id}`);
+              }}
             >
               <Eye className="h-4 w-4" />
             </Button>
@@ -76,7 +79,10 @@ const CashOutReq = ({
         <UpdateCashoutReqModal
           setIsUpdateModalOpen={setIsUpdateModalOpen}
           cashOutReq={item}
-          getSellerWallet={getSellerWallet}
+          getSellerWallet={() => {
+            if (getSellerWallet) getSellerWallet();
+            if (refreshCashouts) refreshCashouts();
+          }}
           setIsViewWalletModalOpen={setIsViewWalletModalOpen}
         />
       )}

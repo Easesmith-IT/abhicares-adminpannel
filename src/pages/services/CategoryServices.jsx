@@ -1,6 +1,7 @@
 import parse from "html-react-parser";
+import DOMPurify from "dompurify";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import useDeleteApiReq from "../../hooks/useDeleteApiReq";
@@ -21,6 +22,7 @@ import Wrapper from "../../components/wrappers/Wrapper";
 import { buildQuery } from "../../utils/buildQuery";
 import { PaginationComp } from "../../components/shared/PaginationComp";
 import { CategoryInfo } from "../../components/category/CategoryInfo";
+import { useCustomSidebar } from "@/components/layout/sidebarContext";
 
 const CategoryServices = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
@@ -33,7 +35,8 @@ const CategoryServices = () => {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
-  const [selectedCity, setSelectedCity] = useState(null);
+  const { selectedCityId } = useCustomSidebar();
+  const [selectedCity, setSelectedCity] = useState(selectedCityId || "");
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   
@@ -42,8 +45,12 @@ const CategoryServices = () => {
   const { state } = useLocation();
   const { categoryId } = useParams();
 
+  useEffect(() => {
+    setSelectedCity(selectedCityId || "");
+  }, [selectedCityId]);
+
   const handleReset = () => {
-    setSelectedCity("");
+    setSelectedCity(selectedCityId || "");
   };
 
   const fetchServices = () => {
@@ -182,7 +189,7 @@ const CategoryServices = () => {
                   </CardHeader>
 
                   <CardContent className="text-sm text-muted-foreground line-clamp-3">
-                    {parse(service.description)}
+                    {parse(DOMPurify.sanitize(service.description))}
                   </CardContent>
                 </Card>
               ))}

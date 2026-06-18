@@ -110,18 +110,12 @@ const SendNotifications = () => {
   useEffect(() => {
     if (searchTerm) {
       searchNotifications();
-    } else {
-      getNotifications();
-    }
-  }, [searchTerm, page]);
-
-  useEffect(() => {
-    if (filterDate) {
+    } else if (filterDate) {
       filterNotifications();
     } else {
       getNotifications();
     }
-  }, [filterDate, page]);
+  }, [searchTerm, filterDate, page]);
 
   const isTableLoading =
     isLoading || searchNotificationLoading || filterNotificationLoading;

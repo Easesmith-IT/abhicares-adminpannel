@@ -1,9 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { format } from "date-fns";
 
 // shadcn
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 import {
   Table,
@@ -13,9 +15,7 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-
 import { Input } from "@/components/ui/input";
-
 import {
   Select,
   SelectTrigger,
@@ -25,62 +25,24 @@ import {
 } from "@/components/ui/select";
 
 import useGetApiReq from "@/hooks/useGetApiReq";
-import axios from "axios";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { H2 } from "../../components/shared/typography";
-import { EyeIcon, PencilIcon, PlusIcon, XCircleIcon } from "lucide-react";
+import { EyeIcon, PencilIcon, PlusIcon, XCircleIcon, Search, RefreshCw, Megaphone } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import MultiSelect from "../../components/shared/MultiSelect";
 import { CityFilter, useCities } from "@/components/filters/city";
 import { PaginationComp } from "../../components/shared/PaginationComp";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
-const DUMMY_CAMPAIGNS = [
-  {
-    id: "1",
-    title: "Festive Offer Push",
-    target_type: "customer",
-    cities: ["Mumbai", "Delhi"],
-    scheduled_at: "2026-03-25T10:00:00Z",
-    status: "pending",
-  },
-  {
-    id: "2",
-    title: "Partner Onboarding Update",
-    target_type: "partner",
-    cities: ["Bangalore"],
-    scheduled_at: null,
-    status: "sent",
-  },
-  {
-    id: "3",
-    title: "Flash Sale Alert",
-    target_type: "customer",
-    cities: [],
-    scheduled_at: "2026-03-20T18:30:00Z",
-    status: "processing",
-  },
-  {
-    id: "4",
-    title: "System Maintenance Notice",
-    target_type: "all",
-    cities: ["Pune", "Hyderabad"],
-    scheduled_at: "2026-03-22T02:00:00Z",
-    status: "failed",
-  },
-  {
-    id: "5",
-    title: "New Feature Launch",
-    target_type: "customer",
-    cities: ["Nagpur"],
-    scheduled_at: null,
-    status: "pending",
-  },
-];
+const STATUS_BADGE_STYLE = {
+  pending: "bg-amber-50 text-amber-700 hover:bg-amber-50 border border-amber-200",
+  processing: "bg-blue-50 text-blue-700 hover:bg-blue-50 border border-blue-200",
+  sent: "bg-green-50 text-green-700 hover:bg-green-50 border border-green-200",
+  completed: "bg-green-50 text-green-700 hover:bg-green-50 border border-green-200",
+  failed: "bg-rose-50 text-rose-700 hover:bg-rose-50 border border-rose-200",
+};
 
 export default function CampaignList() {
   const navigate = useNavigate();
-
   const { res, isLoading, fetchData } = useGetApiReq();
 
   const [campaigns, setCampaigns] = useState([]);
@@ -91,33 +53,29 @@ export default function CampaignList() {
 
   const [filters, setFilters] = useState({
     userType: "",
-    city: "",
     status: "",
   });
 
   const handleReset = () => {
     setFilters({
       userType: "",
-      city: "",
       status: "",
     });
-    setSelectedCity("")
+    setSelectedCity("");
   };
 
-  useEffect(() => {
+  const getCampaigns = useCallback(() => {
     const queryParams = new URLSearchParams();
 
     if (filters.userType && filters.userType !== "all") {
       queryParams.append("target_type", filters.userType);
     }
-
     if (selectedCity) {
       queryParams.append("city", selectedCity);
     }
     if (page) {
       queryParams.append("page", page);
     }
-
     if (filters.status && filters.status !== "all") {
       queryParams.append("status", filters.status);
     }
@@ -125,69 +83,88 @@ export default function CampaignList() {
     fetchData(`/notifications/get-notifications?${queryParams.toString()}`, {
       screenName: "CampaignList",
     });
-  }, [filters, selectedCity,page]);
+  }, [fetchData, filters, selectedCity, page]);
 
-  /* 🔹 Sync response */
+  useEffect(() => {
+    getCampaigns();
+  }, [getCampaigns]);
+
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("res", res);
-
-      setCampaigns(res.data.data || []);
-      setTotalPages(res.data.pages || 1);
+      const data = res.data.data || [];
+      const pages = res.data.pages || 1;
+      setTimeout(() => {
+        setCampaigns(data);
+        setTotalPages(pages);
+      }, 0);
     }
   }, [res]);
 
   return (
     <Wrapper>
-      <div className="space-y-6">
-        {/* 🔹 Header */}
-        <div className="flex justify-between items-center">
-          <H2>Campaigns</H2>
+      <div className="space-y-6 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 text-slate-900 bg-[#F8FAFC] min-h-screen">
+        
+        {/* Header Block */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <H2 className="text-2xl font-bold tracking-tight text-slate-900">Notifications Campaign Manager</H2>
+            <p className="text-xs text-slate-500 mt-1">Broadcast user campaigns, push alerts, and analyze engagement rates.</p>
+          </div>
 
-          <div className="flex flex-wrap gap-4 pt-4">
-            {/* User Type */}
+          <div className="flex items-center gap-3">
+            <Button
+              variant="abhicares"
+              size="sm"
+              onClick={() => navigate("/admin/notifications/create")}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-medium"
+            >
+              <PlusIcon className="mr-1.5 size-4" />
+              <span>Create Campaign</span>
+            </Button>
+          </div>
+        </div>
+
+        {/* Filters Card */}
+        <Card className="border border-slate-200 shadow-sm bg-white rounded-xl">
+          <CardContent className="p-4 flex flex-wrap items-center gap-3">
+            
+            {/* User Type Select */}
             <Select
               value={filters.userType}
               onValueChange={(value) =>
                 setFilters({ ...filters, userType: value })
               }
             >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="All Users" />
+              <SelectTrigger className="w-[160px] bg-slate-50/50 border-slate-200 text-xs">
+                <SelectValue placeholder="All Audience Types" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Users</SelectItem>
-                <SelectItem value="customer">Customer</SelectItem>
-                <SelectItem value="partner">Partner</SelectItem>
+                <SelectItem value="all">All Audiences</SelectItem>
+                <SelectItem value="customer">Customers Only</SelectItem>
+                <SelectItem value="partner">Partners Only</SelectItem>
               </SelectContent>
             </Select>
 
-            {/* City */}
-            {/* <Input
-              placeholder="City"
-              className="w-[180px]"
-              value={filters.city}
-              onChange={(e) => setFilters({ ...filters, city: e.target.value })}
-            /> */}
-
+            {/* City Filter */}
             <CityFilter
               cities={cities}
               value={selectedCity}
               onChange={setSelectedCity}
+              className="w-[160px] bg-slate-50/50 border-slate-200"
             />
 
-            {/* Status */}
+            {/* Status Select */}
             <Select
               value={filters.status}
               onValueChange={(value) =>
                 setFilters({ ...filters, status: value })
               }
             >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="All Status" />
+              <SelectTrigger className="w-[160px] bg-slate-50/50 border-slate-200 text-xs">
+                <SelectValue placeholder="All Campaign Statuses" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
+                <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="pending">Pending</SelectItem>
                 <SelectItem value="processing">Processing</SelectItem>
                 <SelectItem value="sent">Sent</SelectItem>
@@ -196,173 +173,106 @@ export default function CampaignList() {
               </SelectContent>
             </Select>
 
-            <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
-
-            <Button
-              variant="abhicares"
-              onClick={() => navigate("/admin/notifications/create")}
-            >
-              <PlusIcon /> Create Campaign
+            {/* Reset */}
+            <Button variant="ghost" size="sm" onClick={handleReset} className="text-slate-500 hover:text-slate-800">
+              <RefreshCw className="mr-1 size-3.5" />
+              <span>Reset Filters</span>
             </Button>
-          </div>
+          </CardContent>
+        </Card>
+
+        {/* Campaigns Table Card */}
+        <Card className="border border-slate-200 shadow-sm rounded-2xl overflow-hidden bg-white">
+          <CardContent className="p-0">
+            <div className="table-container border-0 shadow-none hover:translate-y-0 p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-slate-50 border-b border-slate-200/60">
+                    <TableHead className="font-semibold text-slate-700 h-11 pl-6">Campaign Title</TableHead>
+                    <TableHead className="font-semibold text-slate-700 h-11">Content Description</TableHead>
+                    <TableHead className="font-semibold text-slate-700 h-11">Target Group</TableHead>
+                    <TableHead className="font-semibold text-slate-700 h-11">Live Cities</TableHead>
+                    <TableHead className="font-semibold text-slate-700 h-11">Schedule Date</TableHead>
+                    <TableHead className="font-semibold text-slate-700 h-11">Status</TableHead>
+                    <TableHead className="font-semibold text-slate-700 h-11 text-right pr-6">Details</TableHead>
+                  </TableRow>
+                </TableHeader>
+
+                <TableBody>
+                  {isLoading &&
+                    Array.from({ length: 5 }).map((_, i) => (
+                      <TableRow key={i}>
+                        <TableCell className="pl-6"><Skeleton className="h-4 w-[160px]" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
+                        <TableCell><Skeleton className="h-4 w-[110px]" /></TableCell>
+                        <TableCell><Skeleton className="h-6 w-[85px] rounded-full" /></TableCell>
+                        <TableCell className="pr-6 text-right"><Skeleton className="h-8 w-8 ml-auto" /></TableCell>
+                      </TableRow>
+                    ))}
+
+                  {!isLoading && campaigns.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-12 text-slate-400 font-medium">
+                        No notification campaigns created.
+                      </TableCell>
+                    </TableRow>
+                  )}
+
+                  {!isLoading &&
+                    campaigns.map((item) => (
+                      <TableRow key={item.id} className="hover:bg-slate-50/40">
+                        <TableCell className="font-bold text-slate-900 pl-6">{item.title}</TableCell>
+                        <TableCell className="max-w-xs truncate text-slate-500">{item.body || "-"}</TableCell>
+                        <TableCell className="capitalize">{item.audience || item.target_type || "All"}</TableCell>
+                        <TableCell className="max-w-[150px] truncate">
+                          {item.cities?.length ? item.cities.map((c) => c?.name || c).join(", ") : "All Cities"}
+                        </TableCell>
+                        <TableCell className="text-slate-500 text-xs font-mono">
+                          {item.scheduled ? format(new Date(item.scheduled), "dd MMM yyyy, hh:mm aa") : "Immediate"}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            className={`capitalize shadow-none ${STATUS_BADGE_STYLE[item.status] || "bg-slate-100 text-slate-700 border border-slate-200"}`}
+                          >
+                            {item.status || "Completed"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="text-right pr-6 py-3">
+                          <div className="flex justify-end gap-1.5">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-slate-500 hover:bg-slate-100"
+                              onClick={() => navigate(`/admin/notifications/${item.id || item._id}`)}
+                            >
+                              <EyeIcon className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 text-slate-500 hover:bg-slate-100"
+                              onClick={() => navigate(`/admin/notifications/${item.id || item._id}/edit`)}
+                            >
+                              <PencilIcon className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Pagination */}
+        <div className="flex justify-between items-center pt-2">
+          <span className="text-xs text-slate-400 font-medium">Page {page} of {totalPages}</span>
+          <PaginationComp page={page} pageCount={totalPages} setPage={setPage} />
         </div>
-
-        {/* 🔹 Table */}
-
-        <div className="table-container">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-slate-200 border-b border-white/40">
-                <TableHead>Title</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Audience</TableHead>
-                <TableHead>Cities</TableHead>
-                <TableHead>Scheduled</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-
-            <TableBody>
-              {isLoading && <CampaignListSkeleton rows={7} />}
-
-              {!isLoading && campaigns.length === 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center">
-                    No campaigns found
-                  </TableCell>
-                </TableRow>
-              )}
-              {campaigns.map((item) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-medium">{item.title}</TableCell>
-                  <TableCell>{item.body}</TableCell>
-
-                  <TableCell>{item.audience}</TableCell>
-
-                  <TableCell>
-                    <p className="w-40 whitespace-break-spaces">
-                      {item.cities?.map((city) => city?.name)?.join(", ")}
-                    </p>
-                  </TableCell>
-
-                  <TableCell>
-                    {item.scheduled
-                      ? new Date(item.scheduled).toLocaleString()
-                      : "Immediate"}
-                  </TableCell>
-
-                  <TableCell>
-                    <StatusBadge status={item.status} />
-                  </TableCell>
-
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      {/* View */}
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() =>
-                          navigate(`/admin/notifications/${item.id}`)
-                        }
-                      >
-                        <EyeIcon className="h-4 w-4" />
-                      </Button>
-
-                      {/* Edit (only if pending) */}
-                      {/* {item.status === "pending" && (
-                        <Button
-                          size="icon"
-                          variant="outline"
-                          onClick={() =>
-                            navigate(`/admin/notifications/${item.id}/edit`)
-                          }
-                        >
-                          <PencilIcon className="h-4 w-4" />
-                        </Button>
-                      )} */}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        <PaginationComp
-          page={page}
-          pageCount={totalPages}
-          setPage={setPage}
-          className="mt-8 mb-5"
-        />
       </div>
     </Wrapper>
-  );
-}
-
-/* 🔹 Status Badge */
-function StatusBadge({ status }) {
-  const styles = {
-    pending: "bg-yellow-100 text-yellow-700",
-    processing: "bg-blue-100 text-blue-700",
-    sent: "bg-green-100 text-green-700",
-    failed: "bg-red-100 text-red-700",
-  };
-
-  return (
-    <span
-      className={`px-2 py-1 rounded-md text-xs capitalize font-medium ${
-        styles[status] || "bg-gray-100 text-gray-700"
-      }`}
-    >
-      {status}
-    </span>
-  );
-}
-
-export function CampaignListSkeleton({ rows = 5 }) {
-  return (
-    <>
-      {Array.from({ length: rows }).map((_, i) => (
-        <TableRow key={i}>
-          <TableCell>
-            <Skeleton className="h-4 w-[180px]" />
-          </TableCell>
-
-          <TableCell>
-            <Skeleton className="h-4 w-[180px]" />
-          </TableCell>
-
-          <TableCell>
-            <Skeleton className="h-4 w-[100px]" />
-          </TableCell>
-
-          <TableCell>
-            <Skeleton className="h-4 w-[140px]" />
-          </TableCell>
-
-          <TableCell>
-            <Skeleton className="h-4 w-[160px]" />
-          </TableCell>
-          <TableCell>
-            <Skeleton className="h-4 w-[160px]" />
-          </TableCell>
-
-          <TableCell>
-            <Skeleton className="h-6 w-[80px] rounded-md" />
-          </TableCell>
-
-         
-
-          {/* <TableCell className="text-right">
-            <div className="flex justify-end gap-2">
-              <Skeleton className="h-8 w-8 rounded-md" />
-              <Skeleton className="h-8 w-8 rounded-md" />
-              <Skeleton className="h-8 w-8 rounded-md" />
-            </div>
-          </TableCell> */}
-        </TableRow>
-      ))}
-    </>
   );
 }

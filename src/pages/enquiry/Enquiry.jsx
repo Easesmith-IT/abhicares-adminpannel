@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Search, Trash2 } from "lucide-react";
 
 import Wrapper from "../../components/wrappers/Wrapper";

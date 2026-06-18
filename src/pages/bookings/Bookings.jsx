@@ -1,12 +1,13 @@
-import { format } from "date-fns";
-import { Download, Search } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Download, Search, RefreshCw, ClipboardList, SlidersHorizontal } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import useGetApiReq from "../../hooks/useGetApiReq";
+import { useCustomSidebar } from "../../components/layout/sidebarContext";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -20,13 +21,15 @@ import Wrapper from "../../components/wrappers/Wrapper";
 import BookingsTable from "../../components/booking/BookingsTable";
 import MonthlyBookingModal from "../../components/modals/MonthlyBookingModal";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
+import { H2 } from "../../components/shared/typography";
 
 const Bookings = () => {
   const navigate = useNavigate();
-  const searchRef = useRef(null);
+  const { selectedCityId } = useCustomSidebar();
 
-  const { res: listRes, fetchData: getBookings, isLoading } = useGetApiReq();
-  const { res: filterRes, fetchData: filterBookings } = useGetApiReq();
+  const [searchVal, setSearchVal] = useState("");
+
+  const { res: bookingRes, fetchData: fetchBookingsData, isLoading } = useGetApiReq();
   const { res: searchRes, fetchData: searchBooking } = useGetApiReq();
 
   const [bookings, setBookings] = useState([]);
@@ -49,169 +52,185 @@ const Bookings = () => {
     });
 
     setLimit("10");
-
-    searchRef.current.value = "";
+    setSearchVal("");
   };
 
   /* ================= Fetch ================= */
-
   useEffect(() => {
+    const cityQuery = selectedCityId ? `&cityId=${selectedCityId}` : "";
     if (filters.date || filters.status) {
-      filterBookings(
-        `/admin/search-filter-bookings?status=${filters.status}&bookingDate=${filters.date}&page=${page}&limit=${limit}`,
+      fetchBookingsData(
+        `/admin/search-filter-bookings?status=${filters.status}&bookingDate=${filters.date}&page=${page}&limit=${limit}${cityQuery}`,
       );
     } else {
-      getBookings(`/admin/get-booking-list?page=${page}&limit=${limit}`);
+      fetchBookingsData(`/admin/get-booking-list?page=${page}&limit=${limit}${cityQuery}`);
     }
-  }, [page, filters, limit]);
+  }, [page, filters, limit, selectedCityId, fetchBookingsData]);
 
   useEffect(() => {
-    if (listRes?.status === 200) {
-      setBookings(listRes.data.data);
-      setPageCount(listRes.data.pagination.totalPages);
+    if (bookingRes?.status === 200) {
+      const data = bookingRes.data.data || [];
+      const totalPages = bookingRes.data.pagination?.totalPages || 1;
+      setTimeout(() => {
+        setBookings(data);
+        setPageCount(totalPages);
+      }, 0);
     }
-  }, [listRes]);
-
-  console.log("bookings", bookings);
-
-  useEffect(() => {
-    if (filterRes?.status === 200) {
-      console.log("filterRes", filterRes);
-
-      setBookings(filterRes.data.data);
-      setPageCount(filterRes.data.pagination.totalPages);
-    }
-  }, [filterRes]);
+  }, [bookingRes]);
 
   useEffect(() => {
     if (searchRes?.status === 200) {
-      console.log("searchRes", searchRes);
-
-      setBookings([searchRes.data.data[0]]);
-      setPageCount(0);
+      const bookingsData = [searchRes.data.data[0]];
+      setTimeout(() => {
+        setBookings(bookingsData);
+        setPageCount(0);
+      }, 0);
     }
   }, [searchRes]);
 
   /* ================= Handlers ================= */
-
   const handleSearch = () => {
-    const bookingId = searchRef.current?.value;
-    if (!bookingId) return;
-    searchBooking(`/admin/get-booking-by-id?bookingId=${bookingId}`);
+    if (!searchVal) return;
+    searchBooking(`/admin/get-booking-by-id?bookingId=${searchVal}`);
   };
 
-  /* ================= UI ================= */
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   return (
     <Wrapper>
-      <div className="w-full font-poppins">
-        {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pb-4">
-          <h1 className="text-[30px] font-semibold">Bookings</h1>
+      <div className="space-y-6 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 text-slate-900 bg-[#F8FAFC] min-h-screen">
+        
+        {/* Header Block */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <H2 className="text-2xl font-bold tracking-tight text-slate-900">Bookings Workspace</H2>
+            <p className="text-xs text-slate-500 mt-1">Monitor booking schedules, dispatch tracking, and provider allotments.</p>
+          </div>
 
-          <Button
-            variant="abhicares"
-            onClick={() => navigate("/admin/bookings/rejected-request")}
-          >
-            Rejected Bookings
-          </Button>
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/admin/bookings/rejected-request")}
+              className="bg-white border-slate-200"
+            >
+              Rejected Bookings
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setIsModalOpen(true)}
+              className="bg-white border-slate-200"
+            >
+              <Download className="size-4" />
+            </Button>
+          </div>
         </div>
 
-        <div className="flex items-center gap-4 pb-5">
-          {/* Date */}
-          <Input
-            type="date"
-            value={filters.date}
-            onChange={(e) =>
-              setFilters((p) => ({ ...p, date: e.target.value }))
-            }
-            className="w-[160px]"
-          />
-          <Input
-            type="date"
-            value={filters.endDate}
-            onChange={(e) =>
-              setFilters((p) => ({ ...p, endDate: e.target.value }))
-            }
-            className="w-[160px]"
-          />
+        {/* Filters Panel */}
+        <Card className="border border-slate-200 shadow-sm bg-white rounded-xl">
+          <CardContent className="p-4 flex flex-wrap items-center gap-3">
+            
+            {/* Search Input */}
+            <div className="relative flex-1 min-w-[240px]">
+              <Input
+                value={searchVal}
+                onChange={(e) => setSearchVal(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Search booking by ID..."
+                className="pr-10 bg-slate-50/50 border-slate-200"
+              />
+              <Button
+                size="icon"
+                variant="ghost"
+                onClick={handleSearch}
+                className="absolute right-1.5 top-1/2 -translate-y-1/2 h-7 w-7 text-slate-400 hover:text-slate-900"
+              >
+                <Search className="size-4" />
+              </Button>
+            </div>
 
-          {/* Status */}
-          <Select
-            value={filters.status}
-            onValueChange={(value) =>
-              setFilters((p) => ({ ...p, status: value }))
-            }
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="cancelled">Cancelled</SelectItem>
-              <SelectItem value="alloted">Alloted</SelectItem>
-              <SelectItem value="completed">Completed</SelectItem>
-              <SelectItem value="not-alloted">Not Alloted</SelectItem>
-            </SelectContent>
-          </Select>
+            {/* Date Filters */}
+            <div className="flex items-center gap-2">
+              <Input
+                type="date"
+                value={filters.date}
+                onChange={(e) =>
+                  setFilters((p) => ({ ...p, date: e.target.value }))
+                }
+                className="w-[140px] bg-slate-50/50 border-slate-200 text-xs"
+              />
+              <span className="text-slate-400 text-xs">-</span>
+              <Input
+                type="date"
+                value={filters.endDate}
+                onChange={(e) =>
+                  setFilters((p) => ({ ...p, endDate: e.target.value }))
+                }
+                className="w-[140px] bg-slate-50/50 border-slate-200 text-xs"
+              />
+            </div>
 
-          <div>
-            {/* <label className="text-sm font-medium mb-1 block">Limit</label> */}
+            {/* Status Select */}
+            <Select
+              value={filters.status}
+              onValueChange={(value) =>
+                setFilters((p) => ({ ...p, status: value }))
+              }
+            >
+              <SelectTrigger className="w-[150px] bg-slate-50/50 border-slate-200 text-xs">
+                <SelectValue placeholder="All Statuses" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all_statuses">All Statuses</SelectItem>
+                <SelectItem value="cancelled">Cancelled</SelectItem>
+                <SelectItem value="alloted">Alloted</SelectItem>
+                <SelectItem value="completed">Completed</SelectItem>
+                <SelectItem value="not-alloted">Not Alloted</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Limit Select */}
             <Select value={limit} onValueChange={(value) => setLimit(value)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select Limit" />
+              <SelectTrigger className="w-[80px] bg-slate-50/50 border-slate-200 text-xs">
+                <SelectValue placeholder="Limit" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="10">10</SelectItem>
                 <SelectItem value="20">20</SelectItem>
                 <SelectItem value="30">30</SelectItem>
-                <SelectItem value="40">40</SelectItem>
                 <SelectItem value="50">50</SelectItem>
               </SelectContent>
             </Select>
-          </div>
 
-          {/* Search */}
-          <div className="relative">
-            <Input
-              ref={searchRef}
-              placeholder="Search booking by id"
-              className="w-[260px] pr-9"
-            />
-            <Search
-              size={18}
-              onClick={handleSearch}
-              className="absolute right-2 top-2.5 cursor-pointer text-muted-foreground hover:text-black"
-            />
-          </div>
+            {/* Reset */}
+            <Button variant="ghost" size="sm" onClick={handleReset} className="text-slate-500 hover:text-slate-800">
+              <RefreshCw className="mr-1 size-3.5" />
+              <span>Reset Filters</span>
+            </Button>
+          </CardContent>
+        </Card>
 
-          <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
-
-          {/* Download */}
-          <Button
-            variant="abhicares"
-            size="icon"
-            onClick={() => setIsModalOpen(true)}
-          >
-            <Download size={18} />
-          </Button>
-        </div>
-
+        {/* Table list */}
         <BookingsTable bookings={bookings} isLoading={isLoading} />
 
-        <PaginationComp
-          page={page}
-          pageCount={pageCount}
-          setPage={setPage}
-          className="mt-8 mb-5"
-        />
-
-        {isModalOpen && (
-          <MonthlyBookingModal
-            isModalOpen={isModalOpen}
-            setIsModalOpen={setIsModalOpen}
-          />
-        )}
+        {/* Pagination */}
+        <div className="flex justify-between items-center pt-2">
+          <span className="text-xs text-slate-400 font-medium">Page {page} of {pageCount || 1}</span>
+          <PaginationComp page={page} pageCount={pageCount} setPage={setPage} />
+        </div>
       </div>
+
+      {isModalOpen && (
+        <MonthlyBookingModal
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+        />
+      )}
     </Wrapper>
   );
 };

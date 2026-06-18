@@ -4,8 +4,8 @@ const initialState = {
     isOpen: false
 }
 
-const autorizationSlice = createSlice({
-    name: 'autorization',
+const authorizationSlice = createSlice({
+    name: 'authorization',
     initialState,
     reducers: {
         checkAuthorizationFun: (state, action) => {
@@ -14,6 +14,5 @@ const autorizationSlice = createSlice({
     },
 })
 
-export const { checkAuthorizationFun } = autorizationSlice.actions
-export default autorizationSlice.reducer
-
+export const { checkAuthorizationFun } = authorizationSlice.actions
+export default authorizationSlice.reducer

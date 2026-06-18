@@ -36,7 +36,15 @@ const OfferDetail = () => {
     );
   }
 
-  if (!offer) return null;
+  if (!offer) {
+    return (
+      <Wrapper>
+        <div className="py-12 text-center text-slate-500 font-medium">
+          Offer not found
+        </div>
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper>

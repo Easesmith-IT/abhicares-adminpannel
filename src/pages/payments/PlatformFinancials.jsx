@@ -12,6 +12,7 @@ import CityFilter from "../../components/filters/city/CityFilter";
 import useCities from "../../components/filters/city/useCities";
 import { CategoryFilter, useCategories } from "../../components/filters/category";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
+import { useCustomSidebar } from "@/components/layout/sidebarContext";
 
 const PlatformFinancials = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
@@ -23,16 +24,21 @@ const PlatformFinancials = () => {
 
 //   console.log("filters",filters);
   
+  const { selectedCityId } = useCustomSidebar();
   const [data, setData] = useState(null);
-  const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(selectedCityId || "");
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const { cities } = useCities();
   const { categories } = useCategories();
 //   console.log("categories", categories);
+
+  useEffect(() => {
+    setSelectedCity(selectedCityId || "");
+  }, [selectedCityId]);
   
- const handleReset = () => {
-    setSelectedCity("");
+  const handleReset = () => {
+    setSelectedCity(selectedCityId || "");
     setSelectedCategory("");
   };
 

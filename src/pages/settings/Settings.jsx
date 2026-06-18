@@ -21,7 +21,6 @@ import {
 import AddSubAdminModal from "../../components/modals/AddSubAdminModal";
 import DeleteModal from "../../components/modals/DeleteModal";
 import SeoModal from "../../components/modals/SeoModal";
-import UpdateReferEarnModal from "../../components/modals/UpdateReferEarnModal";
 import { PaginationComp } from "../../components/shared/PaginationComp";
 import Wrapper from "../../components/wrappers/Wrapper";
 import AutoAssignSetting from "../../components/settings/AutoAssignSetting";
@@ -46,11 +45,8 @@ const Settings = () => {
   const [updatePwdModal, setUpdatePwdModal] = useState(false);
   const [subAdmin, setSubadmin] = useState({});
   const [allSubadmins, setAllSubadmins] = useState([]);
-  const [isUpdateReferAndEarnModalOpen, setIsUpdateReferAndEarnModalOpen] =
-    useState(false);
   const [pageCount, setPageCount] = useState(1);
   const [page, setPage] = useState(1);
-  const [isUpdateAutoModeModalOpen, setIsUpdateAutoModeModalOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -109,9 +105,9 @@ const Settings = () => {
             <div className="flex flex-wrap gap-3">
               <Button
                 variant="secondary"
-                onClick={() => setIsUpdateReferAndEarnModalOpen(true)}
+                onClick={() => navigate("/admin/rewards?tab=config")}
               >
-                Update Refer & Earn
+                Manage Rewards & Referrals
               </Button>
 
               <Button
@@ -223,12 +219,6 @@ const Settings = () => {
 
       {/* Modals */}
       {isSeoModalOpen && <SeoModal setIsModalOpen={setIsSeoModalOpen} />}
-
-      {isUpdateReferAndEarnModalOpen && (
-        <UpdateReferEarnModal
-          setIsModalOpen={setIsUpdateReferAndEarnModalOpen}
-        />
-      )}
 
       {isModalOpen && (
         <AddSubAdminModal

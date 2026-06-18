@@ -15,6 +15,7 @@ import {
   useCategories,
 } from "../../components/filters/category";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
+import { useCustomSidebar } from "@/components/layout/sidebarContext";
 import {
   Table,
   TableBody,
@@ -34,15 +35,20 @@ const PlatformFinancialsBreakdown = () => {
 
   //   console.log("filters",filters);
 
+  const { selectedCityId } = useCustomSidebar();
   const [data, setData] = useState(null);
-  const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedCity, setSelectedCity] = useState(selectedCityId || "");
   const [selectedCategory, setSelectedCategory] = useState(null);
 
   const { cities } = useCities();
   //   console.log("categories", categories);
 
+  useEffect(() => {
+    setSelectedCity(selectedCityId || "");
+  }, [selectedCityId]);
+
   const handleReset = () => {
-    setSelectedCity("");
+    setSelectedCity(selectedCityId || "");
     setSelectedCategory("");
   };
 

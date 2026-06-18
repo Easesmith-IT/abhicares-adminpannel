@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import usePatchApiReq from "../../hooks/usePatchApiReq";
 import usePostApiReq from "../../hooks/usePostApiReq";

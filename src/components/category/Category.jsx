@@ -1,8 +1,11 @@
-import { EllipsisVerticalIcon, ImageOff, Pencil, TrashIcon } from "lucide-react";
+import { EllipsisVerticalIcon, ImageOff, Pencil, TrashIcon, Percent, Wrench, ShieldCheck } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,13 +13,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import useDeleteApiReq from "../../hooks/useDeleteApiReq";
-import AddCategoryModal from "../modals/AddCategoryModal";
 import DeleteModal from "../modals/DeleteModal";
-import { Badge } from "../ui/badge";
-import { useNavigate } from "react-router-dom";
 
 export const Category = ({ category, getCategories }) => {
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
 
   const navigate = useNavigate();
@@ -41,50 +40,50 @@ export const Category = ({ category, getCategories }) => {
 
   useEffect(() => {
     if (deleteRes?.status === 200 || deleteRes?.status === 201) {
-      handleDeleteToggle();
-      getCategories();
+      setTimeout(() => {
+        handleDeleteToggle();
+        getCategories();
+      }, 0);
     }
-  }, [deleteRes]);
+  }, [deleteRes, getCategories]);
 
   return (
     <>
-      <Card className="relative">
-        <CardHeader>
+      <Card className="relative border border-slate-200 bg-white rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition duration-200 flex flex-col justify-between group">
+        
+        {/* Category Image Header */}
+        <div className="relative h-[160px] w-full overflow-hidden bg-slate-100 border-b border-slate-100">
           {category.imageUrl ? (
             <img
               src={`${import.meta.env.VITE_APP_IMAGE_URL}/${category.imageUrl}`}
               alt={category.name}
-              className="h-[200px] w-full rounded-t-xl object-cover"
+              className="h-full w-full object-cover group-hover:scale-[1.02] transition duration-300"
             />
           ) : (
-            <div className="h-[200px] flex justify-center items-center bg-gray-200 rounded-md w-full">
-              <ImageOff className="size-10" />
+            <div className="h-full flex justify-center items-center text-slate-400">
+              <ImageOff className="size-8 stroke-[1.5]" />
             </div>
           )}
-          <div className="mb-2 flex gap-2 justify-between">
-            <h3
-              onClick={() => navigate(`/admin/categories/${category._id}`)}
-              className="text-lg font-semibold cursor-pointer hover:text-blue-500 hover:underline"
-            >
-              {category.name}
-            </h3>
+          
+          {/* Dropdown Menu on top right */}
+          <div className="absolute top-3 right-3 z-10">
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <EllipsisVerticalIcon className="size-4" />
+                <Button variant="secondary" size="icon" className="h-7 w-7 rounded-full bg-white/90 backdrop-blur-sm border border-slate-200/50 shadow-sm text-slate-600 hover:bg-white">
+                  <EllipsisVerticalIcon className="size-3.5" />
                 </Button>
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end" className="w-36">
                 <DropdownMenuItem
                   onSelect={(e) => {
-                    e.preventDefault(); // prevent menu auto-close issues
+                    e.preventDefault();
                     handleEditToggle();
                   }}
-                  className="flex items-center gap-2 cursor-pointer"
+                  className="flex items-center gap-2 cursor-pointer text-xs"
                 >
-                  <Pencil className="size-4" />
-                  Edit
+                  <Pencil className="size-3.5" />
+                  Edit Catalog
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
@@ -92,41 +91,57 @@ export const Category = ({ category, getCategories }) => {
                     e.preventDefault();
                     handleDeleteToggle();
                   }}
-                  className="flex items-center gap-2 cursor-pointer"
+                  className="flex items-center gap-2 cursor-pointer text-xs text-rose-600 hover:text-rose-700"
                 >
-                  <TrashIcon className="size-4" />
-                  Delete
+                  <TrashIcon className="size-3.5" />
+                  Delete Catalog
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm text-muted-foreground -mt-4">
-          <Badge variant="secondary">{category.totalServices} Services</Badge>
-          {/* <div className="flex justify-between">
-            <span>Commission</span>
-            <span className="font-medium text-black">
-              {category.commission}%
-            </span>
+        </div>
+
+        {/* Card Contents */}
+        <CardContent className="p-5 flex-1 flex flex-col justify-between space-y-4">
+          <div className="space-y-1">
+            <h3
+              onClick={() => navigate(`/admin/categories/${category._id}`)}
+              className="text-base font-bold text-slate-900 cursor-pointer hover:text-blue-600 transition leading-snug"
+            >
+              {category.name}
+            </h3>
+            <div className="flex items-center gap-1.5 pt-1">
+              <Badge variant="secondary" className="bg-slate-100 text-slate-700 font-semibold text-[10px] uppercase tracking-wider py-0.5 px-2">
+                <Wrench className="size-3 mr-1" />
+                {category.totalServices || 0} Services
+              </Badge>
+            </div>
           </div>
 
-          <div className="flex justify-between">
-            <span>Convenience Fee</span>
-            <span className="font-medium text-black">
-              {category.convenience}%
-            </span>
-          </div> */}
+          <Separator className="border-slate-100" />
+
+          {/* Commission & Convenience details */}
+          <div className="space-y-2.5 text-xs text-slate-500">
+            <div className="flex justify-between items-center">
+              <span className="font-medium">Marketplace Commission</span>
+              <span className="font-bold text-slate-900 flex items-center gap-0.5">
+                {category.commission !== undefined ? category.commission : 15}%
+                <Percent className="size-3 text-slate-400" />
+              </span>
+            </div>
+
+            <div className="flex justify-between items-center">
+              <span className="font-medium">Convenience Surcharge</span>
+              <span className="font-bold text-slate-900 flex items-center gap-0.5">
+                {category.convenience !== undefined ? category.convenience : 5}%
+                <Percent className="size-3 text-slate-400" />
+              </span>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
-      {isEditOpen && (
-        <AddCategoryModal
-          isOpen={isEditOpen}
-          onClose={handleEditToggle}
-          getCategories={getCategories}
-          initialData={category}
-        />
-      )}
+
 
       {isDeleteOpen && (
         <DeleteModal

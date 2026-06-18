@@ -2,7 +2,7 @@ import DatePicker from "@/components/shared/DatePicker";
 import { Button } from "@/components/ui/button";
 import useGetApiReq from "@/hooks/useGetApiReq";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Wrapper from "../../../components/wrappers/Wrapper";
 import SubmitCashModal from "./SubmitCashModal";

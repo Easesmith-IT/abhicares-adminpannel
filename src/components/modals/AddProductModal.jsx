@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";

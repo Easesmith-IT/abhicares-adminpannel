@@ -11,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import usePostApiReq from "@/hooks/usePostApiReq";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { useParams } from "react-router-dom";
 import { Spinner } from "../../../components/ui/spinner";
 

@@ -1,4 +1,5 @@
 import parse from "html-react-parser";
+import DOMPurify from "dompurify";
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 
@@ -175,7 +176,15 @@ const ProductInfo = () => {
   }
 
 
-  if (!product) return null;
+  if (!product) {
+    return (
+      <Wrapper>
+        <div className="py-12 text-center text-slate-500 font-medium">
+          Product not found
+        </div>
+      </Wrapper>
+    );
+  }
 
   return (
     <Wrapper>
@@ -218,7 +227,7 @@ const ProductInfo = () => {
 
               {product.description && (
                 <div className="prose max-w-none text-sm text-muted-foreground">
-                  {parse(product.description)}
+                  {parse(DOMPurify.sanitize(product.description))}
                 </div>
               )}
             </div>
@@ -256,7 +265,7 @@ const ProductInfo = () => {
 
                         {p.description && (
                           <div className="text-sm text-muted-foreground line-clamp-2">
-                            {parse(p.description)}
+                            {parse(DOMPurify.sanitize(p.description))}
                           </div>
                         )}
 

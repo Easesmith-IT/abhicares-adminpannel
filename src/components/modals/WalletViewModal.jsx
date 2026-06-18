@@ -104,6 +104,7 @@ const WalletViewModal = ({
                   item={item}
                   getSellerWallet={getSellerWallet}
                   setIsViewWalletModalOpen={setIsViewWalletModalOpen}
+                  refreshCashouts={fetchCashOutRequests}
                 />
               ))}
             </div>
