@@ -7,6 +7,7 @@ import {
   Search,
   Star,
   ChevronRight,
+  ChevronLeft,
   Globe,
   User,
   Settings as SettingsIcon,
@@ -206,7 +207,7 @@ const NavigationItem = ({ name, href, icon: CustomIcon, isCollapsed, isActive, i
         {isActive && (
           <motion.div
             layoutId="active-bg"
-            className="absolute inset-0 bg-[#2563EB]/10 z-[-1] rounded-xl"
+            className="absolute inset-0 bg-[#EEF4FF] z-[-1] rounded-xl"
             transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
           />
         )}
@@ -300,7 +301,7 @@ const NavigationGroup = ({
         padding: isVisualExpanded ? 8 : 0,
       }}
       transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-      className="bg-white border border-[#E5E7EB] shadow-[0_1px_2px_rgba(0,0,0,0.02)] mb-3 mx-auto overflow-hidden"
+      className="bg-white border border-[#E8EDF5] shadow-[0_1px_2px_rgba(0,0,0,0.02)] mb-3 mx-auto overflow-hidden"
     >
       {isVisualExpanded ? (
         <>
@@ -365,7 +366,7 @@ const NavigationGroup = ({
             onClick={onToggle}
             className={cn(
               "w-full h-full flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors rounded-[13px] cursor-pointer h-11 w-11",
-              isGroupActive && "bg-[#2563EB]/10 text-[#2563EB]"
+              isGroupActive && "bg-[#EEF4FF] text-[#2563EB]"
             )}
           >
             <Icon className="size-5 shrink-0" />
@@ -599,28 +600,51 @@ const SideNav = () => {
       <motion.div
         animate={{ width: isVisualExpanded ? 300 : 72 }}
         transition={{ duration: isVisualExpanded ? 0.28 : 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className="h-full flex flex-col bg-[#F8FAFC] border-r border-[#E2E8F0] overflow-hidden select-none w-full shadow-lg"
+        className="h-full flex flex-col border-r border-[rgba(15,23,42,0.06)] overflow-hidden select-none w-full shadow-lg"
+        style={{
+          background: "rgba(255, 255, 255, 0.92)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+        }}
       >
         {/* 1. Header */}
         <div className={cn(
-          "flex flex-col pt-4 pb-3 border-b border-[#E2E8F0] shrink-0",
+          "flex flex-col pt-4 pb-3 border-b border-[#E8EDF5] shrink-0",
           isVisualExpanded ? "px-4" : "px-2"
         )}>
           <div className="flex items-center justify-between">
             {isVisualExpanded ? (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.08, duration: 0.2 }}
-                className="flex items-center cursor-pointer select-none"
-                onClick={() => navigate("/admin/dashboard")}
-              >
-                <img
-                  src={logo}
-                  alt="AbhiCares Logo"
-                  className="h-8 w-auto object-contain shrink-0"
-                />
-              </motion.div>
+              <div className="flex items-center justify-between w-full">
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.08, duration: 0.2 }}
+                  className="flex items-center cursor-pointer select-none"
+                  onClick={() => navigate("/admin/dashboard")}
+                >
+                  <img
+                    src={logo}
+                    alt="AbhiCares Logo"
+                    className="h-8 w-auto object-contain shrink-0"
+                  />
+                </motion.div>
+                <button
+                  onClick={() => {
+                    setIsCollapsed(!isCollapsed);
+                    if (isCollapsed) {
+                      setIsHovered(false);
+                    }
+                  }}
+                  className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer shrink-0 ml-2"
+                  title={isCollapsed ? "Pin Sidebar Open" : "Collapse Sidebar"}
+                >
+                  {isCollapsed ? (
+                    <ChevronRight className="size-4" />
+                  ) : (
+                    <ChevronLeft className="size-4" />
+                  )}
+                </button>
+              </div>
             ) : (
               <img
                 src={logo}
@@ -643,7 +667,7 @@ const SideNav = () => {
               animate={{ width: isVisualExpanded ? "100%" : 44 }}
               transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
               className={cn(
-                "flex items-center bg-white hover:bg-slate-50 text-[#64748B] border border-[#E2E8F0] shadow-[0_1px_2px_rgba(0,0,0,0.02)] font-medium overflow-hidden mx-auto cursor-pointer h-11 rounded-[14px]",
+                "flex items-center bg-white hover:bg-slate-50 text-[#64748B] border border-[#E8EDF5] shadow-[0_1px_2px_rgba(0,0,0,0.02)] font-medium overflow-hidden mx-auto cursor-pointer h-11 rounded-[14px]",
                 isVisualExpanded ? "px-3 justify-start gap-2.5 w-full" : "justify-center w-11"
               )}
             >
@@ -748,7 +772,7 @@ const SideNav = () => {
 
         {/* 4. Footer (UserProfile & Context Menu) */}
         <div className={cn(
-          "mt-auto border-t border-[#E2E8F0] shrink-0 relative bg-[#F8FAFC]",
+          "mt-auto border-t border-[#E8EDF5] shrink-0 relative bg-transparent",
           isVisualExpanded ? "p-4" : "p-2"
         )}>
           <div className="flex items-center justify-between">

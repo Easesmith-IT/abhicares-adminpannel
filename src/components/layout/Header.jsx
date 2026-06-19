@@ -411,13 +411,11 @@ const Header = () => {
 
   // Quick Create links list
   const quickCreateOptions = [
-    { label: "New Booking", path: "/admin/customers" },
-    { label: "New Partner", path: "/admin/partners/create" },
-    { label: "New Category", path: "/admin/categories/add-category" },
-    { label: "New Service", path: "/admin/item-categories/add" },
-    { label: "New Offer", path: "/admin/offers/create" },
-    { label: "New Banner", path: "/admin/banners" },
-    { label: "New City", path: "/admin/available-cities/add" }
+    { label: "Create Booking", path: "/admin/customers" },
+    { label: "Create Customer", path: "/admin/customers" },
+    { label: "Create Partner", path: "/admin/partners/create" },
+    { label: "Create Offer", path: "/admin/offers/create" },
+    { label: "Create Banner", path: "/admin/banners" }
   ];
 
   // Breadcrumbs parsing
@@ -459,528 +457,543 @@ const Header = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-[#F8FAFC] px-[30px] pt-6 pb-2 w-full select-none">
-        <div className="w-full rounded-[24px] border border-[#E2E8F0]/80 bg-white px-6 py-4 shadow-[0_2px_12px_rgba(0,0,0,0.03)] flex flex-col gap-3.5">
+      <header
+        className="sticky top-5 z-40 select-none transition-all duration-300"
+        style={{
+          height: "76px",
+          padding: "0 24px",
+          margin: "20px 24px 10px 24px",
+          background: "rgba(255, 255, 255, 0.92)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          border: "1px solid rgba(255, 255, 255, 0.6)",
+          borderRadius: "28px",
+          boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)"
+        }}
+      >
+        <div className="w-full h-full flex items-center justify-between gap-4">
           
-          {/* ROW 1: Controls Row */}
-          <div className="flex items-center justify-between w-full gap-4">
-            
-            {/* 1. Global Search Input */}
-            <div ref={searchRef} className="relative w-full max-w-[420px]">
-              <div className="relative flex items-center">
-                <Search className="absolute left-4 size-[18px] text-[#64748B] pointer-events-none" />
-                <input
-                  id="global-search-input"
-                  ref={searchInputRef}
-                  type="text"
-                  value={searchQuery}
-                  onChange={handleSearchChange}
-                  onFocus={() => setIsSearchFocused(true)}
-                  placeholder="Search projects, leads, customers, vendors, materials..."
-                  className="h-10 w-full rounded-[12px] border border-[#E2E8F0] bg-white pl-11 pr-12 text-sm text-[#0F172A] placeholder-[#94A3B8] transition-all duration-200 outline-none hover:bg-slate-50 focus:border-[#2563EB] focus:bg-white focus:shadow-[0_0_0_4px_rgba(37,99,235,0.08)]"
-                />
-                {searchQuery ? (
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSearchResults(null);
-                      searchInputRef.current?.focus();
-                    }}
-                    className="absolute right-4 p-0.5 hover:bg-slate-100 rounded-md transition-colors text-[#64748B] hover:text-[#0F172A]"
-                  >
-                    <X className="size-4" />
-                  </button>
-                ) : (
-                  <span className="absolute right-4 flex items-center pointer-events-none text-[10px] font-medium text-[#94A3B8] bg-[#F1F5F9] border border-[#E2E8F0] px-1.5 py-0.5 rounded-md font-mono">
-                    /
-                  </span>
-                )}
-              </div>
+          {/* 1. Global Search Input */}
+          <motion.div
+            ref={searchRef}
+            className="relative flex items-center"
+            animate={{
+              width: isSearchFocused ? 520 : 420,
+            }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            style={{ height: "48px" }}
+          >
+            <Search className="absolute left-4 size-[18px] text-[#64748B] pointer-events-none top-1/2 -translate-y-1/2" />
+            <input
+              id="global-search-input"
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onFocus={() => setIsSearchFocused(true)}
+              placeholder="Search customers, partners, bookings, services..."
+              className="h-full w-full rounded-[16px] border border-[#E2E8F0] bg-[#F8FAFC] pl-11 pr-20 text-sm text-[#0F172A] placeholder-[#94A3B8] transition-all duration-200 outline-none hover:bg-slate-50 focus:border-[#2563EB] focus:bg-white"
+              style={{
+                boxShadow: isSearchFocused
+                  ? "0 10px 25px -5px rgba(37, 99, 235, 0.1), 0 8px 10px -6px rgba(37, 99, 235, 0.1)"
+                  : "none"
+              }}
+            />
+            {searchQuery ? (
+              <button
+                onClick={() => {
+                  setSearchQuery("");
+                  setSearchResults(null);
+                  searchInputRef.current?.focus();
+                }}
+                className="absolute right-4 p-0.5 hover:bg-slate-100 rounded-md transition-colors text-[#64748B] hover:text-[#0F172A] top-1/2 -translate-y-1/2"
+              >
+                <X className="size-4" />
+              </button>
+            ) : (
+              <span className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-[10px] font-medium text-[#94A3B8] bg-[#F1F5F9] border border-[#E2E8F0] px-1.5 py-0.5 rounded-md font-mono">
+                Ctrl + K
+              </span>
+            )}
 
-              {/* Search Dropdown Panel */}
-              <AnimatePresence>
-                {isSearchFocused && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    transition={{ duration: 0.15 }}
-                    className="absolute top-[48px] left-0 w-[580px] max-h-[400px] overflow-y-auto rounded-[14px] border border-[#E2E8F0] bg-white shadow-2xl z-50 py-2 scrollbar-thin"
-                  >
-                    {/* Loader State */}
-                    {isSearchLoading && (
-                      <div className="flex items-center justify-center py-12 gap-3 text-sm text-[#64748B]">
-                        <Loader2 className="size-5 animate-spin text-[#2563EB]" />
-                        Searching operations database...
-                      </div>
-                    )}
-
-                    {/* Empty State */}
-                    {!isSearchLoading && searchQuery.trim().length >= 2 && !searchResults && (
-                      <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                        <span className="text-sm text-[#0F172A] font-semibold mb-1">No results found</span>
-                        <span className="text-xs text-[#64748B]">No matching items in active scope. Try adjusting search query.</span>
-                      </div>
-                    )}
-
-                    {/* Recent Searches */}
-                    {!isSearchLoading && searchQuery.trim().length < 2 && (
-                      <div>
-                        {recentSearches.length > 0 ? (
-                          <div>
-                            <div className="flex items-center justify-between px-4 py-1.5 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
-                              <span>Recent Searches</span>
-                              <button
-                                onClick={clearRecentSearches}
-                                className="hover:text-[#2563EB] lowercase font-normal transition-colors cursor-pointer"
-                              >
-                                clear history
-                              </button>
-                            </div>
-                            <div className="divide-y divide-slate-50">
-                              {recentSearches.map((recent) => (
-                                <div
-                                  key={recent.id}
-                                  onClick={() => {
-                                    setIsSearchFocused(false);
-                                    navigate(recent.path);
-                                  }}
-                                  className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm text-[#0F172A] transition-colors"
-                                >
-                                  <Clock className="size-4 text-[#64748B]" />
-                                  <span className="flex-1 font-medium">{recent.label}</span>
-                                  <span className="text-[9px] text-[#64748B] uppercase font-bold bg-[#F1F5F9] px-2 py-0.5 rounded border border-[#E2E8F0]">
-                                    {recent.type}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
-                            <Search className="size-8 text-[#E2E8F0] mb-2" />
-                            <span className="text-sm text-[#0F172A] font-semibold mb-1">Search bookings, records, partners...</span>
-                            <span className="text-xs text-[#64748B] max-w-[280px]">Type at least 2 characters to instantly search booking IDs, orders, categories, or customers.</span>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Grouped Results Display */}
-                    {!isSearchLoading && searchResults && (
-                      <div className="divide-y divide-[#F1F5F9]">
-                        {/* BOOKINGS */}
-                        {searchResults.bookings.length > 0 && (
-                          <div className="py-1.5">
-                            <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Bookings</div>
-                            {searchResults.bookings.map((b) => (
-                              <div
-                                key={b._id}
-                                onClick={() => handleResultClick(b, "booking", `/admin/bookings/${b._id}`)}
-                                className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <Calendar className="size-4 text-[#2563EB]" />
-                                  <span className="font-semibold text-[#0F172A]">Booking #{b.bookingId}</span>
-                                  <span className="text-xs text-[#64748B]">({b.userId?.name || "No customer"})</span>
-                                </div>
-                                <span className="text-xs font-semibold px-2 py-0.5 rounded-full capitalize bg-blue-50 text-blue-700 border border-blue-100">
-                                  {b.status}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* ORDERS */}
-                        {searchResults.orders.length > 0 && (
-                          <div className="py-1.5">
-                            <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Orders</div>
-                            {searchResults.orders.map((o) => (
-                              <div
-                                key={o._id}
-                                onClick={() => handleResultClick(o, "order", `/admin/orders/${o._id}`)}
-                                className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <CreditCard className="size-4 text-emerald-600" />
-                                  <span className="font-semibold text-[#0F172A]">Order #{o.orderId}</span>
-                                  <span className="text-xs text-[#64748B]">₹{o.orderValue}</span>
-                                </div>
-                                <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
-                                  {o.status}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* CUSTOMERS */}
-                        {searchResults.customers.length > 0 && (
-                          <div className="py-1.5">
-                            <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Customers</div>
-                            {searchResults.customers.map((c) => (
-                              <div
-                                key={c._id}
-                                onClick={() => handleResultClick(c, "customer", `/admin/customers/${c._id}`)}
-                                className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <Users className="size-4 text-purple-600" />
-                                  <span className="font-semibold text-[#0F172A]">{c.name}</span>
-                                  <span className="text-xs text-[#64748B]">{c.phone || c.email}</span>
-                                </div>
-                                <span className="text-[10px] uppercase font-bold text-[#64748B]">
-                                  {c.city?.name || "Global"}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* PARTNERS */}
-                        {searchResults.partners.length > 0 && (
-                          <div className="py-1.5">
-                            <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Service Partners</div>
-                            {searchResults.partners.map((p) => (
-                              <div
-                                key={p._id}
-                                onClick={() => handleResultClick(p, "partner", `/admin/partners/${p._id}`)}
-                                className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <Building2 className="size-4 text-orange-600" />
-                                  <span className="font-semibold text-[#0F172A]">{p.name}</span>
-                                  <span className="text-xs text-[#64748B]">({p.partnerId || p.phone})</span>
-                                </div>
-                                <span className="text-xs font-semibold px-2 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-100">
-                                  {p.status}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* SERVICES */}
-                        {searchResults.services.length > 0 && (
-                          <div className="py-1.5">
-                            <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Services</div>
-                            {searchResults.services.map((s) => (
-                              <div
-                                key={s._id}
-                                onClick={() =>
-                                  handleResultClick(
-                                    s,
-                                    "service",
-                                    `/admin/categories/${s.categoryId?._id || s.categoryId || "all"}/product/${s._id}`
-                                  )
-                                }
-                                className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <Sparkles className="size-4 text-amber-500" />
-                                  <span className="font-semibold text-[#0F172A]">{s.name}</span>
-                                </div>
-                                <ArrowRight className="size-4 text-[#64748B]" />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* CATEGORIES */}
-                        {searchResults.categories.length > 0 && (
-                          <div className="py-1.5">
-                            <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Categories</div>
-                            {searchResults.categories.map((cat) => (
-                              <div
-                                key={cat._id}
-                                onClick={() => handleResultClick(cat, "category", `/admin/categories/${cat._id}`)}
-                                className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <Layers className="size-4 text-sky-600" />
-                                  <span className="font-semibold text-[#0F172A]">{cat.name}</span>
-                                </div>
-                                <ArrowRight className="size-4 text-[#64748B]" />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* CITIES */}
-                        {searchResults.cities.length > 0 && (
-                          <div className="py-1.5">
-                            <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Cities</div>
-                            {searchResults.cities.map((city) => (
-                              <div
-                                key={city._id}
-                                onClick={() => {
-                                  setSelectedCity(city);
-                                  setIsSearchFocused(false);
-                                  navigate("/admin/available-cities");
-                                }}
-                                className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
-                              >
-                                <MapPin className="size-4 text-rose-500" />
-                                <span className="font-semibold text-[#0F172A] capitalize">{city.name}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* OFFERS */}
-                        {searchResults.offers.length > 0 && (
-                          <div className="py-1.5">
-                            <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Offers</div>
-                            {searchResults.offers.map((offer) => (
-                              <div
-                                key={offer._id}
-                                onClick={() => handleResultClick(offer, "offer", `/admin/offers/${offer._id}`)}
-                                className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <Gift className="size-4 text-indigo-500" />
-                                  <span className="font-semibold text-[#0F172A] font-mono">{offer.couponCode}</span>
-                                  <span className="text-xs text-[#64748B]">({offer.title})</span>
-                                </div>
-                                <span className="text-xs text-indigo-600 font-semibold font-mono">
-                                  {offer.discountValue}% Off
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* PAYMENTS */}
-                        {searchResults.payments.length > 0 && (
-                          <div className="py-1.5">
-                            <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Payments</div>
-                            {searchResults.payments.map((p) => (
-                              <div
-                                key={p._id}
-                                onClick={() => handleResultClick(p, "payment", "/admin/payments")}
-                                className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
-                              >
-                                <div className="flex items-center gap-3">
-                                  <Tag className="size-4 text-[#64748B]" />
-                                  <span className="font-semibold text-[#0F172A] font-mono text-xs">{p.razorpay_payment_id || p._id}</span>
-                                  <span className="text-xs text-[#64748B]">(Order #{p.orderId})</span>
-                                </div>
-                                <span className="text-xs font-semibold text-slate-800">
-                                  ₹{p.amount?.toFixed(2)}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Right Group: City Switcher, Create Button & Profile Dropdown */}
-            <div className="flex items-center gap-3">
-              
-              {/* City Switcher */}
-              <div ref={cityRef} className="relative">
-                <button
-                  onClick={() => setIsCityDropdownOpen(!isCityDropdownOpen)}
-                  className="flex items-center justify-between gap-1.5 h-10 px-3.5 rounded-[12px] border border-[#E2E8F0] bg-white hover:bg-slate-50 text-xs font-bold text-[#0F172A] shadow-sm transition-colors cursor-pointer"
+            {/* Search Dropdown Panel */}
+            <AnimatePresence>
+              {isSearchFocused && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  className="absolute top-[56px] left-0 w-full max-h-[400px] overflow-y-auto rounded-[16px] border border-[#E2E8F0] bg-white shadow-2xl z-50 py-2 scrollbar-thin"
                 >
-                  <div className="flex items-center gap-2 truncate">
-                    <Globe className="size-3.5 text-[#2563EB] shrink-0" />
-                    <span className="truncate">{selectedCity}</span>
-                  </div>
-                  <ChevronDown className="size-3 text-[#64748B] shrink-0 ml-0.5" />
-                </button>
+                  {/* Loader State */}
+                  {isSearchLoading && (
+                    <div className="flex items-center justify-center py-12 gap-3 text-sm text-[#64748B]">
+                      <Loader2 className="size-5 animate-spin text-[#2563EB]" />
+                      Searching operations database...
+                    </div>
+                  )}
 
-                <AnimatePresence>
-                  {isCityDropdownOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 5 }}
-                      transition={{ duration: 0.1 }}
-                      className="absolute right-0 mt-2 w-44 rounded-[12px] border border-[#E2E8F0] bg-white shadow-xl z-50 overflow-hidden py-1"
+                  {/* Empty State */}
+                  {!isSearchLoading && searchQuery.trim().length >= 2 && !searchResults && (
+                    <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                      <span className="text-sm text-[#0F172A] font-semibold mb-1">No results found</span>
+                      <span className="text-xs text-[#64748B]">No matching items in active scope. Try adjusting search query.</span>
+                    </div>
+                  )}
+
+                  {/* Recent Searches */}
+                  {!isSearchLoading && searchQuery.trim().length < 2 && (
+                    <div>
+                      {recentSearches.length > 0 ? (
+                        <div>
+                          <div className="flex items-center justify-between px-4 py-1.5 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">
+                            <span>Recent Searches</span>
+                            <button
+                              onClick={clearRecentSearches}
+                              className="hover:text-[#2563EB] lowercase font-normal transition-colors cursor-pointer"
+                            >
+                              clear history
+                            </button>
+                          </div>
+                          <div className="divide-y divide-slate-50">
+                            {recentSearches.map((recent) => (
+                              <div
+                                key={recent.id}
+                                onClick={() => {
+                                  setIsSearchFocused(false);
+                                  navigate(recent.path);
+                                }}
+                                className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm text-[#0F172A] transition-colors"
+                              >
+                                <Clock className="size-4 text-[#64748B]" />
+                                <span className="flex-1 font-medium">{recent.label}</span>
+                                <span className="text-[9px] text-[#64748B] uppercase font-bold bg-[#F1F5F9] px-2 py-0.5 rounded border border-[#E2E8F0]">
+                                  {recent.type}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-10 px-4 text-center">
+                          <Search className="size-8 text-[#E2E8F0] mb-2" />
+                          <span className="text-sm text-[#0F172A] font-semibold mb-1">Search bookings, records, partners...</span>
+                          <span className="text-xs text-[#64748B] max-w-[280px]">Type at least 2 characters to instantly search booking IDs, orders, categories, or customers.</span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Grouped Results Display */}
+                  {!isSearchLoading && searchResults && (
+                    <div className="divide-y divide-[#F1F5F9]">
+                      {/* BOOKINGS */}
+                      {searchResults.bookings.length > 0 && (
+                        <div className="py-1.5">
+                          <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Bookings</div>
+                          {searchResults.bookings.map((b) => (
+                            <div
+                              key={b._id}
+                              onClick={() => handleResultClick(b, "booking", `/admin/bookings/${b._id}`)}
+                              className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <Calendar className="size-4 text-[#2563EB]" />
+                                <span className="font-semibold text-[#0F172A]">Booking #{b.bookingId}</span>
+                                <span className="text-xs text-[#64748B]">({b.userId?.name || "No customer"})</span>
+                              </div>
+                              <span className="text-xs font-semibold px-2 py-0.5 rounded-full capitalize bg-blue-50 text-blue-700 border border-blue-100">
+                                {b.status}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* ORDERS */}
+                      {searchResults.orders.length > 0 && (
+                        <div className="py-1.5">
+                          <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Orders</div>
+                          {searchResults.orders.map((o) => (
+                            <div
+                              key={o._id}
+                              onClick={() => handleResultClick(o, "order", `/admin/orders/${o._id}`)}
+                              className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <CreditCard className="size-4 text-emerald-600" />
+                                <span className="font-semibold text-[#0F172A]">Order #{o.orderId}</span>
+                                <span className="text-xs text-[#64748B]">₹{o.orderValue}</span>
+                              </div>
+                              <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100">
+                                {o.status}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* CUSTOMERS */}
+                      {searchResults.customers.length > 0 && (
+                        <div className="py-1.5">
+                          <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Customers</div>
+                          {searchResults.customers.map((c) => (
+                            <div
+                              key={c._id}
+                              onClick={() => handleResultClick(c, "customer", `/admin/customers/${c._id}`)}
+                              className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <Users className="size-4 text-purple-600" />
+                                <span className="font-semibold text-[#0F172A]">{c.name}</span>
+                                <span className="text-xs text-[#64748B]">{c.phone || c.email}</span>
+                              </div>
+                              <span className="text-[10px] uppercase font-bold text-[#64748B]">
+                                {c.city?.name || "Global"}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* PARTNERS */}
+                      {searchResults.partners.length > 0 && (
+                        <div className="py-1.5">
+                          <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Service Partners</div>
+                          {searchResults.partners.map((p) => (
+                            <div
+                              key={p._id}
+                              onClick={() => handleResultClick(p, "partner", `/admin/partners/${p._id}`)}
+                              className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <Building2 className="size-4 text-orange-600" />
+                                <span className="font-semibold text-[#0F172A]">{p.name}</span>
+                                <span className="text-xs text-[#64748B]">({p.partnerId || p.phone})</span>
+                              </div>
+                              <span className="text-xs font-semibold px-2 py-0.5 rounded bg-orange-50 text-orange-700 border border-orange-100">
+                                {p.status}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* SERVICES */}
+                      {searchResults.services.length > 0 && (
+                        <div className="py-1.5">
+                          <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Services</div>
+                          {searchResults.services.map((s) => (
+                            <div
+                              key={s._id}
+                              onClick={() =>
+                                handleResultClick(
+                                  s,
+                                  "service",
+                                  `/admin/categories/${s.categoryId?._id || s.categoryId || "all"}/product/${s._id}`
+                                )
+                              }
+                              className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <Sparkles className="size-4 text-amber-500" />
+                                <span className="font-semibold text-[#0F172A]">{s.name}</span>
+                              </div>
+                              <ArrowRight className="size-4 text-[#64748B]" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* CATEGORIES */}
+                      {searchResults.categories.length > 0 && (
+                        <div className="py-1.5">
+                          <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Categories</div>
+                          {searchResults.categories.map((cat) => (
+                            <div
+                              key={cat._id}
+                              onClick={() => handleResultClick(cat, "category", `/admin/categories/${cat._id}`)}
+                              className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <Layers className="size-4 text-sky-600" />
+                                <span className="font-semibold text-[#0F172A]">{cat.name}</span>
+                              </div>
+                              <ArrowRight className="size-4 text-[#64748B]" />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* CITIES */}
+                      {searchResults.cities.length > 0 && (
+                        <div className="py-1.5">
+                          <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Cities</div>
+                          {searchResults.cities.map((city) => (
+                            <div
+                              key={city._id}
+                              onClick={() => {
+                                setSelectedCity(city);
+                                setIsSearchFocused(false);
+                                navigate("/admin/available-cities");
+                              }}
+                              className="flex items-center gap-3 px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
+                            >
+                              <MapPin className="size-4 text-rose-500" />
+                              <span className="font-semibold text-[#0F172A] capitalize">{city.name}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* OFFERS */}
+                      {searchResults.offers.length > 0 && (
+                        <div className="py-1.5">
+                          <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Offers</div>
+                          {searchResults.offers.map((offer) => (
+                            <div
+                              key={offer._id}
+                              onClick={() => handleResultClick(offer, "offer", `/admin/offers/${offer._id}`)}
+                              className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <Gift className="size-4 text-indigo-500" />
+                                <span className="font-semibold text-[#0F172A] font-mono">{offer.couponCode}</span>
+                                <span className="text-xs text-[#64748B]">({offer.title})</span>
+                              </div>
+                              <span className="text-xs text-indigo-600 font-semibold font-mono">
+                                {offer.discountValue}% Off
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* PAYMENTS */}
+                      {searchResults.payments.length > 0 && (
+                        <div className="py-1.5">
+                          <div className="px-4 py-1 text-[10px] font-bold text-[#64748B] uppercase tracking-wider">Payments</div>
+                          {searchResults.payments.map((p) => (
+                            <div
+                              key={p._id}
+                              onClick={() => handleResultClick(p, "payment", "/admin/payments")}
+                              className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 cursor-pointer text-sm transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <Tag className="size-4 text-[#64748B]" />
+                                <span className="font-semibold text-[#0F172A] font-mono text-xs">{p.razorpay_payment_id || p._id}</span>
+                                <span className="text-xs text-[#64748B]">(Order #{p.orderId})</span>
+                              </div>
+                              <span className="text-xs font-semibold text-slate-800">
+                                ₹{p.amount?.toFixed(2)}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Right Group: City Selector, Create Button & Profile Dropdown */}
+          <div className="flex items-center gap-3">
+            
+            {/* City Selector */}
+            <motion.div
+              ref={cityRef}
+              className="relative"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <button
+                onClick={() => setIsCityDropdownOpen(!isCityDropdownOpen)}
+                className="flex items-center justify-between gap-2 h-12 px-4 rounded-[14px] border border-[#E2E8F0] bg-[#F8FAFC] hover:bg-slate-50 text-xs font-bold text-[#0F172A] shadow-sm transition-all cursor-pointer"
+                style={{ minWidth: "130px" }}
+              >
+                <div className="flex items-center gap-2 truncate">
+                  <Globe className="size-4 text-[#2563EB] shrink-0" />
+                  <span className="truncate font-semibold text-[#0f172a]">{selectedCity}</span>
+                </div>
+                <ChevronDown className="size-3.5 text-[#64748B] shrink-0 ml-0.5" />
+              </button>
+
+              <AnimatePresence>
+                {isCityDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="absolute right-0 mt-2 w-44 rounded-[14px] border border-[#E2E8F0] bg-white shadow-xl z-50 overflow-hidden py-1"
+                  >
+                    {/* All Cities Option */}
+                    <button
+                      onClick={() => {
+                        setSelectedCity("All Cities");
+                        setIsCityDropdownOpen(false);
+                      }}
+                      className={`flex items-center justify-between w-full text-left px-4 py-2.5 text-xs font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer ${
+                        selectedCity === "All Cities" ? "bg-[#2563EB]/10 text-[#2563EB] font-bold" : ""
+                      }`}
                     >
-                      {/* All Cities Option */}
+                      <span>All Cities</span>
+                      {selectedCity === "All Cities" && (
+                        <span className="size-1.5 bg-[#2563EB] rounded-full" />
+                      )}
+                    </button>
+
+                    {/* Cities from database */}
+                    {allCities.map((city) => (
                       <button
+                        key={city._id}
                         onClick={() => {
-                          setSelectedCity("All Cities");
+                          setSelectedCity(city);
                           setIsCityDropdownOpen(false);
                         }}
-                        className={`flex items-center justify-between w-full text-left px-4 py-2 text-xs font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer ${
-                          selectedCity === "All Cities" ? "bg-[#2563EB]/10 text-[#2563EB] font-bold" : ""
+                        className={`flex items-center justify-between w-full text-left px-4 py-2.5 text-xs font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer ${
+                          selectedCity === city.name ? "bg-[#2563EB]/10 text-[#2563EB] font-bold" : ""
                         }`}
                       >
-                        <span>All Cities</span>
-                        {selectedCity === "All Cities" && (
+                        <span>{city.name}</span>
+                        {selectedCity === city.name && (
                           <span className="size-1.5 bg-[#2563EB] rounded-full" />
                         )}
                       </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
-                      {/* Cities from database */}
-                      {allCities.map((city) => (
-                        <button
-                          key={city._id}
-                          onClick={() => {
-                            setSelectedCity(city);
-                            setIsCityDropdownOpen(false);
-                          }}
-                          className={`flex items-center justify-between w-full text-left px-4 py-2 text-xs font-medium hover:bg-slate-50 text-slate-700 hover:text-slate-900 transition-colors cursor-pointer ${
-                            selectedCity === city.name ? "bg-[#2563EB]/10 text-[#2563EB] font-bold" : ""
-                          }`}
-                        >
-                          <span>{city.name}</span>
-                          {selectedCity === city.name && (
-                            <span className="size-1.5 bg-[#2563EB] rounded-full" />
-                          )}
-                        </button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+            {/* 2. Create Button */}
+            <motion.div
+              ref={createRef}
+              className="relative"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <button
+                onClick={() => setIsCreateOpen(!isCreateOpen)}
+                className="flex items-center gap-1.5 h-12 px-5 rounded-[14px] bg-[#2563EB] hover:bg-[#1D4ED8] text-xs font-semibold text-white shadow-md transition-colors cursor-pointer"
+              >
+                <Plus className="size-4.5" />
+                <span>Create</span>
+                <ChevronDown className="size-3 text-white/80 ml-0.5" />
+              </button>
 
-              {/* 2. Create Button */}
-              <div ref={createRef} className="relative">
-                <button
-                  onClick={() => setIsCreateOpen(!isCreateOpen)}
-                  className="flex items-center gap-1.5 h-10 px-4 rounded-[12px] bg-[#2563EB] hover:bg-[#1D4ED8] text-xs font-bold text-white shadow-sm transition-colors cursor-pointer"
-                >
-                  <Plus className="size-4" />
-                  <span>Create</span>
-                  <ChevronDown className="size-3 text-white/80" />
-                </button>
+              <AnimatePresence>
+                {isCreateOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="absolute right-0 mt-2 w-48 rounded-[14px] border border-[#E2E8F0] bg-white shadow-xl z-50 overflow-hidden py-1"
+                  >
+                    {quickCreateOptions.map((opt, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setIsCreateOpen(false);
+                          navigate(opt.path);
+                        }}
+                        className="w-full px-4 py-2.5 text-left text-xs font-semibold text-[#0F172A] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
-                <AnimatePresence>
-                  {isCreateOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 5 }}
-                      transition={{ duration: 0.1 }}
-                      className="absolute right-0 mt-2 w-48 rounded-[12px] border border-[#E2E8F0] bg-white shadow-xl z-50 overflow-hidden py-1"
-                    >
-                      {quickCreateOptions.map((opt, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => {
-                            setIsCreateOpen(false);
-                            navigate(opt.path);
-                          }}
-                          className="w-full px-4 py-2 text-left text-xs font-medium text-[#0F172A] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
+            {/* 3. User Profile Pill Card */}
+            <motion.div
+              ref={userMenuRef}
+              className="relative"
+              whileHover={{ scale: 1.02 }}
+              transition={{ duration: 0.2 }}
+            >
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2.5 h-12 px-3 pr-4 rounded-[16px] border border-[#E2E8F0] bg-white hover:bg-slate-50 transition-all shadow-sm cursor-pointer"
+              >
+                <div className="flex size-9 items-center justify-center rounded-full bg-[#EEF2FF] text-xs font-bold text-[#2563EB] border border-[#2563EB]/10 shrink-0">
+                  {getInitials(displayName)}
+                </div>
+                <div className="flex flex-col text-left leading-none">
+                  <span className="text-[12px] font-bold text-[#0F172A] leading-none mb-0.5">{displayName}</span>
+                  <span className="text-[9px] text-[#64748B] font-extrabold uppercase tracking-wider leading-none">
+                    {adminInfo.role === "super-admin" ? "SUPER ADMIN" : adminInfo.role || "ADMIN"}
+                  </span>
+                </div>
+                <ChevronDown className="size-3.5 text-[#64748B] ml-1 transition-transform duration-200" style={{ transform: isUserMenuOpen ? "rotate(180deg)" : "rotate(0)" }} />
+              </button>
 
-              {/* 3. User Profile Pill Card */}
-              <div ref={userMenuRef} className="relative">
-                <button
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-2.5 h-10 px-3 pr-4 rounded-full border border-[#E2E8F0] bg-white hover:bg-slate-50 transition-colors shadow-sm cursor-pointer"
-                >
-                  <div className="flex size-7 items-center justify-center rounded-full bg-[#EEF2FF] text-[10px] font-bold text-[#2563EB]">
-                    {getInitials(displayName)}
-                  </div>
-                  <div className="flex flex-col text-left leading-none">
-                    <span className="text-[11px] font-bold text-[#0F172A] leading-none mb-0.5">{displayName}</span>
-                    <span className="text-[9px] text-[#64748B] font-bold uppercase tracking-wider leading-none">
-                      {adminInfo.role === "super-admin" ? "SUPER ADMIN" : adminInfo.role || "ADMIN"}
-                    </span>
-                  </div>
-                  <ChevronDown className="size-3 text-[#64748B] ml-1 transition-transform duration-200" style={{ transform: isUserMenuOpen ? "rotate(180deg)" : "rotate(0)" }} />
-                </button>
+              <AnimatePresence>
+                {isUserMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    transition={{ duration: 0.2, ease: "easeOut" }}
+                    className="absolute right-0 mt-2 w-48 rounded-[14px] border border-[#E2E8F0] bg-white shadow-xl z-50 overflow-hidden py-1 divide-y divide-[#F1F5F9]"
+                  >
+                    <div className="py-1">
+                      <button
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          navigate("/admin/settings");
+                        }}
+                        className="flex items-center gap-2.5 w-full px-4 py-2.5 text-left text-xs font-semibold text-[#0F172A] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                      >
+                        <User className="size-3.5 text-[#64748B]" />
+                        <span>Profile</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          navigate("/admin/settings");
+                        }}
+                        className="flex items-center gap-2.5 w-full px-4 py-2.5 text-left text-xs font-semibold text-[#0F172A] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                      >
+                        <Users className="size-3.5 text-[#64748B]" />
+                        <span>Sub Admins</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          navigate("/admin/settings");
+                        }}
+                        className="flex items-center gap-2.5 w-full px-4 py-2.5 text-left text-xs font-semibold text-[#0F172A] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
+                      >
+                        <Settings className="size-3.5 text-[#64748B]" />
+                        <span>Settings</span>
+                      </button>
+                    </div>
 
-                <AnimatePresence>
-                  {isUserMenuOpen && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 5 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: 5 }}
-                      transition={{ duration: 0.1 }}
-                      className="absolute right-0 mt-2 w-48 rounded-[12px] border border-[#E2E8F0] bg-white shadow-xl z-50 overflow-hidden py-1 divide-y divide-[#F1F5F9]"
-                    >
-                      <div className="py-1">
-                        <button
-                          onClick={() => {
-                            setIsUserMenuOpen(false);
-                            navigate("/admin/settings");
-                          }}
-                          className="flex items-center gap-2.5 w-full px-4 py-2 text-left text-xs font-semibold text-[#0F172A] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
-                        >
-                          <User className="size-3.5 text-[#64748B]" />
-                          <span>Profile</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            setIsUserMenuOpen(false);
-                            navigate("/admin/settings");
-                          }}
-                          className="flex items-center gap-2.5 w-full px-4 py-2 text-left text-xs font-semibold text-[#0F172A] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
-                        >
-                          <Users className="size-3.5 text-[#64748B]" />
-                          <span>Sub Admins</span>
-                        </button>
-                        <button
-                          onClick={() => {
-                            setIsUserMenuOpen(false);
-                            navigate("/admin/settings");
-                          }}
-                          className="flex items-center gap-2.5 w-full px-4 py-2 text-left text-xs font-semibold text-[#0F172A] hover:bg-[#F8FAFC] transition-colors cursor-pointer"
-                        >
-                          <Settings className="size-3.5 text-[#64748B]" />
-                          <span>Settings</span>
-                        </button>
-                      </div>
+                    <div className="py-1">
+                      <button
+                        onClick={() => {
+                          setIsUserMenuOpen(false);
+                          setIsLogoutModalOpen(true);
+                        }}
+                        className="flex items-center gap-2.5 w-full px-4 py-2.5 text-left text-xs font-semibold text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
+                      >
+                        <LogOut className="size-3.5 text-[#EF4444]" />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
-                      <div className="py-1">
-                        <button
-                          onClick={() => {
-                            setIsUserMenuOpen(false);
-                            setIsLogoutModalOpen(true);
-                          }}
-                          className="flex items-center gap-2.5 w-full px-4 py-2.5 text-left text-xs font-semibold text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
-                        >
-                          <LogOut className="size-3.5 text-[#EF4444]" />
-                          <span>Logout</span>
-                        </button>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-            </div>
           </div>
-
-          {/* DIVIDER & ROW 2: Breadcrumbs Path Row */}
-          <div className="border-t border-[#F1F5F9] pt-3.5 flex items-center justify-between w-full">
-            <div className="flex items-center gap-1.5 text-[11px] text-[#64748B] font-medium tracking-wide">
-              <span className="hover:text-[#0F172A] cursor-pointer transition-colors">Workspace</span>
-              {pathnames.map((path, idx) => {
-                if (path === "admin") return null;
-                const to = `/${pathnames.slice(0, idx + 1).join("/")}`;
-                const label = getBreadcrumbLabel(path);
-                return (
-                  <div key={to} className="flex items-center gap-1.5">
-                    <span className="text-[#CBD5E1] select-none">/</span>
-                    <Link to={to} className="hover:text-[#0F172A] transition-colors">
-                      {label}
-                    </Link>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
         </div>
       </header>
 

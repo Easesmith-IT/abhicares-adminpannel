@@ -9,7 +9,7 @@ const WrapperContent = ({ children }) => {
   const location = useLocation();
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
+    <div className="flex min-h-screen bg-[#D6E2F5]">
       {/* Redesigned Sidebar Nav */}
       <SideNav />
 

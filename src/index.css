@@ -415,4 +415,136 @@ button:not([disabled]),
   opacity: 0 !important;
   transform: translate(-50%, -48%) scale(0.96) !important;
 }
+
+/* ==========================================================================
+   Blue-Tinted Enterprise Workspace Theme Overrides
+   ========================================================================== */
+
+/* 1. Global Workspace Background (Refined Blue Gradient) */
+body,
+.bg-\[\#F8FAFC\],
+.bg-\[\#AFC4E9\],
+[data-slot="sidebar-layout-content"] {
+  background: linear-gradient(
+    180deg,
+    #D6E2F5 0%,
+    #DEE8F7 45%,
+    #E7EEF9 100%
+  ) !important;
+}
+
+/* 2. Elevated Workspace Cards (Default settings) */
+[data-slot="card"] {
+  background: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.65) !important;
+  box-shadow:
+    0 2px 8px rgba(15, 23, 42, 0.05),
+    0 12px 32px rgba(15, 23, 42, 0.08) !important;
+  border-radius: 18px !important;
+}
+
+/* 3. Section Containers for Major Sections */
+.section-container {
+  background: #FCFDFE !important;
+  border: 1px solid #EDF2F7 !important;
+}
+
+/* 4. Enterprise Tables Styling (Translucent backgrounds & 18px radius) */
+[data-slot="table-container"] {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  border-radius: 18px !important;
+  box-shadow:
+    0 2px 8px rgba(15, 23, 42, 0.05),
+    0 12px 32px rgba(15, 23, 42, 0.08) !important;
+  overflow: hidden;
+}
+
+[data-slot="table"] {
+  background: rgba(255, 255, 255, 0.96) !important;
+  border-collapse: collapse !important;
+}
+
+[data-slot="table-header"],
+[data-slot="table-header"] tr,
+[data-slot="table-header"] th,
+thead tr,
+th[data-slot="table-head"] {
+  background: rgba(255, 255, 255, 0.75) !important;
+  background-color: rgba(255, 255, 255, 0.75) !important;
+  color: #475569 !important;
+}
+
+[data-slot="table-row"] {
+  border-bottom: 1px solid #E8EDF5 !important;
+}
+
+[data-slot="table-row"]:hover,
+[data-slot="table-row"]:hover td,
+tr[data-slot="table-row"]:hover,
+tr[data-slot="table-row"]:hover td,
+.hover\:bg-slate-50\/50:hover {
+  background: rgba(37, 99, 235, 0.03) !important;
+  background-color: rgba(37, 99, 235, 0.03) !important;
+}
+
+/* 5. Alerts Overrides (Subtle tinted backgrounds) */
+[data-slot="alert"],
+.alert-warning,
+.alert-success,
+.alert-danger,
+.alert-destructive {
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04) !important;
+  border-radius: 12px !important;
+}
+
+.alert-warning,
+.bg-amber-50\/50.border-amber-200,
+.bg-amber-50.border-amber-200 {
+  background: #FFF8EB !important;
+  background-color: #FFF8EB !important;
+  border: 1px solid #FCD34D !important;
+}
+
+.alert-success,
+.bg-green-50\/50.border-green-200,
+.bg-green-50.border-green-200,
+.bg-emerald-50\/50.border-emerald-200,
+.bg-emerald-50.border-emerald-200 {
+  background: #F0FDF4 !important;
+  background-color: #F0FDF4 !important;
+  border: 1px solid #86EFAC !important;
+}
+
+.alert-danger,
+.alert-destructive,
+.bg-red-50\/50.border-red-200,
+.bg-red-50.border-red-200,
+.bg-rose-50\/50.border-rose-200,
+.bg-rose-50.border-rose-200 {
+  background: #FEF2F2 !important;
+  background-color: #FEF2F2 !important;
+  border: 1px solid #FCA5A5 !important;
+}
+
+/* 6. Forms Overrides (Inputs, Textareas, Select Triggers) */
+[data-slot="input"],
+[data-slot="textarea"],
+[data-slot="select-trigger"] {
+  background: rgba(255, 255, 255, 0.9) !important;
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border: 1px solid #D9E3F3 !important;
+}
+
+[data-slot="input"]:focus,
+[data-slot="input"]:focus-visible,
+[data-slot="textarea"]:focus,
+[data-slot="textarea"]:focus-visible,
+[data-slot="select-trigger"]:focus,
+[data-slot="select-trigger"]:focus-visible {
+  border-color: #2563EB !important;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08) !important;
+  outline: none !important;
+}
+
 

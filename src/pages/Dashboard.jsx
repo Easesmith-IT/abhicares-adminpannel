@@ -234,7 +234,7 @@ const Dashboard = () => {
 
   return (
     <Wrapper>
-      <div className="space-y-6 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 text-slate-900 bg-[#F8FAFC]">
+      <div className="space-y-6 max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 text-slate-900 bg-transparent">
         {/* Header Block */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -271,10 +271,10 @@ const Dashboard = () => {
         >
           {/* Revenue */}
           <motion.div variants={itemVariants}>
-            <Card className="border-slate-200 shadow-sm hover:shadow-md transition bg-white rounded-2xl">
+            <Card className="hover:shadow-md transition">
               <CardContent className="p-5">
                 <div className="flex justify-between items-start">
-                  <div className="p-2.5 rounded-xl bg-blue-50 text-blue-600">
+                  <div className="p-2.5 rounded-xl text-blue-600" style={{ backgroundColor: "#EFF6FF" }}>
                     <DollarSign className="size-5" />
                   </div>
                 </div>
@@ -290,10 +290,10 @@ const Dashboard = () => {
 
           {/* Bookings */}
           <motion.div variants={itemVariants}>
-            <Card className="border-slate-200 shadow-sm hover:shadow-md transition bg-white rounded-2xl">
+            <Card className="hover:shadow-md transition">
               <CardContent className="p-5">
                 <div className="flex justify-between items-start">
-                  <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600">
+                  <div className="p-2.5 rounded-xl text-emerald-600" style={{ backgroundColor: "#ECFDF5" }}>
                     <ShoppingBag className="size-5" />
                   </div>
                 </div>
@@ -309,10 +309,10 @@ const Dashboard = () => {
 
           {/* Active Customers */}
           <motion.div variants={itemVariants}>
-            <Card className="border-slate-200 shadow-sm hover:shadow-md transition bg-white rounded-2xl">
+            <Card className="hover:shadow-md transition">
               <CardContent className="p-5">
                 <div className="flex justify-between items-start">
-                  <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-600">
+                  <div className="p-2.5 rounded-xl text-indigo-600" style={{ backgroundColor: "#F5F3FF" }}>
                     <Users className="size-5" />
                   </div>
                   <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-50 border border-blue-200 flex items-center gap-0.5 text-xs font-semibold">
@@ -331,10 +331,10 @@ const Dashboard = () => {
 
           {/* Service Partners */}
           <motion.div variants={itemVariants}>
-            <Card className="border-slate-200 shadow-sm hover:shadow-md transition bg-white rounded-2xl">
+            <Card className="hover:shadow-md transition">
               <CardContent className="p-5">
                 <div className="flex justify-between items-start">
-                  <div className="p-2.5 rounded-xl bg-purple-50 text-purple-600">
+                  <div className="p-2.5 rounded-xl text-purple-600" style={{ backgroundColor: "#FAF5FF" }}>
                     <Activity className="size-5" />
                   </div>
                   <Badge className="bg-purple-50 text-purple-700 hover:bg-purple-50 border border-purple-200 flex items-center gap-0.5 text-xs font-semibold">
@@ -353,10 +353,10 @@ const Dashboard = () => {
 
           {/* Operational Cities */}
           <motion.div variants={itemVariants}>
-            <Card className="border-slate-200 shadow-sm hover:shadow-md transition bg-white rounded-2xl">
+            <Card className="hover:shadow-md transition">
               <CardContent className="p-5">
                 <div className="flex justify-between items-start">
-                  <div className="p-2.5 rounded-xl bg-amber-50 text-amber-600">
+                  <div className="p-2.5 rounded-xl text-amber-600" style={{ backgroundColor: "#FFF7ED" }}>
                     <MapPin className="size-5" />
                   </div>
                   <Badge className="bg-amber-50 text-amber-700 hover:bg-amber-50 border border-amber-200 flex items-center gap-0.5 text-xs font-semibold">
@@ -375,10 +375,10 @@ const Dashboard = () => {
 
           {/* Active Services */}
           <motion.div variants={itemVariants}>
-            <Card className="border-slate-200 shadow-sm hover:shadow-md transition bg-white rounded-2xl">
+            <Card className="hover:shadow-md transition">
               <CardContent className="p-5">
                 <div className="flex justify-between items-start">
-                  <div className="p-2.5 rounded-xl bg-rose-50 text-rose-600">
+                  <div className="p-2.5 rounded-xl text-rose-600" style={{ backgroundColor: "#FEF2F2" }}>
                     <Wrench className="size-5" />
                   </div>
                   <Badge className="bg-rose-50 text-rose-700 hover:bg-rose-50 border border-rose-200 flex items-center gap-0.5 text-xs font-semibold">
@@ -400,7 +400,7 @@ const Dashboard = () => {
         {operationalAlerts.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {operationalAlerts.map((alert) => (
-              <Card key={alert.id} className="border border-amber-200 bg-amber-50/50 shadow-sm overflow-hidden rounded-xl">
+              <Card key={alert.id} className="border-y border-r border-slate-200/50 border-l-4 border-l-[#FCD34D] shadow-md overflow-hidden rounded-xl" style={{ backgroundColor: "#FFF8EB" }}>
                 <CardContent className="p-4 flex items-start gap-3">
                   <AlertTriangle className="size-5 text-amber-500 shrink-0 mt-0.5" />
                   <div className="space-y-1 flex-1">
@@ -420,7 +420,7 @@ const Dashboard = () => {
         {/* Operational Split: Recent Activity */}
         <div className="grid grid-cols-1 gap-6">
           {/* Live Workspace Feed */}
-          <Card className="border-slate-200 shadow-sm rounded-2xl bg-white overflow-hidden">
+          <Card className="shadow-sm rounded-2xl overflow-hidden section-container">
             <CardHeader className="flex flex-row justify-between items-center px-6 py-5 border-b border-slate-100">
               <div>
                 <CardTitle className="text-lg font-bold text-slate-900">Live Workspace Feed</CardTitle>
