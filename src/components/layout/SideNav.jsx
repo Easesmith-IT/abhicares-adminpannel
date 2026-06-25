@@ -78,6 +78,7 @@ const navigationConfig = [
     items: [
       { name: "Offers", href: "/admin/offers" },
       { name: "Banners", href: "/admin/banners" },
+      { name: "Homepage Trending", href: "/admin/homepage-trending" },
       { name: "Notifications", href: "/admin/notifications" },
       { name: "Rewards & Referrals", href: "/admin/rewards" },
     ],
@@ -539,6 +540,7 @@ const SideNav = () => {
       "/admin/cash-management": "payments",
       "/admin/globals": "settings",
       "/admin/crash-report": "dashboard",
+      "/admin/homepage-trending": "services",
     };
     const key = permMap[path];
     if (!key) return true;

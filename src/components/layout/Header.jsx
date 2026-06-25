@@ -431,6 +431,7 @@ const Header = () => {
       customers: "Customers Directory",
       offers: "Offers & Coupon Codes",
       banners: "Marketing Banners",
+      "homepage-trending": "Homepage Trending",
       notifications: "Notifications Campaign",
       payments: "Payments & Financials",
       enquiries: "Customer Enquiries",

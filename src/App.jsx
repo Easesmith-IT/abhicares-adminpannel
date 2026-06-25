@@ -30,6 +30,7 @@ import NotFound from "./pages/ErrorPage";
 import Globals from "./pages/globals/Globals";
 import AdminHelpCenter from "./pages/help-center/HelpCenter";
 import HelpCenterTicketDetails from "./pages/help-center/HelpCenterTicketDetails";
+import HomepageTrending from "./pages/homepage-trending/HomepageTrending";
 import AddItemCategory from "./pages/item-category/AddItemCategory";
 import CategoryDetailsPage from "./pages/item-category/CategoryDetailsPage";
 import ItemCategories from "./pages/item-category/ItemCategory";
@@ -264,6 +265,11 @@ function App() {
           <Route path="/admin/seller-cashouts" element={<SellerCashouts />} />
 
           <Route path="/admin/banners" exact element={<Banners />} />
+          <Route
+            path="/admin/homepage-trending"
+            exact
+            element={<HomepageTrending />}
+          />
 
           <Route path="/admin/crash-report" exact element={<CrashReports />} />
           <Route

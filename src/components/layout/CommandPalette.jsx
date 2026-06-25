@@ -60,6 +60,7 @@ export const ALL_MENU_ITEMS = [
   // Marketing
   { to: "/admin/offers", label: "Offers & Promo Codes", icon: Gift, category: "Marketing" },
   { to: "/admin/banners", label: "Marketing Banners", icon: ClipboardList, category: "Marketing" },
+  { to: "/admin/homepage-trending", label: "Homepage Trending", icon: Sparkles, category: "Marketing" },
   { to: "/admin/notifications", label: "Push Notifications", icon: Bell, category: "Marketing" },
   
   // Finance
@@ -117,6 +118,7 @@ const CommandPalette = ({ open, setOpen }) => {
       "/admin/cash-management": "payments",
       "/admin/globals": "settings",
       "/admin/crash-report": "dashboard",
+      "/admin/homepage-trending": "services",
     };
     const key = permMap[item.to];
     if (!key) return true; // default visible
