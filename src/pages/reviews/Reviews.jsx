@@ -26,6 +26,7 @@ import {
 } from "../../components/review/ReviewRow";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { H2 } from "../../components/shared/typography";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
@@ -47,6 +48,7 @@ const Reviews = () => {
   const [reviews, setReviews] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [limit, setLimit] = useState("10");
 
   const [filters, setFilters] = useState({
     date: "",
@@ -81,7 +83,7 @@ const Reviews = () => {
   const handlePageClick = (page) => setCurrentPage(page);
 
   const fetchReviews = async () => {
-    getReviews(`/admin/get-all-reviews?page=${currentPage}`);
+    getReviews(`/admin/get-all-reviews?page=${currentPage}&limit=${limit}`);
   };
 
   useEffect(() => {
@@ -99,7 +101,7 @@ const Reviews = () => {
     filterReviewsFun(
       `/admin/filter-review?date=${
         filters.date ? format(new Date(filters.date), "yyyy-MM-dd") : ""
-      }&serviceType=${filters.serviceType}&reviewType=${filters.type}&page=${currentPage}`,
+      }&serviceType=${filters.serviceType}&reviewType=${filters.type}&page=${currentPage}&limit=${limit}`,
     );
   };
 
@@ -109,7 +111,7 @@ const Reviews = () => {
     } else {
       filterReviews();
     }
-  }, [currentPage, filters.date, filters.serviceType, filters.type]);
+  }, [currentPage, limit, filters.date, filters.serviceType, filters.type]);
 
   useEffect(() => {
     if (filterReviewsRes?.status === 200 || filterReviewsRes?.status === 201) {
@@ -167,6 +169,14 @@ const Reviews = () => {
                 <SelectItem value="ON-PACKAGE">ON PACKAGE</SelectItem>
               </SelectContent>
             </Select>
+            <PageSizeSelect
+              value={limit}
+              onChange={(value) => {
+                setLimit(value);
+                setCurrentPage(1);
+              }}
+              label=""
+            />
             <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
           </div>
         </div>
@@ -213,12 +223,13 @@ const Reviews = () => {
           </Table>
         </div>
 
-        <PaginationComp
-          page={currentPage}
-          pageCount={totalPages}
-          setPage={setCurrentPage}
-          className="mt-8 mb-5"
-        />
+        <div className="mt-8 mb-5 flex items-center justify-end gap-3">
+          <PaginationComp
+            page={currentPage}
+            pageCount={totalPages}
+            setPage={setCurrentPage}
+          />
+        </div>
       </div>
     </Wrapper>
   );

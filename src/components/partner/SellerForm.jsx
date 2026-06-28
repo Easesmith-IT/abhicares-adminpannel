@@ -55,7 +55,6 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
 
   const [categories, setCategories] = useState([]);
   const [servicesList, setServicesList] = useState([]);
-  console.log("servicesList", servicesList);
   
   const [cities, setCities] = useState([]);
   const refs = {
@@ -85,7 +84,6 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
    */
   useEffect(() => {
     if (cityRes?.status === 200 || cityRes?.status === 201) {
-      console.log("cityRes", cityRes);
 
       setCities(cityRes.data.data);
     }
@@ -144,9 +142,6 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
     },
   });
 
-  console.log("form.getvalues",form.getValues());
-  console.log("services", form.watch("services"));
-  console.log("initialData", initialData);
   
 
   useEffect(() => {
@@ -324,7 +319,6 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
   
   useEffect(() => {
     if (serviceRes?.status === 200) {
-      console.log("serviceRes", serviceRes);
       setServicesList(serviceRes.data.data);
     }
   }, [serviceRes]);
@@ -343,7 +337,6 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
   /* ---------------- SUBMIT ---------------- */
   const handleSubmit = (values) => {
     const formData = new FormData();
-    console.log("values", values);
 
     /* -------- BASIC -------- */
     [
@@ -405,7 +398,6 @@ const SellerForm = ({ onSubmit, isEdit = false, isLoading, initialData }) => {
   };
 
   const handleError = (error)=> {
-    console.log("error",error);
     
   }
 

@@ -10,7 +10,6 @@ const UpdateProductPage = () => {
   const { productId, serviceId } = useParams();
   const navigate = useNavigate();
   const { state } = useLocation();
-  console.log("state", state);
 
   const { fetchData, res, isLoading } = usePatchApiReq();
 

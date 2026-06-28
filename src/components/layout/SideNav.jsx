@@ -535,6 +535,7 @@ const SideNav = () => {
       "/admin/help-center": "helpCenter",
       "/admin/enquiries": "enquiry",
       "/admin/settings": "settings",
+      "/admin/rewards": "settings",
       "/admin/reviews": "reviews",
       "/admin/seller-cashouts": "sellerCashout",
       "/admin/cash-management": "payments",
@@ -543,7 +544,7 @@ const SideNav = () => {
       "/admin/homepage-trending": "services",
     };
     const key = permMap[path];
-    if (!key) return true;
+    if (!key) return false;
     return permissions[key] !== "none";
   };
 

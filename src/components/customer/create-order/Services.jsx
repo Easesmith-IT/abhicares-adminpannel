@@ -42,7 +42,6 @@ const Services = () => {
 
   const params = useParams();
   const { state } = useLocation();
-  console.log("state", state);
 
   const getServices = () => {
     fetchData(
@@ -58,7 +57,6 @@ const Services = () => {
     if (res?.status === 200 || res?.status === 201) {
       setServices(res.data.data || []);
       setPageCount(res?.data?.pagination?.totalPages || 0);
-      console.log("res", res);
     }
   }, [res]);
 

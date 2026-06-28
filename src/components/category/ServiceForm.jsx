@@ -133,7 +133,6 @@ const ServiceForm = ({ defaultValues, onSubmit, isLoading, label }) => {
     setValue("bannerPreview", "");
   };
 
-  console.log("getValues", getValues());
 
   const img = watch("img");
   const previewImage = watch("previewImage");
@@ -237,7 +236,6 @@ const handleImage = async (e) => {
   };
 
   const onError = (error) => {
-    console.log("Error", error);
   };
 
   /* ----------------------------------

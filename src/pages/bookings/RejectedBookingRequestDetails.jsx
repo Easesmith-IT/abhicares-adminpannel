@@ -52,7 +52,6 @@ const badgeColors = {
 const RejectedBookingRequestDetails = () => {
   const { state } = useLocation();
   const data = state.requestData || "";
-  console.log("data",data);
   
   const navigate = useNavigate();
 

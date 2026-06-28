@@ -11,51 +11,6 @@ import { InfoBox, InfoCard, InfoRow } from "../../components/crash-report";
 import Wrapper from "../../components/wrappers/Wrapper";
 import CrashDetailSkeleton from "../../components/crash-report/CrashDetailSkeleton";
 
-const dummyCrashReports = [
-  {
-    _id: "64fa1c001",
-    errorId: "ERR-UI-101",
-    severity: "Critical",
-    environment: "Production",
-    resolved: false,
-
-    errorName: "TypeError",
-    errorMessage: "Cannot read properties of undefined (reading 'map')",
-    stackTrace: `TypeError: Cannot read properties of undefined
-    at CrashTable.jsx:42
-    at renderWithHooks (react-dom.development.js:16305)
-    at mountIndeterminateComponent (react-dom.development.js:20074)`,
-
-    screenName: "Crash Reports",
-    appName: "Admin Panel",
-    appVersion: "1.2.0",
-    source: "Frontend",
-    userType: "Admin",
-
-    crashAt: "2026-02-05T09:45:00.000Z",
-
-    request: {
-      method: "GET",
-      url: "/crash-report/get/64fa1c001",
-      ip: "103.21.45.12",
-      headers: {
-        "user-agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/121.0.0.0",
-        accept: "application/json",
-      },
-    },
-
-    device: {
-      platform: "Web",
-      os: "Windows",
-      osVersion: "10",
-      deviceModel: "Desktop",
-      browser: "Chrome 121",
-    },
-  },
-];
-
-
 const CrashDetailPage = () => {
   const { crashId } = useParams();
 
@@ -78,7 +33,6 @@ const CrashDetailPage = () => {
   useEffect(() => {
     if (getCrashRes?.status === 200 || getCrashRes?.status === 201) {
       setCrash(getCrashRes?.data?.data || null);
-      // setCrash(dummyCrashReports[0]);
     }
   }, [getCrashRes]);
 

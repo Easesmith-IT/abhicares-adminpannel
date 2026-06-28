@@ -19,7 +19,6 @@ import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const ReviewDetailsModal = ({ setIsModalOpen, review }) => {
-  console.log("review", review);
 
   const {
     res: getReviewDetailsRes,
@@ -34,7 +33,6 @@ const ReviewDetailsModal = ({ setIsModalOpen, review }) => {
     getReviewDetails(`/admin/review-detail?reviewId=${review._id}`);
   };
 
-  console.log("reviewDetails", reviewDetails);
   
 
   useEffect(() => {

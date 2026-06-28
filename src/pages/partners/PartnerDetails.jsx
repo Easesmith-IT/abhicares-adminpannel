@@ -1590,7 +1590,7 @@ const PartnerDetails = () => {
                               <ChevronLeft className="size-4" />
                               <span className="sr-only">Previous Page</span>
                             </Button>
-                            <span className="text-xs font-medium text-slate-600">
+                            <span className="text-xs font-medium text-slate-600 whitespace-nowrap">
                               Page {activityPage} of {totalActivityPages}
                             </span>
                             <Button

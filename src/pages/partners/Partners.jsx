@@ -30,6 +30,7 @@ import UnapprovedSellerModal from "../../components/modals/UnapprovedSellerModal
 import PartnersTableSkeleton from "../../components/partner/PartnersTableSkeleton";
 import Stats from "../../components/partner/Stats";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { H2 } from "../../components/shared/typography";
 import Wrapper from "../../components/wrappers/Wrapper";
 
@@ -62,6 +63,7 @@ const Partners = () => {
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState("10");
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
@@ -120,14 +122,14 @@ const Partners = () => {
   const fetchSellers = useCallback(() => {
     const query = buildQuery({
       page,
-      limit: 10,
+      limit,
       search: debouncedSearch,
       status,
       cityId,
     });
 
     fetchData(`/sellers/get-all-seller?${query}`);
-  }, [fetchData, page, debouncedSearch, status, cityId]);
+  }, [fetchData, page, limit, debouncedSearch, status, cityId]);
 
   useEffect(() => {
     fetchSellers();
@@ -223,6 +225,15 @@ const Partners = () => {
                 </Select>
 
                 <CityFilter value={cityId} onChange={setCityId} className="w-[160px] bg-slate-50/50 border-slate-200" />
+                <PageSizeSelect
+                  value={limit}
+                  onChange={(value) => {
+                    setLimit(value);
+                    setPage(1);
+                  }}
+                  label=""
+                  triggerClassName="bg-slate-50/50 border-slate-200"
+                />
 
                 <Button variant="ghost" size="sm" onClick={handleReset} className="text-slate-500 hover:text-slate-800">
                   <RefreshCw className="mr-1 size-3.5" />
@@ -328,7 +339,7 @@ const Partners = () => {
 
             {/* Pagination */}
             <div className="flex justify-between items-center pt-2">
-              <span className="text-xs text-slate-400 font-medium">Page {page} of {totalPages}</span>
+              <span className="text-xs text-slate-400 font-medium whitespace-nowrap">Page {page} of {totalPages}</span>
               <PaginationComp page={page} pageCount={totalPages} setPage={setPage} />
             </div>
           </div>

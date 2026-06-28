@@ -77,7 +77,6 @@ const OfferForm = ({
   const type = useWatch({ control: form.control, name: "type" });
 
   const onError = (error)=>{
-    console.log("error",error);
     
   }
 

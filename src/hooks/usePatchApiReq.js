@@ -25,14 +25,12 @@ const usePatchApiReq = () => {
         try {
             setIsLoading(true);
             const response = await axiosInstance.patch(url, sendData, axiosConfig);
-            console.log("res", response);
             if (response.status === 200 || response.status === 201) {
                 toast.success(response.data.message);
                 setRes(response);
             }
         } catch (error) {
             setError(error);
-            console.log("patch api error =>", error);
             toast.error(error?.response?.data?.message || "An error occurred.");
             const adminInfo = readCookie("adminInfo");
             if (shouldReportCrash) {

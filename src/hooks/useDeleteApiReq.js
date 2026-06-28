@@ -28,7 +28,6 @@ const useDeleteApiReq = () => {
       if (response.status === 200 || response.status === 201) {
         toast.success(response?.data?.message);
         setRes(response);
-        console.log("delete api response", response);
       }
     } catch (error) {
       setError(error);

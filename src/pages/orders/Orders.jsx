@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
 import { useCustomSidebar } from "@/components/layout/sidebarContext";
 import { H2 } from "../../components/shared/typography";
@@ -190,17 +191,15 @@ const Orders = () => {
               </Select>
 
               {/* Limit */}
-              <Select value={limit} onValueChange={(value) => setLimit(value)}>
-                <SelectTrigger className="w-[85px] bg-slate-50/50 border-slate-200 text-xs">
-                  <SelectValue placeholder="Limit" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="20">20</SelectItem>
-                  <SelectItem value="30">30</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                </SelectContent>
-              </Select>
+              <PageSizeSelect
+                value={limit}
+                onChange={(value) => {
+                  setLimit(value);
+                  setPage(1);
+                }}
+                label=""
+                triggerClassName="w-[85px] bg-slate-50/50 border-slate-200 text-xs"
+              />
 
               {/* Reset */}
               <Button variant="ghost" size="sm" onClick={handleReset} className="text-slate-500 hover:text-slate-800">
@@ -215,7 +214,7 @@ const Orders = () => {
 
           {/* Pagination */}
           <div className="flex justify-between items-center pt-2">
-            <span className="text-xs text-slate-400 font-medium">Page {page} of {pageCount || 1}</span>
+            <span className="text-xs text-slate-400 font-medium whitespace-nowrap">Page {page} of {pageCount || 1}</span>
             <PaginationComp page={page} pageCount={pageCount} setPage={setPage} />
           </div>
         </div>

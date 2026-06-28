@@ -21,8 +21,6 @@ const useCategories = () => {
   useEffect(() => {
     if (res?.status !== 200 && res?.status !== 201) return;
     const { data, pagination } = res.data;
-    console.log("categories", data);
-    console.log("res", res);
     setCategories(data || []);
     setTotalPages(pagination?.totalPages || 1);
   }, [res]);

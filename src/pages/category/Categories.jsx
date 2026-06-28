@@ -12,6 +12,7 @@ import { Button } from "../../components/ui/button";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { buildQuery } from "../../utils/buildQuery";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { useCustomSidebar } from "@/components/layout/sidebarContext";
 
 const Categories = () => {
@@ -22,15 +23,16 @@ const Categories = () => {
   const { selectedCityId } = useCustomSidebar();
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
+  const [limit, setLimit] = useState("10");
 
   const handleAddCategory = () => {
     navigate("/admin/categories/add-category");
   };
 
   const getCategories = useCallback(() => {
-    const query = buildQuery({ cityId: selectedCityId, page });
+    const query = buildQuery({ cityId: selectedCityId, page, limit });
     fetchData(`/categories/get-categories?${query}`);
-  }, [selectedCityId, fetchData, page]);
+  }, [selectedCityId, fetchData, page, limit]);
 
   useEffect(() => {
     getCategories();
@@ -59,6 +61,15 @@ const Categories = () => {
           </div>
 
           <div className="flex items-center gap-3">
+            <PageSizeSelect
+              value={limit}
+              onChange={(value) => {
+                setLimit(value);
+                setPage(1);
+              }}
+              label=""
+              triggerClassName="bg-white border-slate-200"
+            />
             <Button variant="outline" size="sm" onClick={getCategories} className="bg-white border-slate-200">
               <RefreshCw className="size-3.5" />
             </Button>
@@ -110,7 +121,7 @@ const Categories = () => {
 
         {/* Pagination controls */}
         <div className="flex justify-between items-center pt-4">
-          <span className="text-xs text-slate-400 font-medium">Page {page} of {pageCount}</span>
+          <span className="text-xs text-slate-400 font-medium whitespace-nowrap">Page {page} of {pageCount}</span>
           <PaginationComp page={page} pageCount={pageCount} setPage={setPage} />
         </div>
       </div>

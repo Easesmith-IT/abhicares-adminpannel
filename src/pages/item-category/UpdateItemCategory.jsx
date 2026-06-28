@@ -37,7 +37,6 @@ const EditCategoryPage = () => {
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("get res", res);
     }
   }, [res]);
 

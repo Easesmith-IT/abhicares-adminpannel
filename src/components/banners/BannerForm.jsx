@@ -559,7 +559,7 @@ export default function BannerForm({
             {/* Compact Pagination */}
             {sidebarTab === "all" && (
               <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
-                <span className="font-medium text-slate-400">
+                <span className="font-medium text-slate-400 whitespace-nowrap">
                   Page {page} of {totalPages}
                 </span>
                 <div className="flex gap-1">

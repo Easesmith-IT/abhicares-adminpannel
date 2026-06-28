@@ -28,6 +28,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { H2 } from "../../components/shared/typography";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { Button } from "@/components/ui/button";
 import { useCustomSidebar } from "@/components/layout/sidebarContext";
 import { Badge } from "@/components/ui/badge";
@@ -48,12 +49,13 @@ const Payments = () => {
   const [allPayments, setAllPayments] = useState([]);
   const [pageCount, setPageCount] = useState(1);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState("10");
   const [financials, setFinancials] = useState({ netRevenue: 124500, totalCommission: 28900, convenienceCharges: 8400, totalOrders: 142 });
 
   const getAllPayments = useCallback(() => {
-    getPayments(`/admin/get-all-payments?page=${page}&cityId=${selectedCityId || ""}`);
+    getPayments(`/admin/get-all-payments?page=${page}&limit=${limit}&cityId=${selectedCityId || ""}`);
     getFinancials(`/admin/platform-financials?cityId=${selectedCityId || ""}`);
-  }, [getPayments, getFinancials, page, selectedCityId]);
+  }, [getPayments, getFinancials, page, limit, selectedCityId]);
 
   useEffect(() => {
     getAllPayments();
@@ -96,6 +98,15 @@ const Payments = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
+            <PageSizeSelect
+              value={limit}
+              onChange={(value) => {
+                setLimit(value);
+                setPage(1);
+              }}
+              label=""
+              triggerClassName="bg-white border-slate-200"
+            />
             <Button variant="outline" size="sm" onClick={getAllPayments} className="bg-white border-slate-200">
               <RefreshCw className="size-3.5" />
             </Button>
@@ -232,7 +243,7 @@ const Payments = () => {
 
         {/* Pagination */}
         <div className="flex justify-between items-center pt-2">
-          <span className="text-xs text-slate-400 font-medium">Page {page} of {pageCount}</span>
+          <span className="text-xs text-slate-400 font-medium whitespace-nowrap">Page {page} of {pageCount}</span>
           <PaginationComp page={page} pageCount={pageCount} setPage={setPage} />
         </div>
       </div>

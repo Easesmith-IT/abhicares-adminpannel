@@ -39,10 +39,8 @@ export default function SubmitCashModal({ open, onClose, state, getData }) {
     if (res?.status === 200 || res?.status === 201) {
       onClose();
       getData();
-      console.log("submit res", res?.data);
     }
   }, [res]);
-  console.log("amount", amount);
 
   return (
     <Dialog open={open} onOpenChange={onClose}>

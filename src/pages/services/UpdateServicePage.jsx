@@ -9,7 +9,6 @@ const UpdateServicePage = () => {
   const { serviceId } = useParams();
   const { state } = useLocation();
   const navigate = useNavigate();
-  console.log("state", state);
 
 
   const service = state?.service;

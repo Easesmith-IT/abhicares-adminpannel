@@ -27,10 +27,11 @@ import {
 import useGetApiReq from "@/hooks/useGetApiReq";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { H2 } from "../../components/shared/typography";
-import { EyeIcon, PencilIcon, PlusIcon, XCircleIcon, Search, RefreshCw, Megaphone } from "lucide-react";
+import { EyeIcon, PlusIcon, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CityFilter, useCities } from "@/components/filters/city";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
 const STATUS_BADGE_STYLE = {
@@ -50,6 +51,7 @@ export default function CampaignList() {
   const { cities } = useCities();
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [limit, setLimit] = useState("10");
 
   const [filters, setFilters] = useState({
     userType: "",
@@ -76,6 +78,9 @@ export default function CampaignList() {
     if (page) {
       queryParams.append("page", page);
     }
+    if (limit) {
+      queryParams.append("limit", limit);
+    }
     if (filters.status && filters.status !== "all") {
       queryParams.append("status", filters.status);
     }
@@ -83,7 +88,7 @@ export default function CampaignList() {
     fetchData(`/notifications/get-notifications?${queryParams.toString()}`, {
       screenName: "CampaignList",
     });
-  }, [fetchData, filters, selectedCity, page]);
+  }, [fetchData, filters, selectedCity, page, limit]);
 
   useEffect(() => {
     getCampaigns();
@@ -173,6 +178,16 @@ export default function CampaignList() {
               </SelectContent>
             </Select>
 
+            <PageSizeSelect
+              value={limit}
+              onChange={(value) => {
+                setLimit(value);
+                setPage(1);
+              }}
+              label=""
+              triggerClassName="bg-slate-50/50 border-slate-200 text-xs"
+            />
+
             {/* Reset */}
             <Button variant="ghost" size="sm" onClick={handleReset} className="text-slate-500 hover:text-slate-800">
               <RefreshCw className="mr-1 size-3.5" />
@@ -249,14 +264,6 @@ export default function CampaignList() {
                             >
                               <EyeIcon className="h-4 w-4" />
                             </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-slate-500 hover:bg-slate-100"
-                              onClick={() => navigate(`/admin/notifications/${item.id || item._id}/edit`)}
-                            >
-                              <PencilIcon className="h-4 w-4" />
-                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -269,7 +276,7 @@ export default function CampaignList() {
 
         {/* Pagination */}
         <div className="flex justify-between items-center pt-2">
-          <span className="text-xs text-slate-400 font-medium">Page {page} of {totalPages}</span>
+          <span className="text-xs text-slate-400 font-medium whitespace-nowrap">Page {page} of {totalPages}</span>
           <PaginationComp page={page} pageCount={totalPages} setPage={setPage} />
         </div>
       </div>

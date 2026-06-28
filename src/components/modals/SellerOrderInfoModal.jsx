@@ -14,7 +14,6 @@ const SellerOrderInfoModal = ({
   sellerOrder,
 }) => {
   if (!sellerOrder) return null;
-  console.log("sellerOrder", sellerOrder);
   
 
   const isPackage = Boolean(sellerOrder.package);

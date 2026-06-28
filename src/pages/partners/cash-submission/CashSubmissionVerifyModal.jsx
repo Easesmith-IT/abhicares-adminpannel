@@ -45,7 +45,6 @@ export default function VerifyCashSubmissionModal({
     if (res?.status === 200 || res?.status === 201) {
       onClose();
       getData();
-      console.log("submit res", res?.data);
     }
   }, [res]);
 

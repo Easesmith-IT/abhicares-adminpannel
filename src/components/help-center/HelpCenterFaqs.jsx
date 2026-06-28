@@ -53,11 +53,9 @@ const HelpCenterFaqs = () => {
     getAllFaqs();
   }, []);
 
-  console.log("faqs", faqs);
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("res", res);
       setFaqs(res.data.data || []);
     }
   }, [res]);

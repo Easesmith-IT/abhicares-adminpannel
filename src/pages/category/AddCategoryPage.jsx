@@ -10,7 +10,6 @@ const AddCategoryPage = () => {
   const { fetchData, res, isLoading } = usePostApiReq();
 
   const onSubmit = (values) => {
-    console.log("values", values);
     
     const activeConfigs = values.cityConfigs.filter((c) => c.isActive);
 

@@ -18,7 +18,6 @@ const useAuthActions = () => {
       });
       if (res?.status === 200 || res?.status === 201) {
         dispatch(changeAdminStatus({ isAdminAuthenticated: true }));
-        console.log("refresh response:", res);
       }
     } catch (error) {
       console.error("Error fetching admin refresh token:", error);
@@ -44,7 +43,6 @@ const useAuthActions = () => {
         role: "admin",
       });
       if (logoutRes?.status === 200 || logoutRes?.status === 201) {
-        console.log("Admin logout response:", logoutRes);
         dispatch(changeAdminStatus({ isAdminAuthenticated: false }));
         // Clean up storage values
         sessionStorage.removeItem("admin-status");
@@ -73,7 +71,6 @@ const useAuthActions = () => {
     try {
       const res = await axiosInstance.get("/admin/status");
       if (res?.status === 200 || res?.status === 201) {
-        console.log("Admin status response:", res);
         if (res?.data?.shouldLogOut) {
           await handleAdminLogout();
         } else if (!res?.data?.isAuthenticated) {

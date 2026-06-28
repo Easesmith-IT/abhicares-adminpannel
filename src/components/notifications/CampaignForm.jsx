@@ -162,7 +162,6 @@ export default function CampaignForm({
 
   /* 🔹 Submit */
   const handleFormSubmit = (data) => {
-    console.log("data", data);
 
     if (
       !data.title ||

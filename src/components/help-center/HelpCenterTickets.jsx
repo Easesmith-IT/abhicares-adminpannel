@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import DeleteModal from "../modals/DeleteModal";
 import { PaginationComp } from "../shared/PaginationComp";
+import { PageSizeSelect } from "../shared/PageSizeSelect";
 import { TicketRowSkeleton } from "./TicketRowSkeleton";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -270,17 +271,15 @@ const HelpCenterTickets = () => {
             </SelectContent>
           </Select>
 
-          <Select value={limit} onValueChange={(value) => setLimit(value)}>
-            <SelectTrigger className="w-[85px] bg-slate-50/50 border-slate-200 text-xs">
-              <SelectValue placeholder="Limit" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="20">20</SelectItem>
-              <SelectItem value="30">30</SelectItem>
-              <SelectItem value="50">50</SelectItem>
-            </SelectContent>
-          </Select>
+          <PageSizeSelect
+            value={limit}
+            onChange={(value) => {
+              setLimit(value);
+              setPage(1);
+            }}
+            label=""
+            triggerClassName="w-[85px] bg-slate-50/50 border-slate-200 text-xs"
+          />
 
           <Button variant="ghost" size="sm" onClick={handleReset} className="text-slate-500 hover:text-slate-800">
             <RefreshCw className="mr-1 size-3.5" />
@@ -382,7 +381,7 @@ const HelpCenterTickets = () => {
 
       {/* Pagination */}
       <div className="flex justify-between items-center pt-2">
-        <span className="text-xs text-slate-400 font-medium">Page {page} of {pageCount}</span>
+        <span className="text-xs text-slate-400 font-medium whitespace-nowrap">Page {page} of {pageCount}</span>
         <PaginationComp page={page} pageCount={pageCount} setPage={setPage} />
       </div>
 

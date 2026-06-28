@@ -48,7 +48,6 @@ export default function AutoAssignSetting() {
   // Sync response
   useEffect(() => {
     if (getRes?.status === 200 || getRes?.status === 201) {
-      console.log("getRes", getRes);
 
       setEnabled(getRes?.data?.data?.autoAssignEnabled);
     }

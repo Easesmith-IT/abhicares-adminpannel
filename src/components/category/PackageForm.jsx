@@ -311,7 +311,6 @@ const PackageForm = ({
   };
 
   const onError = (error) => {
-    console.log("error", error);
     toast.error("Please correct the form errors before submitting");
   };
 

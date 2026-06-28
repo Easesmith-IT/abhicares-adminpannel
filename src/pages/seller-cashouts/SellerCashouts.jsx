@@ -28,6 +28,7 @@ import { Button } from "@/components/ui/button";
 
 import Wrapper from "../../components/wrappers/Wrapper";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { H2 } from "../../components/shared/typography";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
@@ -53,6 +54,7 @@ const SellerCashouts = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
+  const [limit, setLimit] = useState("10");
 
   const [filters, setFilters] = useState({
     startDate: "",
@@ -71,9 +73,9 @@ const SellerCashouts = () => {
 
   const getAllSellerCashouts = useCallback(async () => {
     getSellerCashouts(
-      `/admin/get-seller-cashout?cashoutId=${searchQuery}&page=${page}&startDate=${filters.startDate}&endDate=${filters.endDate}&status=${filters.status}`,
+      `/admin/get-seller-cashout?cashoutId=${searchQuery}&page=${page}&limit=${limit}&startDate=${filters.startDate}&endDate=${filters.endDate}&status=${filters.status}`,
     );
-  }, [getSellerCashouts, searchQuery, page, filters.startDate, filters.endDate, filters.status]);
+  }, [getSellerCashouts, searchQuery, page, limit, filters.startDate, filters.endDate, filters.status]);
 
   useEffect(() => {
     getAllSellerCashouts();
@@ -176,6 +178,16 @@ const SellerCashouts = () => {
               </SelectContent>
             </Select>
 
+            <PageSizeSelect
+              value={limit}
+              onChange={(value) => {
+                setLimit(value);
+                setPage(1);
+              }}
+              label=""
+              triggerClassName="bg-slate-50/50 border-slate-200 text-xs"
+            />
+
             {/* Reset */}
             <Button variant="ghost" size="sm" onClick={handleReset} className="text-slate-500 hover:text-slate-800">
               <RefreshCw className="mr-1 size-3.5" />
@@ -261,7 +273,7 @@ const SellerCashouts = () => {
 
         {/* Pagination */}
         <div className="flex justify-between items-center pt-2">
-          <span className="text-xs text-slate-400 font-medium">Page {page} of {pageCount}</span>
+          <span className="text-xs text-slate-400 font-medium whitespace-nowrap">Page {page} of {pageCount}</span>
           <PaginationComp page={page} pageCount={pageCount} setPage={setPage} />
         </div>
       </div>

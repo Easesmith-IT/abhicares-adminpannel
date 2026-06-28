@@ -60,7 +60,6 @@ export default function PartnerOfferedBookingDetails() {
   const navigate = useNavigate();
 
   const offer = state?.offer;
-  console.log("offer", offer);
   
 
   if (!offer) {

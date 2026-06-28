@@ -19,7 +19,6 @@ const CustomerRewardPoints = () => {
   const {state} = useLocation()
   const navigate = useNavigate();
 
-  console.log("state", state);
   
 
   const { res, fetchData, isLoading } = useGetApiReq();
@@ -34,7 +33,6 @@ const CustomerRewardPoints = () => {
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("res", res);
 
       setRewardPoints(res?.data?.data || {});
     }

@@ -46,7 +46,6 @@ export default function AddRewardPointsModal({ open, setOpen, getRewardPoints, c
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("res", res);
       setOpen(false)
       getRewardPoints();
     }

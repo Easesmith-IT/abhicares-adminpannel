@@ -6,7 +6,6 @@ export const ServiceCard = ({ service }) => {
   const navigate = useNavigate();
   const params = useParams();
   const { state } = useLocation();
-  console.log("state", state);
 
   const handleNavigate = () => {
     navigate(

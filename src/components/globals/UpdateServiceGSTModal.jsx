@@ -50,7 +50,6 @@ const UpdateServiceGSTModal = ({ open, onOpenChange }) => {
       const gst = res?.data?.gst;
       setGstType(gst?.gstType || "GLOBAL");
 
-      console.log("res?.data", res?.data);
       
 
       // Only prefill input if CUSTOM

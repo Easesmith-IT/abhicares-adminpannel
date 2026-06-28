@@ -6,6 +6,7 @@ import useGetApiReq from "@/hooks/useGetApiReq";
 
 import Wrapper from "../../components/wrappers/Wrapper";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { H2 } from "../../components/shared/typography";
 import { BackLink } from "../../components/shared/back-link";
 
@@ -58,6 +59,7 @@ const UnassignedBookings = () => {
   const [status, setStatus] = useState("all");
   const [cityId, setCityId] = useState("");
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState("10");
 
   const handleReset = () => {
     setStatus("all");
@@ -70,7 +72,7 @@ const UnassignedBookings = () => {
   const fetchUnassignedBookings = useCallback(() => {
     const query = new URLSearchParams({
       page,
-      limit: 10,
+      limit,
       status,
       ...(cityId && { cityId }),
     }).toString();
@@ -78,7 +80,7 @@ const UnassignedBookings = () => {
     fetchData(`/admin/auto-assign-failed-bookings?${query}`, {
       screenName: "UnassignedBookings",
     });
-  }, [page, status, cityId, fetchData]);
+  }, [page, limit, status, cityId, fetchData]);
 
   useEffect(() => {
     fetchUnassignedBookings();
@@ -129,6 +131,15 @@ const UnassignedBookings = () => {
 
           {/* CityId Filter */}
           <CityFilter cities={cities} value={cityId} onChange={setCityId} />
+          <PageSizeSelect
+            value={limit}
+            onChange={(value) => {
+              setLimit(value);
+              setPage(1);
+            }}
+            label=""
+            triggerClassName="bg-white border-slate-200"
+          />
 
           {/* Reset Button */}
           <TooltipIconButton tooltip="Reset Filters" onClick={handleReset} />
@@ -227,7 +238,7 @@ const UnassignedBookings = () => {
 
         {/* Pagination */}
         <div className="flex justify-between items-center pt-2">
-          <span className="text-xs text-slate-400 font-medium">Page {page} of {pagination?.totalPages || 1}</span>
+          <span className="text-xs text-slate-400 font-medium whitespace-nowrap">Page {page} of {pagination?.totalPages || 1}</span>
           <PaginationComp
             page={page}
             pageCount={pagination?.totalPages || 1}

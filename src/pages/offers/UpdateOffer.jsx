@@ -57,7 +57,6 @@ const UpdateOffer = () => {
   }, [res]);
 
   const handleUpdate = async (data) => {
-    console.log("data", data);
     
     await updateOffer(`/offers/update-offer/${offerId}`, data);
 

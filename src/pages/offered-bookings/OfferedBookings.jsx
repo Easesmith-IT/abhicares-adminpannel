@@ -7,6 +7,7 @@ import useDebounce from "../../hooks/useDebounce";
 
 import Wrapper from "../../components/wrappers/Wrapper";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { H2 } from "../../components/shared/typography";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
@@ -57,6 +58,7 @@ export default function OfferedBookings() {
   const navigate = useNavigate();
 
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState("10");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [source, setSource] = useState("");
@@ -68,7 +70,7 @@ export default function OfferedBookings() {
   useEffect(() => {
     const query = new URLSearchParams({
       page,
-      limit: 10,
+      limit,
       lastFiveHours,
       ...(debouncedSearch && { search: debouncedSearch }),
       ...(status && { status }),
@@ -78,14 +80,12 @@ export default function OfferedBookings() {
     fetchData(`/admin/getAdminAllSellerOfferHistory?${query}`, {
       screenName: "OfferedBookings",
     });
-  }, [page, debouncedSearch, status, source, lastFiveHours]);
+  }, [page, limit, debouncedSearch, status, source, lastFiveHours]);
 
-  console.log("res", res);
 
   const offers = res?.data?.data || [];
   const pagination = res?.data?.pagination || {};
 
-  console.log("offers", offers);
   const handleReset = () => {
     setSearch("");
     setStatus("all");
@@ -169,6 +169,15 @@ export default function OfferedBookings() {
             >
               Last 5 Hours Only
             </Button>
+            <PageSizeSelect
+              value={limit}
+              onChange={(value) => {
+                setLimit(value);
+                setPage(1);
+              }}
+              label=""
+              triggerClassName="bg-slate-50/50 border-slate-200 text-xs"
+            />
 
             {/* Reset Filters button */}
             <Button variant="ghost" size="sm" onClick={handleReset} className="text-slate-500 hover:text-slate-800 h-9">
@@ -285,7 +294,7 @@ export default function OfferedBookings() {
 
         {/* Pagination */}
         <div className="flex justify-between items-center pt-2">
-          <span className="text-xs text-slate-400 font-medium">Page {page} of {pagination?.totalPages || 1}</span>
+          <span className="text-xs text-slate-400 font-medium whitespace-nowrap">Page {page} of {pagination?.totalPages || 1}</span>
           <PaginationComp page={page} pageCount={pagination?.totalPages || 1} setPage={setPage} />
         </div>
       </div>

@@ -30,7 +30,6 @@ const AddCategoryModal = ({
   initialData = null,
   getCategories,
 }) => {
-  console.log("initialData", initialData);
   
   const form = useForm({
     resolver: zodResolver(categorySchema),
@@ -60,7 +59,6 @@ const AddCategoryModal = ({
 
 
   const handleSubmit = (values) => {
-    console.log("values", values);
 
     if (initialData) {
       updateCategory(`/admin/update-category/${initialData._id}`, values);

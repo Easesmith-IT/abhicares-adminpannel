@@ -29,7 +29,6 @@ const AddItemCategory = () => {
   
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("add item category res", res);
       navigate("/admin/item-categories");
       }
     }, [res]);

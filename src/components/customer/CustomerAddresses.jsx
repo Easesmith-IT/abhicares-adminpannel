@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { AddressSkeleton } from "../shared/AddressSkeleton";
 
 const CustomerAddresses = ({ selectedId, onSelect = () => {} }) => {
-  console.log("selectedId", selectedId);
 
   const {
     res: getAddressesRes,

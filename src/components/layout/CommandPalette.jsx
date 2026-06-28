@@ -113,6 +113,7 @@ const CommandPalette = ({ open, setOpen }) => {
       "/admin/help-center": "helpCenter",
       "/admin/enquiries": "enquiry",
       "/admin/settings": "settings",
+      "/admin/rewards": "settings",
       "/admin/reviews": "reviews",
       "/admin/seller-cashouts": "sellerCashout",
       "/admin/cash-management": "payments",
@@ -121,7 +122,7 @@ const CommandPalette = ({ open, setOpen }) => {
       "/admin/homepage-trending": "services",
     };
     const key = permMap[item.to];
-    if (!key) return true; // default visible
+    if (!key) return false;
     return permissions[key] !== "none";
   });
 

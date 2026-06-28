@@ -24,13 +24,14 @@ const useGetApiReq = () => {
 
         try {
             setIsLoading(true);
+            setError(null);
             const response = await axiosInstance.get(url, axiosConfig);
             if (response.status === 200 || response.status === 201) {
                 setRes(response);
             }
         } catch (error) {
             setError(error);
-            console.log("error- get api hook", error);
+            setRes(null);
             toast.error(error?.response?.data?.message || "An error occurred.");
             const adminInfo = readCookie("adminInfo");
             if (shouldReportCrash) {

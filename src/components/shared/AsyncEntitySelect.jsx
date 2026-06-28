@@ -30,7 +30,6 @@ const AsyncEntitySelect = ({
   const [search, setSearch] = useState("");
   const [hasMore, setHasMore] = useState(true);
 
-  console.log("loading", loading);
   
 
   const pageRef = useRef(1);
@@ -75,7 +74,6 @@ const AsyncEntitySelect = ({
   const onScroll = (e) => {
     const el = e.target;
 
-    console.log("scroll fired", pageRef.current);
 
 
     if (

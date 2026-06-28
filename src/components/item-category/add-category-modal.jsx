@@ -71,7 +71,6 @@ const AddCategoryModal = ({ open, onClose, data, refresh }) => {
   }, [open, data, form]);
 
   const onSubmit = async (values) => {
-    console.log("values", values);
 
     data ? await updateCategory(values) : await mutateAsync(values);
 

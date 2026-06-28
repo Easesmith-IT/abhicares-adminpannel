@@ -20,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import DeleteModal from "../../components/modals/DeleteModal";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { H2 } from "../../components/shared/typography";
 import { Button } from "../../components/ui/button";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
@@ -44,11 +45,12 @@ const Enquiry = () => {
   const [enquiryId, setEnquiryId] = useState("");
   const [pageCount, setPageCount] = useState(1);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState("10");
   const [searchValue, setSearchValue] = useState("");
 
   const getAllInquiries = useCallback(() => {
-    getInquiries(`/admin/get-all-enquiry?page=${page}`);
-  }, [page]);
+    getInquiries(`/admin/get-all-enquiry?page=${page}&limit=${limit}`);
+  }, [page, limit, getInquiries]);
 
   useEffect(() => {
     getAllInquiries();
@@ -133,6 +135,14 @@ const Enquiry = () => {
                   onChange={handleSearch}
                 />
               </div>
+              <PageSizeSelect
+                value={limit}
+                onChange={(value) => {
+                  setLimit(value);
+                  setPage(1);
+                }}
+                label=""
+              />
               <TooltipIconButton
                 tooltip="Reset Filters"
                 onClick={handleReset}
@@ -189,12 +199,13 @@ const Enquiry = () => {
             </Table>
           </div>
 
-          <PaginationComp
-            page={page}
-            pageCount={pageCount}
-            setPage={setPage}
-            className="mt-8 mb-5"
-          />
+          <div className="mt-8 mb-5 flex items-center justify-between gap-3">
+            <PaginationComp
+              page={page}
+              pageCount={pageCount}
+              setPage={setPage}
+            />
+          </div>
         </div>
       </Wrapper>
 

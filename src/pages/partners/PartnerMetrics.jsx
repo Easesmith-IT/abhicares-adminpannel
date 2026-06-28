@@ -95,7 +95,6 @@ const PartnerMetrics = ({ metrics = metricsData }) => {
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("res", res);
     }
   }, [res]);
 

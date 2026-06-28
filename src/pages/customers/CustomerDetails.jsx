@@ -74,6 +74,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { BackLink } from "../../components/shared/back-link";
 import { H2 } from "../../components/shared/typography";
 
@@ -106,6 +107,7 @@ const CustomerDetails = () => {
   // Filters & Page controls
   const [bookingPage, setBookingPage] = useState(1);
   const [bookingTotalPages, setBookingTotalPages] = useState(1);
+  const [bookingLimit, setBookingLimit] = useState("10");
   const [bookingSearch, setBookingSearch] = useState("");
   const [bookingStatusFilter, setBookingStatusFilter] = useState("all");
 
@@ -129,9 +131,9 @@ const CustomerDetails = () => {
 
   const fetchBookings = useCallback(() => {
     if (customerId && customerId !== "undefined") {
-      getBookings(`/admin/get-customer-bookings/${customerId}?page=${bookingPage}`);
+      getBookings(`/admin/get-customer-bookings/${customerId}?page=${bookingPage}&limit=${bookingLimit}`);
     }
-  }, [customerId, getBookings, bookingPage]);
+  }, [customerId, getBookings, bookingPage, bookingLimit]);
 
   const fetchWalletTransactions = useCallback(() => {
     if (customerId && customerId !== "undefined") {
@@ -857,6 +859,14 @@ const CustomerDetails = () => {
                     <option value="completed">Completed</option>
                     <option value="cancelled">Cancelled</option>
                   </select>
+                  <PageSizeSelect
+                    value={bookingLimit}
+                    onChange={(value) => {
+                      setBookingLimit(value);
+                      setBookingPage(1);
+                    }}
+                    label=""
+                  />
 
                   <Button variant="outline" size="sm" onClick={exportBookingsToCSV} className="border-slate-200 flex items-center gap-1.5 text-slate-700 cursor-pointer">
                     <Download className="size-3.5" />
@@ -960,12 +970,13 @@ const CustomerDetails = () => {
                   </TableBody>
                 </Table>
                 
-                <PaginationComp
-                  page={bookingPage}
-                  pageCount={bookingTotalPages}
-                  setPage={setBookingPage}
-                  className="mt-6 mb-5"
-                />
+                <div className="mt-6 mb-5 flex items-center justify-end gap-3">
+                  <PaginationComp
+                    page={bookingPage}
+                    pageCount={bookingTotalPages}
+                    setPage={setBookingPage}
+                  />
+                </div>
               </CardContent>
             </Card>
           </TabsContent>

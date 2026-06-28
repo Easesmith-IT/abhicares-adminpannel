@@ -6,6 +6,7 @@ import useGetApiReq from "@/hooks/useGetApiReq";
 
 import OfferRow from "@/components/offer/OfferRow";
 import { PaginationComp } from "@/components/shared/PaginationComp";
+import { PageSizeSelect } from "@/components/shared/PageSizeSelect";
 import Wrapper from "@/components/wrappers/Wrapper";
 
 import { Button } from "@/components/ui/button";
@@ -68,19 +69,19 @@ const Offers = () => {
 
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
+  const [limit, setLimit] = useState("10");
 
   const getOffers = () => {
-    fetchData(`/offers/get-all-offers?page=${page}`);
+    fetchData(`/offers/get-all-offers?page=${page}&limit=${limit}`);
   };
 
   /* Fetch */
   useEffect(() => {
     getOffers();
-  }, [page]);
+  }, [page, limit]);
 
   useEffect(() => {
     if (res?.status === 200) {
-      console.log("res", res);
       
       setOffers(res.data.data || []);
       setPageCount(res.data?.pagination?.totalPages || 0);
@@ -104,7 +105,15 @@ const Offers = () => {
       <div className="flex items-center justify-between mb-6">
         <H2>Offers</H2>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 items-center">
+          <PageSizeSelect
+            value={limit}
+            onChange={(value) => {
+              setLimit(value);
+              setPage(1);
+            }}
+            label=""
+          />
           {/* <Select value={statusFilter} onValueChange={setStatusFilter}>
             <SelectTrigger className="w-[140px]">
               <SelectValue placeholder="Status" />
@@ -166,12 +175,13 @@ const Offers = () => {
 
       {/* Pagination */}
       {!isLoading && (
-        <PaginationComp
-          page={page}
-          pageCount={pageCount}
-          setPage={setPage}
-          className="mt-8"
-        />
+        <div className="mt-8 flex items-center justify-between gap-3">
+          <PaginationComp
+            page={page}
+            pageCount={pageCount}
+            setPage={setPage}
+          />
+        </div>
       )}
     </Wrapper>
   );

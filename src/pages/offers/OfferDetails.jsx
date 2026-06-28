@@ -24,7 +24,6 @@ const OfferDetail = () => {
 
   const offer = res?.data?.data;
 
-  console.log("res?.data?.data", res?.data?.data);
   
 
   if (isLoading) {

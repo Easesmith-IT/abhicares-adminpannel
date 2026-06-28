@@ -32,6 +32,7 @@ import TooltipIconButton from "../../components/shared/TooltipIconButton";
 import { Badge } from "../../components/ui/badge";
 import { Label } from "../../components/ui/label";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import UpdateServiceGSTModal from "../../components/globals/UpdateServiceGSTModal";
 import { useCustomSidebar } from "@/components/layout/sidebarContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -48,8 +49,10 @@ const ServiceInfoPage = () => {
   const [selectedCity, setSelectedCity] = useState(selectedCityId || "");
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
+  const [productLimit, setProductLimit] = useState("10");
   const [page1, setPage1] = useState(1);
   const [pageCount1, setPageCount1] = useState(1);
+  const [packageLimit, setPackageLimit] = useState("10");
   const [isGstUpdateModalOpen, setIsGstUpdateModalOpen] = useState(false);
 
   useEffect(() => {
@@ -93,7 +96,7 @@ const ServiceInfoPage = () => {
     fetchService(`/services/get-service-details/${serviceId}`);
 
   const getServiceProducts = () => {
-    const query = buildQuery({ cityId: selectedCity, page });
+    const query = buildQuery({ cityId: selectedCity, page, limit: productLimit });
     fetchProducts(`/products/get-service-product/${serviceId}?${query}`);
   };
 
@@ -101,6 +104,7 @@ const ServiceInfoPage = () => {
     const query = buildQuery({
       cityId: selectedCity,
       page1,
+      limit: packageLimit,
       serviceId,
       isActive: true,
     });
@@ -124,11 +128,11 @@ const ServiceInfoPage = () => {
 
   useEffect(() => {
     getServiceProducts();
-  }, [page, selectedCity]);
+  }, [page, productLimit, selectedCity]);
 
   useEffect(() => {
     getServicePackages();
-  }, [selectedCity, page1]);
+  }, [selectedCity, page1, packageLimit]);
 
   useEffect(() => {
     if (serviceRes?.status === 200) {
@@ -358,17 +362,27 @@ const ServiceInfoPage = () => {
                     <h3 className="text-lg font-semibold text-slate-900">Products</h3>
                     <p className="text-xs text-slate-500">Manage individual products and pricing details</p>
                   </div>
-                  <Button
-                    variant="abhicares"
-                    className="rounded-xl text-xs font-medium flex items-center gap-1.5 h-9"
-                    onClick={() =>
-                      navigate(
-                        `/admin/categories/${categoryId}/product/${serviceId}/add-product`,
-                      )
-                    }
-                  >
-                    <Plus size={16} /> Add Product
-                  </Button>
+                  <div className="flex items-center gap-3">
+                    <PageSizeSelect
+                      value={productLimit}
+                      onChange={(value) => {
+                        setProductLimit(value);
+                        setPage(1);
+                      }}
+                      label=""
+                    />
+                    <Button
+                      variant="abhicares"
+                      className="rounded-xl text-xs font-medium flex items-center gap-1.5 h-9"
+                      onClick={() =>
+                        navigate(
+                          `/admin/categories/${categoryId}/product/${serviceId}/add-product`,
+                        )
+                      }
+                    >
+                      <Plus size={16} /> Add Product
+                    </Button>
+                  </div>
                 </div>
 
                 {productLoading ? (
@@ -405,7 +419,7 @@ const ServiceInfoPage = () => {
                   </Grid>
                 )}
 
-                <div className="pt-4">
+                <div className="pt-4 flex items-center justify-end gap-3">
                   <PaginationComp page={page} pageCount={pageCount} setPage={setPage} />
                 </div>
               </TabsContent>
@@ -417,18 +431,28 @@ const ServiceInfoPage = () => {
                     <h3 className="text-lg font-semibold text-slate-900">Packages</h3>
                     <p className="text-xs text-slate-500">Manage curated service packages and bundles</p>
                   </div>
-                  <Button
-                    variant="abhicares"
-                    className="rounded-xl text-xs font-medium flex items-center gap-1.5 h-9"
-                    onClick={() =>
-                      navigate(
-                        `/admin/categories/${categoryId}/product/${serviceId}/add-package`,
-                        { state: { products } },
-                      )
-                    }
-                  >
-                    <Plus size={16} /> Add Package
-                  </Button>
+                  <div className="flex items-center gap-3">
+                    <PageSizeSelect
+                      value={packageLimit}
+                      onChange={(value) => {
+                        setPackageLimit(value);
+                        setPage1(1);
+                      }}
+                      label=""
+                    />
+                    <Button
+                      variant="abhicares"
+                      className="rounded-xl text-xs font-medium flex items-center gap-1.5 h-9"
+                      onClick={() =>
+                        navigate(
+                          `/admin/categories/${categoryId}/product/${serviceId}/add-package`,
+                          { state: { products } },
+                        )
+                      }
+                    >
+                      <Plus size={16} /> Add Package
+                    </Button>
+                  </div>
                 </div>
 
                 {packageLoading ? (
@@ -464,7 +488,7 @@ const ServiceInfoPage = () => {
                   </Grid>
                 )}
 
-                <div className="pt-4">
+                <div className="pt-4 flex items-center justify-end gap-3">
                   <PaginationComp
                     page={page1}
                     pageCount={pageCount1}

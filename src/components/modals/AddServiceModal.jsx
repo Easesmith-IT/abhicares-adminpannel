@@ -53,7 +53,6 @@ const AddServiceModal = ({
     setForm((p) => ({ ...p, [name]: value }));
   };
 
-  console.log("isLoading", isLoading);
   
 
   const handleImage = (e) => {

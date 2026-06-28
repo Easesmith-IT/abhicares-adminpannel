@@ -7,6 +7,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Wrapper from "../../../components/wrappers/Wrapper";
 import SubmitCashModal from "./SubmitCashModal";
 import { BackLink } from "../../../components/shared/back-link";
+import { PageSizeSelect } from "../../../components/shared/PageSizeSelect";
 import { H2 } from "../../../components/shared/typography";
 import { CashSubmissionTable } from "./CashSubmissionTable";
 import { buildQuery } from "../../../utils/buildQuery";
@@ -17,6 +18,7 @@ const CashSubmission = () => {
   const [submissionSummary, setSubmissionSummary] = useState("");
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
+  const [limit, setLimit] = useState("10");
   const [range, setRange] = useState("Monthly");
 
   // Optional (for Custom)
@@ -27,7 +29,6 @@ const CashSubmission = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
   const { deliveryAgentId } = useParams();
   const { state } = useLocation();
-  console.log("state", state);
 
   const getCashSubmissions = () => {
     if (range === "Custom" && (!startDate || !endDate)) {
@@ -38,25 +39,25 @@ const CashSubmission = () => {
     const query = buildQuery({
       range,
       page,
-      deliveryPartnerId: deliveryAgentId,
+      limit,
       startDate: range === "Custom" ? startDate : null,
       endDate: range === "Custom" ? endDate : null,
     });
 
-    fetchData(`/cashout/seller/${state.walletId}?${query}`);
+    fetchData(`/cashout/history/${state.walletId}?${query}`);
   };
 
   useEffect(() => {
     getCashSubmissions();
-  }, [page, range, startDate, endDate]);
+  }, [page, limit, range, startDate, endDate]);
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("getCashSubmissions res", res?.data);
-      const { cashInHand, cashouts, totalSubmitted } = res?.data?.data;
+      const { cashInHand, totalSubmitted } = res?.data?.summary || {};
+      const cashouts = res?.data?.data || [];
       setSubmissions(cashouts);
       setSubmissionSummary({ cashInHand, totalSubmitted });
-      // setPageCount(res?.data?.pagination?.totalPages);
+      setPageCount(res?.data?.pagination?.pages || 1);
     }
   }, [res]);
 
@@ -67,6 +68,14 @@ const CashSubmission = () => {
           <BackLink href={-1}>
             <H2>Cash Submissions</H2>
           </BackLink>
+          <PageSizeSelect
+            value={limit}
+            onChange={(value) => {
+              setLimit(value);
+              setPage(1);
+            }}
+            label=""
+          />
 
           {/* <Button
             onClick={() => setIsModalOpen(true)}
@@ -152,6 +161,8 @@ const CashSubmission = () => {
           getCashSubmissions={getCashSubmissions}
           isLoading={isLoading}
           setPage={setPage}
+          limit={limit}
+          setLimit={setLimit}
           page={page}
           pageCount={pageCount}
         />

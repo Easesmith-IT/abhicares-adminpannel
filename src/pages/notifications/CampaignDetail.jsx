@@ -91,7 +91,6 @@ export default function CampaignDetail() {
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("res", res);
       
       setCampaign(res.data.data); // ✅ correct mapping
     }

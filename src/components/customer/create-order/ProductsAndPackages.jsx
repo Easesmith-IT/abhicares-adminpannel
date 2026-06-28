@@ -33,7 +33,6 @@ const ProductsAndPackages = () => {
   const [packages, setPackages] = useState([]);
   const params = useParams();
   const { state } = useLocation();
-  console.log("state", state);
 
   const getServiceScreen = ()=>{
     fetchData(
@@ -49,7 +48,6 @@ const ProductsAndPackages = () => {
     if (res?.status === 200 || res?.status === 201) {
       setProducts(res.data.products || []);
       setPackages(res.data.packages || []);
-      console.log("res", res);
     }
   }, [res]);
 

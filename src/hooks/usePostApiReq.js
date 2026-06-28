@@ -28,14 +28,12 @@ const usePostApiReq = () => {
         ...axiosConfig,
         withCredentials: true,
       });
-      console.log("res", response);
       if (response.status === 200 || response.status === 201) {
         setRes(response);
         toast.success(response.data.message);
       }
     } catch (error) {
       setError(error);
-      console.log("post api error =>", error);
       toast.error(error?.response?.data?.message || "An error occurred.");
       const adminInfo = readCookie("adminInfo");
       if (shouldReportCrash) {

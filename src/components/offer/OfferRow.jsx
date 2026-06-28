@@ -60,7 +60,6 @@ const OfferRow = ({ offer, refetch, onEdit }) => {
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("res", res);
     }
   }, [res]);
 

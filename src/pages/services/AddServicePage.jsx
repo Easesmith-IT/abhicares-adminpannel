@@ -13,7 +13,6 @@ const AddServicePage = () => {
 
   const onSubmit = (values) => {
 
-    console.log("values", values);
     
     const fd = new FormData();
 

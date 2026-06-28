@@ -28,7 +28,6 @@ const Checkout = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-    console.log("cartItems", cartItems);
 
   const [orderType, setOrderType] = useState("COD");
 
@@ -157,7 +156,6 @@ const Checkout = () => {
       },
     };
 
-    console.log("payload",payload);
     createOrder("admin/create-cod-order-for-user", payload);
 
   };
@@ -165,7 +163,6 @@ const Checkout = () => {
   useEffect(() => {
     if (createOrderRes?.status === 200 || createOrderRes?.status === 201) {
       navigate(`/admin/orders/${createOrderRes?.data?.data?.order?._id}`);
-      console.log("createOrderRes", createOrderRes);
     }
   }, [createOrderRes]);
 
@@ -176,7 +173,6 @@ const Checkout = () => {
       quantity: item?.quantity,
       prodId: item?.type === "Package" ? item?._id : item?._id,
     }));
-    console.log("modifiedItems", modifiedItems);
 
     calculateCharge("/shopping/caluclate-charge", {
       items: modifiedItems,
@@ -194,7 +190,6 @@ const Checkout = () => {
       calculateChargeRes?.status === 200 ||
       calculateChargeRes?.status === 201
     ) {
-      console.log("calculateChargeRes", calculateChargeRes);
       setAppliedCoupon(calculateChargeRes?.data?.offerApplied);
     }
   }, [calculateChargeRes]);

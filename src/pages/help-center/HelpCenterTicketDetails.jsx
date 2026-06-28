@@ -40,7 +40,6 @@ const HelpCenterTicketDetails = () => {
     getTicket(`/admin/get-single-ticket?ticketId=${ticketId}`);
   };
 
-  console.log("ticketDetails", ticketDetails);
 
   useEffect(() => {
     getTicketDetails();

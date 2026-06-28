@@ -2,6 +2,7 @@
 
 import DataNotFound from "@/components/shared/DataNotFound";
 import { PaginationComp } from "@/components/shared/PaginationComp";
+import { PageSizeSelect } from "@/components/shared/PageSizeSelect";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,121 +20,74 @@ import { H2 } from "../../components/shared/typography";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { Category } from "../../components/item-category/category";
 import useGetApiReq from "../../hooks/useGetApiReq";
-import { toast } from "sonner";
-
-const dummyCategories = [
-  {
-    _id: "65f1a1b2c3d4e5f601",
-    name: "Medicine",
-    description:
-      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quos, aspernatur quasi, dolorem excepturi saepe alias autem veritatis qui consectetur reprehenderit odio rem deleniti veniam ab assumenda, provident dolorum nemo aliquam!",
-    isActive: true,
-    createdAt: "2024-01-10T10:30:00.000Z",
-    createdBy: "Admin",
-  },
-  {
-    _id: "65f1a1b2c3d4e5f602",
-    name: "Equipment",
-    description:
-      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quos, aspernatur quasi, dolorem excepturi saepe alias autem veritatis qui consectetur reprehenderit odio rem deleniti veniam ab assumenda, provident dolorum nemo aliquam!",
-    isActive: false,
-    createdAt: "2024-01-12T14:15:00.000Z",
-    createdBy: "Admin",
-  },
-  {
-    _id: "65f1a1b2c3d4e5f603",
-    name: "Surgical Items",
-    description:
-      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quos, aspernatur quasi, dolorem excepturi saepe alias autem veritatis qui consectetur reprehenderit odio rem deleniti veniam ab assumenda, provident dolorum nemo aliquam!",
-    isActive: true,
-    createdAt: "2024-01-15T09:20:00.000Z",
-  },
-  {
-    _id: "65f1a1b2c3d4e5f604",
-    name: "Diagnostics",
-    isActive: true,
-    createdBy: "Admin",
-    createdAt: "2024-01-18T16:45:00.000Z",
-  },
-  {
-    _id: "65f1a1b2c3d4e5f605",
-    name: "Personal Care",
-    description:
-      "Lorem ipsum dolor sit amet consectetur, adipisicing elit. Quos, aspernatur quasi, dolorem excepturi saepe alias autem veritatis qui consectetur reprehenderit odio rem deleniti veniam ab assumenda, provident dolorum nemo aliquam!",
-    isActive: false,
-    createdBy: "Admin",
-    createdAt: "2024-01-20T11:10:00.000Z",
-  },
-];
 
 const ItemCategories = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageCount, setpageCount] = useState(0);
-  const [limit] = useState(10);
+  const [limit, setLimit] = useState("10");
   const [categories, setCategories] = useState([]);
-  const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false);
+  const { fetchData, isLoading, res } = useGetApiReq();
 
-  const handleModalOpen = () => setIsAddCategoryModalOpen((prev) => !prev);
+  const getItemCategories = () => {
+    const query = buildQuery({
+      page,
+      limit,
+      search,
+    });
 
-  const query = buildQuery({
-    page,
-    limit,
-    search,
-  });
-
-  const { fetchData, isLoading, error, res } = useGetApiReq();
-
-  const getItemCategories = async (values) => {
-    try {
-      await fetchData(`/items/getAllCategories?${query}`, values, {
-        screenName: "AddItemCategory",
-      });
-
-      // 👇 since your hook doesn't return response directly,
-      // rely on success state or just navigate after call
-    } catch (error) {
-      toast.error("Failed to create category");
-    }
+    fetchData(`/items/getAllCategories?${query}`, {
+      screenName: "AddItemCategory",
+    });
   };
 
   useEffect(() => {
-    getItemCategories()
-  }, [])
+    getItemCategories();
+  }, [page, limit, search]);
   
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("get item category res", res);
       setCategories(res?.data?.data?.categories);
+      setpageCount(res?.data?.totalPages || 0);
     }
   }, [res]);
 
   return (
     <Wrapper>
       <div className="space-y-6">
-        <div className="flex justify-between">
-          <H2>Item Categories</H2>
-          <Button asChild variant="abhicares">
-            <Link to={"/admin/item-categories/add"}>
-              <PlusIcon />
-              <span>Add Category</span>
-            </Link>
-          </Button>
-        </div>
-        <div className="lg:col-span-2 hidden">
-          <label htmlFor="search" className="text-sm font-medium mb-1 block">
-            Search
-          </label>
-          <div className="relative">
-            <Search className="absolute left-3 top-2.5 size-4  text-muted-foreground" />
-            <Input
-              id="search"
-              placeholder="Search by name, email, phone..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 w-lg bg-white"
+        <div className="flex justify-between items-center gap-3">
+          <div className="flex items-center gap-3">
+            <H2>Item Categories</H2>
+            <div className="relative w-full max-w-xs">
+              <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+              <Input
+                id="search"
+                placeholder="Search categories..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+                className="pl-9 bg-white"
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <PageSizeSelect
+              value={limit}
+              onChange={(value) => {
+                setLimit(value);
+                setPage(1);
+              }}
+              label=""
             />
+            <Button asChild variant="abhicares">
+              <Link to={"/admin/item-categories/add"}>
+                <PlusIcon />
+                <span>Add Category</span>
+              </Link>
+            </Button>
           </div>
         </div>
 
@@ -166,20 +120,13 @@ const ItemCategories = () => {
           )}
         </div>
 
-        <PaginationComp
-          page={page}
-          pageCount={pageCount}
-          setPage={setPage}
-          className="mt-8 mb-5"
-        />
-
-        {isAddCategoryModalOpen && (
-          <AddCategoryModal
-            open={isAddCategoryModalOpen}
-            onClose={handleModalOpen}
-            refresh={() => {}}
+        <div className="mt-8 mb-5 flex items-center justify-between gap-3">
+          <PaginationComp
+            page={page}
+            pageCount={pageCount}
+            setPage={setPage}
           />
-        )}
+        </div>
       </div>
     </Wrapper>
   );

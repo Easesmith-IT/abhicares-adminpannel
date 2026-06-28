@@ -25,7 +25,6 @@ const AssignedPartnerModal = ({
   getBooking,
   assignedSellerId,
 }) => {
-  console.log("serviceId", serviceId);
 
   const [sellers, setSellers] = useState([]);
   const [search, setSearch] = useState("");
@@ -48,7 +47,6 @@ const AssignedPartnerModal = ({
   useEffect(() => {
     if (sellerRes?.status === 200) {
       setSellers(sellerRes.data.data || []);
-      console.log("sellerRes", sellerRes);
     }
   }, [sellerRes]);
 
@@ -90,8 +88,6 @@ const AssignedPartnerModal = ({
         {/* Sellers */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-4">
           {sellers.map((seller, i) => {
-            console.log("i", i);
-            console.log("index", index);
 
             return (
               <AssignCard

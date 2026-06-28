@@ -34,7 +34,6 @@ const UpdateCategoryPage = () => {
 
   useEffect(() => {
     if (categoryRes?.status === 201 || categoryRes?.status === 200) {
-      console.log("categoryRes", categoryRes);
 
       const category = categoryRes?.data?.data;
 
@@ -55,7 +54,6 @@ const UpdateCategoryPage = () => {
 
 
   const onSubmit = (values) => {
-     console.log("values", values);
     const activeConfigs = values.cityConfigs.filter((c) => c.isActive);
 
     const fd = new FormData();
@@ -83,7 +81,6 @@ const UpdateCategoryPage = () => {
     return <CategoryFormSkeleton />;
   }
 
-  console.log("defaultValues", defaultValues);
 
   return (
     <Wrapper>

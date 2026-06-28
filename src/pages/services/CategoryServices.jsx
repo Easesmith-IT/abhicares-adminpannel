@@ -21,6 +21,7 @@ import { H2 } from "../../components/shared/typography";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { buildQuery } from "../../utils/buildQuery";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { CategoryInfo } from "../../components/category/CategoryInfo";
 import { useCustomSidebar } from "@/components/layout/sidebarContext";
 
@@ -39,6 +40,7 @@ const CategoryServices = () => {
   const [selectedCity, setSelectedCity] = useState(selectedCityId || "");
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(1);
+  const [limit, setLimit] = useState("10");
   
 
   const navigate = useNavigate();
@@ -54,17 +56,16 @@ const CategoryServices = () => {
   };
 
   const fetchServices = () => {
-    const query = buildQuery({ cityId: selectedCity });
+    const query = buildQuery({ cityId: selectedCity, page, limit });
     fetchData(`/services/get-category-service/${categoryId}?${query}`);
   };
 
   useEffect(() => {
     fetchServices();
-  }, [selectedCity]);
+  }, [selectedCity, page, limit]);
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("res", res);
       
       setServices(res.data.data || []);
       setPageCount(res?.data?.pagination?.totalPages || 0);
@@ -100,6 +101,14 @@ const CategoryServices = () => {
 
             <div className="flex gap-3">
               <CityFilter value={selectedCity} onChange={setSelectedCity} />
+              <PageSizeSelect
+                value={limit}
+                onChange={(value) => {
+                  setLimit(value);
+                  setPage(1);
+                }}
+                label=""
+              />
               <TooltipIconButton
                 tooltip="Reset Filters"
                 onClick={handleReset}
@@ -196,12 +205,13 @@ const CategoryServices = () => {
             </div>
           )}
 
-          <PaginationComp
-            className="mt-5"
-            page={page}
-            pageCount={pageCount}
-            setPage={setPage}
-          />
+          <div className="mt-5 flex items-center justify-between gap-3">
+            <PaginationComp
+              page={page}
+              pageCount={pageCount}
+              setPage={setPage}
+            />
+          </div>
         </div>
       </Wrapper>
 

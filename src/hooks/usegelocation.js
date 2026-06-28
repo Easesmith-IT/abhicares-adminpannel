@@ -41,7 +41,6 @@ const useGeolocation = () => {
               geocoder.geocode(
                 { location: userLocation },
                 (results, status) => {
-                  console.log('results', results)
                   if (status === "OK" && results[0]) {
                     const formattedAddress = getSuitableFormattedAddress(results);
                     const city = extractAddressComponent(results, "locality");
@@ -96,7 +95,6 @@ const useGeolocation = () => {
                 geocoder.geocode(
                   { location: userLocation },
                   (results, status) => {
-                    console.log("results", results);
                     if (status === "OK" && results[0]) {
                       const formattedAddress = getSuitableFormattedAddress(results);
                       const city = extractAddressComponent(results, "locality");
@@ -118,10 +116,6 @@ const useGeolocation = () => {
                           pincode,
                         };
                       });
-                      console.log("formattedAddress", formattedAddress);
-                      console.log("city", city);
-                      console.log("state", state);
-                      console.log("pincode", pincode);
                     } else {
                       console.error("Error in geocoding:", status);
                     }

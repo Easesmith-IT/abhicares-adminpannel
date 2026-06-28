@@ -3,6 +3,7 @@ import useGetApiReq from "../../hooks/useGetApiReq";
 
 import Wrapper from "../../components/wrappers/Wrapper";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 
 import {
   Select,
@@ -37,7 +38,6 @@ const RejectedBookingRequests = () => {
 
   useEffect(() => {
     if (res?.status === 200) {
-        console.log("res", res);
         
       setRequests(res?.data?.data || []);
       setPageCount(res?.data?.pagination?.totalPages || 1);
@@ -47,12 +47,29 @@ const RejectedBookingRequests = () => {
   return (
     <Wrapper>
       <div className="w-full font-poppins">
-        <BackLink href={-1}>
-          <H2>Seller Reject Requests</H2>
-        </BackLink>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <BackLink href={-1}>
+            <H2>Seller Reject Requests</H2>
+          </BackLink>
+
+          <PageSizeSelect
+            value={limit}
+            onChange={(value) => {
+              setLimit(value);
+              setPage(1);
+            }}
+            label=""
+          />
+        </div>
 
         <div className="flex items-center gap-4 py-5">
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select
+            value={statusFilter}
+            onValueChange={(value) => {
+              setStatusFilter(value);
+              setPage(1);
+            }}
+          >
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Request Status" />
             </SelectTrigger>
@@ -65,17 +82,6 @@ const RejectedBookingRequests = () => {
             </SelectContent>
           </Select>
 
-          {/* <Select value={limit} onValueChange={setLimit}>
-            <SelectTrigger className="w-[120px]">
-              <SelectValue />
-            </SelectTrigger>
-
-            <SelectContent>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="20">20</SelectItem>
-              <SelectItem value="50">50</SelectItem>
-            </SelectContent>
-          </Select> */}
         </div>
 
         <RejectedBookingRequestTable
@@ -84,12 +90,12 @@ const RejectedBookingRequests = () => {
           getReqs={getReqs}
         />
 
-        {/* <PaginationComp
+        <PaginationComp
           page={page}
           pageCount={pageCount}
           setPage={setPage}
           className="mt-8 mb-5"
-        /> */}
+        />
       </div>
     </Wrapper>
   );

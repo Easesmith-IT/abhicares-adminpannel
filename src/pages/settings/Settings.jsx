@@ -22,6 +22,7 @@ import AddSubAdminModal from "../../components/modals/AddSubAdminModal";
 import DeleteModal from "../../components/modals/DeleteModal";
 import SeoModal from "../../components/modals/SeoModal";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import Wrapper from "../../components/wrappers/Wrapper";
 import AutoAssignSetting from "../../components/settings/AutoAssignSetting";
 
@@ -47,6 +48,7 @@ const Settings = () => {
   const [allSubadmins, setAllSubadmins] = useState([]);
   const [pageCount, setPageCount] = useState(1);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState("10");
 
   const navigate = useNavigate();
 
@@ -69,12 +71,12 @@ const Settings = () => {
   };
 
   const getSubadmins = async () => {
-    getSubAdmins(`/admin/get-sub-admins?page=${page}`);
+    getSubAdmins(`/admin/get-sub-admins?page=${page}&limit=${limit}`);
   };
 
   useEffect(() => {
     getSubadmins();
-  }, [page]);
+  }, [page, limit]);
 
   useEffect(() => {
     if (getSubAdminsRes?.status === 200 || getSubAdminsRes?.status === 201) {
@@ -103,6 +105,14 @@ const Settings = () => {
             <h1 className="text-2xl font-semibold">Settings</h1>
 
             <div className="flex flex-wrap gap-3">
+              <PageSizeSelect
+                value={limit}
+                onChange={(value) => {
+                  setLimit(value);
+                  setPage(1);
+                }}
+                label=""
+              />
               <Button
                 variant="secondary"
                 onClick={() => navigate("/admin/rewards?tab=config")}
@@ -208,12 +218,13 @@ const Settings = () => {
             </Table>
           </div>
 
-          <PaginationComp
-            page={page}
-            pageCount={pageCount}
-            setPage={setPage}
-            className="mt-8 mb-5"
-          />
+          <div className="mt-8 mb-5 flex items-center justify-between gap-3">
+            <PaginationComp
+              page={page}
+              pageCount={pageCount}
+              setPage={setPage}
+            />
+          </div>
         </div>
       </Wrapper>
 

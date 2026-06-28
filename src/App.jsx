@@ -2,7 +2,7 @@ import "leaflet-draw/dist/leaflet.draw.css";
 import "leaflet/dist/leaflet.css";
 import "./App.css";
 
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import { Toaster } from "sonner";
 import { SidebarLayoutProvider } from "@/components/layout/sidebarContext";
 import PrivateRoute from "./components/protected-route/PrivateRoute";
@@ -38,7 +38,6 @@ import EditCategoryPage from "./pages/item-category/UpdateItemCategory";
 import CampaignDetail from "./pages/notifications/CampaignDetail";
 import CampaignList from "./pages/notifications/CampaignList";
 import CreateCampaign from "./pages/notifications/CreateCampaign";
-import EditCampaign from "./pages/notifications/EditCampaign";
 import CreateOffer from "./pages/offers/CreateOffer";
 import OfferDetail from "./pages/offers/OfferDetails";
 import Offers from "./pages/offers/Offers";
@@ -257,10 +256,10 @@ function App() {
 
           <Route path="/admin/reviews" element={<Reviews />} />
 
-          {/* <Route
+          <Route
             path="/admin/send-notifications"
-            element={<SendNotifications />}
-          /> */}
+            element={<Navigate to="/admin/notifications" replace />}
+          />
 
           <Route path="/admin/seller-cashouts" element={<SellerCashouts />} />
 
@@ -284,11 +283,6 @@ function App() {
             path="/admin/notifications/create"
             exact
             element={<CreateCampaign />}
-          />
-          <Route
-            path="/admin/notifications/:id/edit"
-            exact
-            element={<EditCampaign />}
           />
           <Route
             path="/admin/notifications/:id"

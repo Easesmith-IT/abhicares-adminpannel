@@ -230,7 +230,6 @@ const CategoryForm = ({ defaultValues, onSubmit, isLoading, label }) => {
   };
 
   const onError = (error) => {
-    console.log("Validation Errors:", error);
     toast.error("Please fill in all required fields and configs");
   };
 

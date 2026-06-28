@@ -22,25 +22,14 @@ import { Button } from "../../components/ui/button";
 import { EyeIcon } from "lucide-react";
 import { CashManagementTable } from "../partners/cash-submission/CashManagementTable";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { Skeleton } from "../../components/ui/skeleton";
-
-const sampleData = [
-  {
-    partnerId: "P001",
-    cashInHand: 5235,
-    name: "Partner 1",
-  },
-  {
-    partnerId: "P002",
-    cashInHand: 1200,
-    name: "Partner 2",
-  },
-];
 
 const CashManagement = () => {
   const [submissions, setSubmissions] = useState([]);
   const [page, setPage] = useState(1);
   const [pageCount, setPageCount] = useState(0);
+  const [limit, setLimit] = useState("10");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,6 +59,7 @@ const CashManagement = () => {
     const query = buildQuery({
       range,
       page,
+      limit,
       city:selectedCity || "",
     });
 
@@ -80,12 +70,12 @@ const CashManagement = () => {
 
   useEffect(() => {
     getCashSubmissions();
-  }, [page, range, selectedCity]);
+  }, [page, range, limit, selectedCity]);
 
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      console.log("getCashSubmissions res", res?.data);
       setSubmissions(res?.data?.data);
+      setPageCount(res?.data?.pagination?.pages || 1);
     }
   }, [res]);
 
@@ -96,11 +86,9 @@ const CashManagement = () => {
   useEffect(() => {
     getCashInHandOfSellers();
   }, [selectedCity]);
-  console.log("selectedCity", selectedCity);
 
   useEffect(() => {
     if (res2?.status === 200 || res2?.status === 201) {
-      console.log("getCashInHandOfSellers res", res2);
       setSellers(res2?.data?.data);
     }
   }, [res2]);
@@ -111,6 +99,14 @@ const CashManagement = () => {
         <div className="flex justify-between items-center gap-5">
           <H2>Cash Management</H2>
           <div className="flex gap-5 items-center">
+            <PageSizeSelect
+              value={limit}
+              onChange={(value) => {
+                setLimit(value);
+                setPage(1);
+              }}
+              label=""
+            />
             <CityFilter
               cities={cities}
               value={selectedCity}
@@ -132,6 +128,8 @@ const CashManagement = () => {
               getCashSubmissions={getCashSubmissions}
               isLoading={isLoading}
               setPage={setPage}
+              limit={limit}
+              setLimit={setLimit}
               page={page}
               pageCount={pageCount}
             />

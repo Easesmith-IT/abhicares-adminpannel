@@ -69,7 +69,6 @@ const Categories = () => {
   const { res, fetchData, isLoading } = useGetApiReq();
   const [categories, setCategories] = useState([...dummyCategories]);
   const {state} = useLocation();
-  console.log("state",state);
 
   const getCategories = ()=>{
 
@@ -83,7 +82,6 @@ const Categories = () => {
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
       setCategories(res.data.categories || []);
-      console.log("res",res);
       
     }
   }, [res]);

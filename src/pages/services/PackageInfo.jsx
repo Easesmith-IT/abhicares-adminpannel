@@ -101,8 +101,6 @@ const PackageInfo = () => {
       setPkg(res?.data?.data);
     }
   }, [res]);
-  console.log("res", res);
-  console.log("pkg", pkg);
 
   
 
@@ -184,7 +182,6 @@ const PackageInfo = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {pkg.products.map(({ productId }) => {
                 if (!productId) return null;
-                console.log("productId", productId);
 
                 return (
                   <Link

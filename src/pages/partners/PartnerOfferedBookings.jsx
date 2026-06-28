@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Eye } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
@@ -6,6 +6,7 @@ import useGetApiReq from "@/hooks/useGetApiReq";
 
 import Wrapper from "../../components/wrappers/Wrapper";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { H2 } from "../../components/shared/typography";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
 
@@ -56,6 +57,7 @@ export default function PartnerOfferedBookings() {
   const params = useParams();
 
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState("10");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
   const [source, setSource] = useState("");
@@ -65,7 +67,7 @@ export default function PartnerOfferedBookings() {
   useEffect(() => {
     const query = new URLSearchParams({
       page,
-      limit: 10,
+      limit,
       ...(search && { search }),
       ...(status && { status }),
       ...(source && { source }),
@@ -77,9 +79,8 @@ export default function PartnerOfferedBookings() {
         screenName: "OfferedBookings",
       },
     );
-  }, [page, search, status, source]);
+  }, [page, limit, search, status, source]);
 
-   console.log("res", res);
 
   const offers = res?.data?.data || [];
   const pagination = res?.data?.pagination || {};
@@ -94,8 +95,16 @@ export default function PartnerOfferedBookings() {
   return (
     <Wrapper>
       <div className="mt-6">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between items-center gap-3">
           <H2>Offered Bookings</H2>
+          <PageSizeSelect
+            value={limit}
+            onChange={(value) => {
+              setLimit(value);
+              setPage(1);
+            }}
+            label=""
+          />
         </div>
 
         {/* Metrics */}
@@ -124,7 +133,7 @@ export default function PartnerOfferedBookings() {
 
         {/* Filters */}
 
-        <div className="hidden flex-wrap gap-3 mt-6 mb-6">
+        <div className="flex flex-wrap gap-3 mt-6 mb-6">
           <Input
             placeholder="Search booking..."
             value={search}
@@ -299,12 +308,13 @@ export default function PartnerOfferedBookings() {
           </Table>
         </div>
 
-        <PaginationComp
-          page={page}
-          pageCount={pagination?.totalPages || 1}
-          setPage={setPage}
-          className="mt-8 mb-5"
-        />
+        <div className="mt-8 mb-5 flex items-center justify-between gap-3">
+          <PaginationComp
+            page={page}
+            pageCount={pagination?.totalPages || 1}
+            setPage={setPage}
+          />
+        </div>
       </div>
     </Wrapper>
   );

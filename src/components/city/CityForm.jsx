@@ -18,7 +18,6 @@ const CityForm = ({
   onSubmit,
   isLoading,
 }) => {
-  console.log("initialData", initialData);
 
   const [cityInfo, setCityInfo] = useState({
     city: initialData.name || "",
@@ -32,7 +31,6 @@ const CityForm = ({
       : [],
   );
 
-  console.log("geoFence", geoFence);
 
   /* Auto fetch lat/long on city change */
   useEffect(() => {

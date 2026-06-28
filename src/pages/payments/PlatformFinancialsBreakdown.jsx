@@ -67,7 +67,6 @@ const PlatformFinancialsBreakdown = () => {
 
   useEffect(() => {
     if (res?.status === 200) {
-      console.log("platform-financials-res", res);
 
       setData(res?.data?.data);
     }

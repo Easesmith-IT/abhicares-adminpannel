@@ -17,6 +17,8 @@ export const CashSubmissionTable = ({
   setPage,
   pageCount,
   page,
+  limit,
+  setLimit,
 }) => {
   return (
     <div className="table-container mt-10">
@@ -53,12 +55,13 @@ export const CashSubmissionTable = ({
       )}
 
       {!isLoading && (
-        <PaginationComp
-          page={page}
-          pageCount={pageCount}
-          setPage={setPage}
-          className="mt-8 mb-5"
-        />
+        <div className="mt-8 mb-5 flex items-center justify-end gap-3">
+          <PaginationComp
+            page={page}
+            pageCount={pageCount}
+            setPage={setPage}
+          />
+        </div>
       )}
     </div>
   );

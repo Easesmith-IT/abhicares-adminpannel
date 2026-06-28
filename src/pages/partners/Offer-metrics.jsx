@@ -94,7 +94,6 @@ const OfferMetrics = () => {
   const stats = res?.data?.data || {};
   const risk = getRiskMeta(stats);
 
-  console.log("res?.data", res?.data);
 
   useEffect(() => {
     if (!partnerId) return;

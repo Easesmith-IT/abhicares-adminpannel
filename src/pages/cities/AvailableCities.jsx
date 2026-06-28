@@ -7,6 +7,7 @@ import useGetApiReq from "../../hooks/useGetApiReq";
 import Wrapper from "../../components/wrappers/Wrapper";
 import AvailableCitiesSkeleton from "../../components/city/AvailableCitiesSkeleton";
 import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 
 import {
   Table,
@@ -35,6 +36,7 @@ const AvailableCities = () => {
 
   const [cities, setCities] = useState([]);
   const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState("10");
   const [searchVal, setSearchVal] = useState("");
   const [statusVal, setStatusVal] = useState("all");
 
@@ -66,9 +68,9 @@ const AvailableCities = () => {
     return matchesSearch && matchesStatus;
   });
 
-  const limit = 10;
-  const calculatedPageCount = Math.ceil(filteredCities.length / limit) || 1;
-  const paginatedCities = filteredCities.slice((page - 1) * limit, page * limit);
+  const limitNumber = Number(limit);
+  const calculatedPageCount = Math.ceil(filteredCities.length / limitNumber) || 1;
+  const paginatedCities = filteredCities.slice((page - 1) * limitNumber, page * limitNumber);
 
   // Reset page if it exceeds bounds
   useEffect(() => {
@@ -152,6 +154,16 @@ const AvailableCities = () => {
               </SelectContent>
             </Select>
 
+            <PageSizeSelect
+              value={limit}
+              onChange={(value) => {
+                setLimit(value);
+                setPage(1);
+              }}
+              label=""
+              triggerClassName="bg-slate-50/50 border-slate-200"
+            />
+
             {/* Reset */}
             <Button variant="ghost" size="sm" onClick={handleReset} className="text-slate-500 hover:text-slate-800 h-9">
               <RefreshCw className="mr-1 size-3.5" />
@@ -203,7 +215,7 @@ const AvailableCities = () => {
 
         {/* Pagination */}
         <div className="flex justify-between items-center pt-2">
-          <span className="text-xs text-slate-400 font-medium">Page {page} of {calculatedPageCount}</span>
+          <span className="text-xs text-slate-400 font-medium whitespace-nowrap">Page {page} of {calculatedPageCount}</span>
           <PaginationComp page={page} pageCount={calculatedPageCount} setPage={setPage} />
         </div>
       </div>

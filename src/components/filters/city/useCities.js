@@ -38,7 +38,6 @@ const useCities = () => {
     if (res?.status !== 200 && res?.status !== 201) return;
 
     const { data, pagination } = res.data;
-    console.log("data", data);
     
 
     setCities(data || []);
