@@ -12,6 +12,7 @@ import {
 
 import { useCustomSidebar } from "@/components/layout/sidebarContext";
 import { PaginationComp } from "@/components/shared/PaginationComp";
+import { PageSizeSelect } from "@/components/shared/PageSizeSelect";
 import { H2 } from "@/components/shared/typography";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -412,6 +413,18 @@ export default function HomepageTrendingPage() {
                 <Badge variant="outline" className="border-slate-200 bg-slate-50 text-slate-700">
                   {pagination.total} result{pagination.total === 1 ? "" : "s"}
                 </Badge>
+                <PageSizeSelect
+                  value={String(queryState.limit)}
+                  onChange={(value) =>
+                    updateUrlState(
+                      getHomepageTrendingTabStateForFilterChange(queryState, {
+                        limit: Number(value),
+                      }),
+                    )
+                  }
+                  label=""
+                  triggerClassName="bg-white border-slate-200"
+                />
                 <Button variant="outline" size="sm" onClick={clearFilters}>
                   <RefreshCw className="size-4" />
                   Reset Filters

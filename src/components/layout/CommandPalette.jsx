@@ -37,11 +37,12 @@ import { useCustomSidebar } from "./sidebarContext";
 export const ALL_MENU_ITEMS = [
   // Overview
   { to: "/admin/dashboard", label: "Dashboard", icon: LayoutDashboard, category: "Overview" },
-  { to: "/admin/partners/metrics", label: "Analytics & Metrics", icon: Sparkles, category: "Overview" },
   
   // Operations
+  { to: "/admin/orders", label: "Orders", icon: ClipboardList, category: "Operations" },
   { to: "/admin/bookings", label: "Bookings Management", icon: CalendarCheck, category: "Operations" },
   { to: "/admin/offered-bookings", label: "Offered Bookings", icon: ClipboardList, category: "Operations" },
+  { to: "/admin/auto-assign-analytics", label: "Auto Assign Analytics", icon: Sparkles, category: "Operations" },
   { to: "/admin/bookings/rejected-request", label: "Job Requests (Rejected Requests)", icon: FileWarningIcon, category: "Operations" },
   
   // Services
@@ -62,6 +63,7 @@ export const ALL_MENU_ITEMS = [
   { to: "/admin/banners", label: "Marketing Banners", icon: ClipboardList, category: "Marketing" },
   { to: "/admin/homepage-trending", label: "Homepage Trending", icon: Sparkles, category: "Marketing" },
   { to: "/admin/notifications", label: "Push Notifications", icon: Bell, category: "Marketing" },
+  { to: "/admin/rewards", label: "Rewards & Referrals", icon: Gift, category: "Marketing" },
   
   // Finance
   { to: "/admin/payments", label: "Payments & Financials", icon: CreditCard, category: "Finance" },
@@ -100,6 +102,7 @@ const CommandPalette = ({ open, setOpen }) => {
       "/admin/banners": "banners",
       "/admin/orders": "orders",
       "/admin/bookings": "bookings",
+      "/admin/auto-assign-analytics": "bookings",
       "/admin/offered-bookings": "bookings",
       "/admin/bookings/rejected-request": "bookings",
       "/admin/categories": "services",

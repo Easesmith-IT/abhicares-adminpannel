@@ -3,7 +3,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
-import { useCities } from "@/components/filters/city";
 import useGetApiReq from "@/hooks/useGetApiReq";
 
 import {
@@ -54,6 +53,7 @@ const BannerItemSchema = z.object({
 const bannerSchema = z
   .object({
     type: z.enum(["HOME", "OFFER", "REFER"]),
+    isActive: z.boolean().optional(),
 
     cityConfigs: z.array(
       z.object({
@@ -69,14 +69,17 @@ const bannerSchema = z
       if (!city.isActive) return;
 
       city.banners.forEach((banner, bannerIndex) => {
-        const hasImage = banner.file || banner.existingImage;
+        // Only the first banner slot (Slot 1) is strictly required to have an image.
+        if (bannerIndex === 0) {
+          const hasImage = banner.file || banner.existingImage;
 
-        if (!hasImage) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ["cityConfigs", cityIndex, "banners", bannerIndex, "file"],
-            message: "Banner image is required",
-          });
+          if (!hasImage) {
+            ctx.addIssue({
+              code: z.ZodIssueCode.custom,
+              path: ["cityConfigs", cityIndex, "banners", bannerIndex, "file"],
+              message: "Banner image is required",
+            });
+          }
         }
       });
     });
@@ -105,43 +108,67 @@ export default function BannerForm({
   onSubmit,
   isEdit = false,
   isLoading,
+  selectedCityId: propSelectedCityId,
+  hideTypeSelector = false,
+  availableCities = [],
+  availableCategories = [],
 }) {
-  const {
-    cities,
-    page,
-    totalPages,
-    nextPage,
-    prevPage,
-    onSearch,
-    isLoading: cityLoading,
-  } = useCities();
+  const { res: allCitiesRes, fetchData: fetchAllCities, isLoading: cityLoading } = useGetApiReq();
+  const [cities, setCities] = useState(availableCities);
+
+  useEffect(() => {
+    if (!availableCities.length) {
+      fetchAllCities("/admin/get-availabe-city?limit=500");
+    }
+  }, [availableCities.length, fetchAllCities]);
+
+  useEffect(() => {
+    if (availableCities.length) {
+      setCities(availableCities);
+      return;
+    }
+
+    if (allCitiesRes?.status === 200 || allCitiesRes?.status === 201) {
+      setCities(allCitiesRes.data?.data || []);
+    }
+  }, [allCitiesRes, availableCities]);
 
   const { res: categoryRes, fetchData: getCategories } = useGetApiReq();
   const { res: serviceRes, fetchData: getServices } = useGetApiReq();
 
-  const [categories, setCategories] = useState([]);
+  const [categories, setCategories] = useState(availableCategories);
   const [servicesMap, setServicesMap] = useState({});
 
-  const [selectedCityId, setSelectedCityId] = useState(null);
+  const [selectedCityId, setSelectedCityId] = useState(propSelectedCityId || null);
   const [sidebarTab, setSidebarTab] = useState("all"); // "all" | "active"
 
   // Normalize initial data to handle backend populates cleanly (convert objects to ID strings)
   const normalizedInitialConfigs = useMemo(() => {
     if (!initialData?.cityConfigs) return [];
+    const expected = (initialData.type || "HOME") === "HOME" ? 3 : 1;
     return initialData.cityConfigs.map((cfg) => {
       const id = typeof cfg.cityId === "object" && cfg.cityId?._id ? cfg.cityId._id : cfg.cityId;
       const name = cfg.cityName || (typeof cfg.cityId === "object" && cfg.cityId?.name ? cfg.cityId.name : "");
+      
+      const parsedBanners = cfg.banners?.map((b) => ({
+        categoryId: b.categoryId?._id || b.categoryId || "",
+        serviceId: b.serviceId?._id || b.serviceId || "",
+        existingImage: b.image || b.existingImage || "",
+        preview: b.preview || "",
+        file: b.file || null,
+      })) || [];
+
+      // Pad banners list up to expected size
+      const paddedBanners = [
+        ...parsedBanners,
+        ...Array.from({ length: Math.max(0, expected - parsedBanners.length) }).map(makeEmptyBanner)
+      ];
+
       return {
         ...cfg,
         cityId: id,
         cityName: name,
-        banners: cfg.banners?.map((b) => ({
-          categoryId: b.categoryId?._id || b.categoryId || "",
-          serviceId: b.serviceId?._id || b.serviceId || "",
-          existingImage: b.image || b.existingImage || "",
-          preview: b.preview || "",
-          file: b.file || null,
-        })) || [],
+        banners: paddedBanners,
       };
     });
   }, [initialData]);
@@ -150,6 +177,7 @@ export default function BannerForm({
     resolver: zodResolver(bannerSchema),
     defaultValues: {
       type: initialData?.type || "HOME",
+      isActive: initialData?.isActive !== undefined ? initialData.isActive : true,
       cityConfigs: normalizedInitialConfigs,
     },
   });
@@ -172,28 +200,38 @@ export default function BannerForm({
 
   // Set default city selection
   useEffect(() => {
-    if (sidebarTab === "all" && cities.length && !selectedCityId) {
-      setSelectedCityId(cities[0]._id);
+    if (propSelectedCityId) {
+      setSelectedCityId(propSelectedCityId);
+      return;
     }
-  }, [cities, sidebarTab, selectedCityId]);
-
-  useEffect(() => {
-    if (sidebarTab === "active" && activeConfigs.length && !selectedCityId) {
-      setSelectedCityId(activeConfigs[0].cityId);
+    if (cities.length && !selectedCityId) {
+      const activeCfg = cityConfigs?.find((c) => c.isActive);
+      if (activeCfg) {
+        setSelectedCityId(activeCfg.cityId);
+      } else {
+        setSelectedCityId(cities[0]._id);
+      }
     }
-  }, [activeConfigs, sidebarTab, selectedCityId]);
+  }, [cities, cityConfigs, selectedCityId, propSelectedCityId]);
 
   /* ---------------- CATEGORIES ---------------- */
 
   useEffect(() => {
-    getCategories("/admin/get-all-category");
-  }, []);
+    if (!availableCategories.length) {
+      getCategories("/admin/get-all-category");
+    }
+  }, [availableCategories.length, getCategories]);
 
   useEffect(() => {
+    if (availableCategories.length) {
+      setCategories(availableCategories);
+      return;
+    }
+
     if (categoryRes?.status === 200) {
       setCategories(categoryRes.data.data || []);
     }
-  }, [categoryRes]);
+  }, [availableCategories, categoryRes]);
 
   /* ---------------- SERVICES ---------------- */
 
@@ -223,15 +261,20 @@ export default function BannerForm({
     const bannerCount = (initialData.type || type) === "HOME" ? 3 : 1;
 
     const merged = [
-      ...existing.map((cfg) => ({
-        ...cfg,
-        cityName: cfg.cityName ?? cityMap.get(cfg.cityId),
-        banners: cfg.banners?.length
-          ? cfg.banners
-          : Array.from({
-              length: bannerCount,
-            }).map(makeEmptyBanner),
-      })),
+      ...existing.map((cfg) => {
+        const currentBanners = cfg.banners || [];
+        const paddedBanners = currentBanners.length >= bannerCount
+          ? currentBanners.slice(0, bannerCount)
+          : [
+              ...currentBanners,
+              ...Array.from({ length: bannerCount - currentBanners.length }).map(makeEmptyBanner)
+            ];
+        return {
+          ...cfg,
+          cityName: cfg.cityName ?? cityMap.get(cfg.cityId),
+          banners: paddedBanners,
+        };
+      }),
 
       ...cities
         .filter(
@@ -290,41 +333,58 @@ export default function BannerForm({
         }
       });
     });
-  }, [normalizedInitialConfigs]);
+  }, []);
+
+  const handleToggleActive = (cityIndex, val) => {
+    if (val) {
+      // Deactivate all other cities
+      cityConfigs.forEach((cfg, idx) => {
+        if (idx !== cityIndex && cfg.isActive) {
+          setValue(`cityConfigs.${idx}.isActive`, false);
+        }
+      });
+    }
+    setValue(`cityConfigs.${cityIndex}.isActive`, val);
+  };
 
   /* ---------------- SUBMIT ---------------- */
 
   const submitHandler = (data) => {
-    const expected = data.type === "HOME" ? 3 : 1;
-
-    const invalid = data.cityConfigs.some(
-      (c) => c.isActive && c.banners.length !== expected,
-    );
-
-    if (invalid) {
-      toast.error("Invalid banner count");
-      return;
-    }
-
     const formData = new FormData();
 
     formData.append("type", data.type);
+    formData.append("isActive", data.isActive ?? true);
 
-    const clean = data.cityConfigs.map((c) => ({
-      cityId: c.cityId,
-      isActive: c.isActive,
+    const clean = data.cityConfigs.map((c) => {
+      if (!c.isActive) {
+        return {
+          cityId: c.cityId,
+          isActive: false,
+          banners: [],
+        };
+      }
 
-      banners: c.banners.map((b) => ({
-        image: b.existingImage || null,
-        categoryId: b.categoryId || null,
-        serviceId: b.serviceId || null,
-      })),
-    }));
+      // Filter out empty banner slots (keep Slot 1 always, and any others that have an image)
+      const filteredBanners = c.banners.filter((b, idx) => idx === 0 || b.existingImage || b.file);
+
+      return {
+        cityId: c.cityId,
+        isActive: true,
+        banners: filteredBanners.map((b) => ({
+          image: b.existingImage || null,
+          categoryId: b.categoryId || null,
+          serviceId: b.serviceId || null,
+        })),
+      };
+    });
 
     formData.append("cityConfigs", JSON.stringify(clean));
 
     data.cityConfigs.forEach((city) => {
-      city.banners.forEach((b, i) => {
+      if (!city.isActive) return;
+
+      const filteredBanners = city.banners.filter((b, idx) => idx === 0 || b.existingImage || b.file);
+      filteredBanners.forEach((b, i) => {
         if (b.file) {
           formData.append(`cityBanner_${city.cityId}_${i}`, b.file);
         }
@@ -345,6 +405,35 @@ export default function BannerForm({
     return !!(cityConfigsErrors && cityConfigsErrors[index]);
   };
 
+  const handleApplyToAllActive = () => {
+    if (!currentCityConfig) return;
+
+    const hasAnyBanner = currentCityConfig.banners.some(
+      (b) => b.file || b.existingImage
+    );
+    if (!hasAnyBanner) {
+      toast.error("Please configure at least one banner image before copying.");
+      return;
+    }
+
+    const updated = cityConfigs.map((cfg) => {
+      if (cfg.isActive && String(cfg.cityId) !== String(currentCityConfig.cityId)) {
+        return {
+          ...cfg,
+          banners: currentCityConfig.banners.map((b) => ({
+            ...b,
+          })),
+        };
+      }
+      return cfg;
+    });
+
+    setValue("cityConfigs", updated, { shouldDirty: true });
+    toast.success(
+      `Applied ${currentCityConfig.cityName}'s banners configuration to all active cities.`
+    );
+  };
+
   return (
     <Form {...form}>
       <form
@@ -363,28 +452,54 @@ export default function BannerForm({
 
         {/* Top Control Bar */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200/60 shadow-xs">
-          <div className="w-full sm:w-72">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            {!hideTypeSelector && (
+              <div className="w-full sm:w-60">
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem className="space-y-1.5">
+                      <Label className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Banner Type</Label>
+                      <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200/50">
+                        {["HOME", "OFFER", "REFER"].map((t) => (
+                          <button
+                            key={t}
+                            type="button"
+                            disabled={isEdit}
+                            onClick={() => field.onChange(t)}
+                            className={`py-1.5 px-2 rounded-md text-xs font-bold transition-all cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed ${
+                              field.value === t
+                                ? "bg-white text-blue-600 shadow-xs border border-slate-200/30"
+                                : "text-slate-600 hover:text-slate-800"
+                            }`}
+                          >
+                            {t}
+                          </button>
+                        ))}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+
             <FormField
               control={form.control}
-              name="type"
+              name="isActive"
               render={({ field }) => (
                 <FormItem className="space-y-1.5">
-                  <Label className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Banner Type</Label>
-                  <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200/50">
-                    {["HOME", "OFFER", "REFER"].map((t) => (
-                      <button
-                        key={t}
-                        type="button"
-                        onClick={() => field.onChange(t)}
-                        className={`py-1.5 px-2 rounded-md text-xs font-bold transition-all cursor-pointer ${
-                          field.value === t
-                            ? "bg-white text-blue-600 shadow-xs border border-slate-200/30"
-                            : "text-slate-600 hover:text-slate-800"
-                        }`}
-                      >
-                        {t}
-                      </button>
-                    ))}
+                  <Label className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Overall Status</Label>
+                  <div className="flex items-center gap-2 bg-slate-50 border border-slate-200/60 rounded-lg px-3 py-1.5 h-[38px] w-[140px] justify-between">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                      {field.value ? "Active" : "Inactive"}
+                    </span>
+                    <Switch
+                      checked={field.value ?? true}
+                      onCheckedChange={field.onChange}
+                      className="scale-75 data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-slate-200"
+                    />
                   </div>
                   <FormMessage />
                 </FormItem>
@@ -405,216 +520,66 @@ export default function BannerForm({
           </div>
         </div>
 
-        {/* Form Content Split Pane */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+        {/* Form Content Focused Single Column */}
+        <div className="space-y-6">
           
-          {/* Left Column: Cities Selector */}
-          <div className="md:col-span-5 bg-white border border-slate-200/60 rounded-xl p-4 shadow-xs flex flex-col space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Target Cities</span>
-              <Badge className="bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 rounded text-[10px] font-bold">
-                {sidebarTab === "all" ? cities.length : activeConfigs.length} Loaded
-              </Badge>
-            </div>
-
-            {/* Sidebar Tabs */}
-            <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200/50">
-              <button
-                type="button"
-                onClick={() => {
-                  setSidebarTab("all");
-                  if (cities.length) {
-                    setSelectedCityId(cities[0]._id);
-                  }
-                }}
-                className={`flex-1 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
-                  sidebarTab === "all"
-                    ? "bg-white text-slate-800 shadow-xs border border-slate-200/30"
-                    : "text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                All Cities
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setSidebarTab("active");
-                  if (activeConfigs.length) {
-                    setSelectedCityId(activeConfigs[0].cityId);
-                  } else {
-                    setSelectedCityId(null);
-                  }
-                }}
-                className={`flex-1 py-1.5 rounded-md text-xs font-bold transition-all cursor-pointer ${
-                  sidebarTab === "active"
-                    ? "bg-white text-slate-800 shadow-xs border border-slate-200/30"
-                    : "text-slate-500 hover:text-slate-800"
-                }`}
-              >
-                Active Only
-              </button>
-            </div>
-
-            {/* Search Input */}
-            {sidebarTab === "all" && (
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 h-3.5 w-3.5 text-slate-400" />
-                <Input
-                  placeholder="Search cities..."
-                  onChange={(e) => onSearch(e.target.value)}
-                  className="pl-8.5 bg-slate-50 border-slate-200 focus:bg-white text-xs h-9 rounded-lg transition-all"
-                />
+          {/* Top Panel: Target City Heading & Status Selector */}
+          <div className="bg-white border border-slate-200/60 rounded-xl p-5 shadow-xs flex flex-col space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-base font-extrabold text-slate-800 flex items-center gap-2 capitalize">
+                  <MapPin className="h-5 w-5 text-blue-600 shrink-0" />
+                  {currentCityConfig?.cityName || "Configure Banners"} - {type} Banners
+                </h3>
+                <p className="text-xs text-slate-400 font-semibold mt-0.5 uppercase tracking-wider">
+                  Target Configuration Status & Settings
+                </p>
               </div>
-            )}
 
-            {/* Cities Scroll Area */}
-            <ScrollArea className="h-[380px] pr-2">
-              <div className="space-y-1.5">
-                {cityLoading ? (
-                  Array.from({ length: 4 }).map((_, i) => (
-                    <div key={i} className="h-11 bg-slate-50 rounded-lg animate-pulse border border-slate-100" />
-                  ))
-                ) : sidebarTab === "all" ? (
-                  cities.map((city) => {
-                    const configIndex = cityConfigs.findIndex(c => String(c.cityId) === String(city._id));
-                    const isActive = configIndex !== -1 ? cityConfigs[configIndex].isActive : false;
-                    const isSelected = selectedCityId === city._id;
-
-                    return (
-                      <div
-                        key={city._id}
-                        onClick={() => setSelectedCityId(city._id)}
-                        className={`flex items-center justify-between p-2.5 rounded-lg border transition-all cursor-pointer ${
-                          isSelected
-                            ? "bg-blue-50/70 border-blue-200 text-blue-900 shadow-2xs"
-                            : "bg-white border-slate-100 hover:bg-slate-50 text-slate-700 hover:border-slate-200"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 max-w-[70%]">
-                          <span className={`h-2 w-2 rounded-full shrink-0 ${isActive ? 'bg-emerald-500' : 'bg-slate-300'}`} />
-                          <span className="font-semibold text-xs capitalize truncate">{city.name}</span>
-                          {configIndex !== -1 && cityHasError(configIndex) && (
-                            <AlertCircle className="h-3.5 w-3.5 text-red-500 shrink-0" />
-                          )}
-                        </div>
-                        <Switch
-                          checked={isActive}
-                          onCheckedChange={(val) => {
-                            if (configIndex !== -1) {
-                              setValue(`cityConfigs.${configIndex}.isActive`, val);
-                            }
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                          className="scale-75 data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-slate-200"
-                        />
-                      </div>
-                    );
-                  })
-                ) : (
-                  activeConfigs.map((cfg) => {
-                    const isSelected = selectedCityId === cfg.cityId;
-                    const configIndex = cityConfigs.findIndex(c => String(c.cityId) === String(cfg.cityId));
-
-                    return (
-                      <div
-                        key={cfg.cityId}
-                        onClick={() => setSelectedCityId(cfg.cityId)}
-                        className={`flex items-center justify-between p-2.5 rounded-lg border transition-all cursor-pointer ${
-                          isSelected
-                            ? "bg-blue-50/70 border-blue-200 text-blue-900 shadow-2xs"
-                            : "bg-white border-slate-100 hover:bg-slate-50 text-slate-700 hover:border-slate-200"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2 max-w-[70%]">
-                          <span className="h-2 w-2 rounded-full bg-emerald-500 shrink-0" />
-                          <span className="font-semibold text-xs capitalize truncate">{cfg.cityName}</span>
-                          {configIndex !== -1 && cityHasError(configIndex) && (
-                            <AlertCircle className="h-3.5 w-3.5 text-red-500 shrink-0" />
-                          )}
-                        </div>
-                        <Switch
-                          checked={cfg.isActive}
-                          onCheckedChange={(val) => {
-                            if (configIndex !== -1) {
-                              setValue(`cityConfigs.${configIndex}.isActive`, val);
-                            }
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                          className="scale-75 data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-slate-200"
-                        />
-                      </div>
-                    );
-                  })
-                )}
-
-                {!cityLoading && sidebarTab === "all" && cities.length === 0 && (
-                  <div className="text-center py-6 text-xs text-slate-400">No cities found</div>
-                )}
-                {!cityLoading && sidebarTab === "active" && activeConfigs.length === 0 && (
-                  <div className="text-center py-6 text-xs text-slate-400">No active cities configured yet</div>
-                )}
-              </div>
-            </ScrollArea>
-
-            {/* Compact Pagination */}
-            {sidebarTab === "all" && (
-              <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
-                <span className="font-medium text-slate-400 whitespace-nowrap">
-                  Page {page} of {totalPages}
-                </span>
-                <div className="flex gap-1">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={prevPage}
-                    disabled={page === 1}
-                    className="h-7 px-2 text-[10px] border-slate-200 cursor-pointer"
-                  >
-                    Prev
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={nextPage}
-                    disabled={page === totalPages}
-                    className="h-7 px-2 text-[10px] border-slate-200 cursor-pointer"
-                  >
-                    Next
-                  </Button>
+              {selectedCityId && currentCityConfigIndex !== -1 && (
+                <div className="flex items-center gap-3 bg-slate-50 border border-slate-200/60 rounded-lg px-3.5 py-1.5 self-start sm:self-auto">
+                  <span className="text-[11px] font-bold text-slate-600 uppercase tracking-wide">
+                    Active Status:
+                  </span>
+                  <Switch
+                    checked={currentCityConfig.isActive}
+                    onCheckedChange={(val) => {
+                      handleToggleActive(currentCityConfigIndex, val);
+                    }}
+                    className="scale-90 data-[state=checked]:bg-emerald-500 data-[state=unchecked]:bg-slate-200"
+                  />
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* Right Column: Config Details */}
-          <div className="md:col-span-7 flex flex-col space-y-4">
+          {/* Configuration details for selected city */}
+          <div className="flex flex-col space-y-4">
             {!selectedCityId || currentCityConfigIndex === -1 ? (
-              <div className="bg-white border border-slate-200/60 rounded-xl p-8 shadow-xs flex flex-col items-center justify-center text-center min-h-[440px]">
+              <div className="bg-white border border-slate-200/60 rounded-xl p-8 shadow-xs flex flex-col items-center justify-center text-center min-h-[250px]">
                 <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 mb-3 animate-pulse">
                   <MapPin className="h-5 w-5" />
                 </div>
                 <h4 className="font-bold text-slate-800 text-sm">Select a City</h4>
                 <p className="text-xs text-slate-400 max-w-[240px] mt-1">
-                  Choose a city from the list on the left to configure its marketing banners.
+                  Choose a target city from the dropdown above to configure its marketing banners.
                 </p>
               </div>
             ) : !currentCityConfig.isActive ? (
-              <div className="bg-white border border-slate-200/60 rounded-xl p-8 shadow-xs flex flex-col items-center justify-center text-center min-h-[440px]">
+              <div className="bg-white border border-slate-200/60 rounded-xl p-8 shadow-xs flex flex-col items-center justify-center text-center min-h-[250px]">
                 <div className="h-12 w-12 rounded-full bg-orange-50 flex items-center justify-center text-orange-500 mb-3">
                   <AlertCircle className="h-6 w-6" />
                 </div>
                 <h4 className="font-extrabold text-slate-800 text-sm capitalize">
-                  {currentCityConfig.cityName} is Inactive
+                  Banners are Inactive for {currentCityConfig.cityName}
                 </h4>
-                <p className="text-xs text-slate-400 max-w-[250px] mt-1 mb-4">
-                  Banners for this city are currently disabled. Enable this city to start configuring slots.
+                <p className="text-xs text-slate-400 max-w-[320px] mt-1 mb-4">
+                  Banners for this city are currently disabled. Enable the active status to configure slots.
                 </p>
                 <Button
                   type="button"
-                  onClick={() => setValue(`cityConfigs.${currentCityConfigIndex}.isActive`, true)}
-                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold py-2 px-4 shadow-sm cursor-pointer"
+                  onClick={() => handleToggleActive(currentCityConfigIndex, true)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-semibold py-2 px-5 shadow-sm cursor-pointer"
                 >
                   Enable Banners for {currentCityConfig.cityName}
                 </Button>
@@ -631,12 +596,9 @@ export default function BannerForm({
                       {type === "HOME" ? "3 Banner Slots (Home Page Carousel)" : "1 Banner Slot"}
                     </p>
                   </div>
-                  <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-100 hover:bg-emerald-50 text-[10px] font-extrabold py-0.5 px-2 rounded-md">
-                    Active
-                  </Badge>
                 </div>
 
-                <div className="space-y-5 max-h-[420px] overflow-y-auto pr-1">
+                <div className="space-y-5 pr-1">
                   {currentCityConfig.banners.map((banner, bannerIndex) => {
                     const services = servicesMap[banner.categoryId] || [];
                     const hasError = form.formState.errors?.cityConfigs?.[currentCityConfigIndex]?.banners?.[bannerIndex]?.file;

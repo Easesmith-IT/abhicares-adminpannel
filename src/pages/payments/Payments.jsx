@@ -33,6 +33,29 @@ import { Button } from "@/components/ui/button";
 import { useCustomSidebar } from "@/components/layout/sidebarContext";
 import { Badge } from "@/components/ui/badge";
 
+const getPaymentReference = (payment) => {
+  const latestTransactionWithPaymentId = [...(payment?.transactions || [])]
+    .reverse()
+    .find((transaction) => transaction?.razorpayPaymentId);
+
+  const gatewayReference =
+    payment?.razorpayPaymentId ||
+    payment?.razorpay_payment_id ||
+    latestTransactionWithPaymentId?.razorpayPaymentId;
+
+  if (gatewayReference) {
+    return {
+      value: gatewayReference,
+      source: "gateway",
+    };
+  }
+
+  return {
+    value: payment?.paymentId || payment?.ledgerId || payment?._id || "—",
+    source: "ledger",
+  };
+};
+
 const Payments = () => {
   const navigate = useNavigate();
 
@@ -189,7 +212,7 @@ const Payments = () => {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-slate-50 border-b border-slate-200/60">
-                    <TableHead className="font-semibold text-slate-700 h-11 pl-6">Gateway Payment ID</TableHead>
+                    <TableHead className="font-semibold text-slate-700 h-11 pl-6">Payment Reference</TableHead>
                     <TableHead className="font-semibold text-slate-700 h-11">Linked Order ID</TableHead>
                     <TableHead className="font-semibold text-slate-700 h-11">Payment Status</TableHead>
                     <TableHead className="font-semibold text-slate-700 h-11 text-right pr-6">Settled Amount</TableHead>
@@ -213,8 +236,21 @@ const Payments = () => {
 
                   {!isLoading && allPayments.map((payment) => (
                     <TableRow key={payment._id} className="hover:bg-slate-50/40">
-                      <TableCell className="font-mono text-xs text-slate-500 pl-6">
-                        {payment.razorpay_payment_id || "PAY-UNSPECIFIED"}
+                      <TableCell className="pl-6">
+                        {(() => {
+                          const reference = getPaymentReference(payment);
+
+                          return (
+                            <div className="flex flex-col gap-0.5">
+                              <span className="font-mono text-xs text-slate-600">
+                                {reference.value}
+                              </span>
+                              <span className="text-[11px] text-slate-400">
+                                {reference.source === "gateway" ? "Gateway reference" : "Ledger fallback"}
+                              </span>
+                            </div>
+                          );
+                        })()}
                       </TableCell>
 
                       <TableCell

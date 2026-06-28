@@ -27,6 +27,17 @@ import { cn } from "../../lib/utils";
 import { useCustomSidebar } from "./sidebarContext";
 import CommandPalette, { ALL_MENU_ITEMS } from "./CommandPalette";
 
+const COLLAPSED_PANEL_WIDTH = 72;
+const COLLAPSED_HIT_WIDTH = 88;
+const EXPANDED_PANEL_WIDTH = 300;
+const EXPANDED_HIT_WIDTH = 312;
+const SIDEBAR_TRANSITION = {
+  duration: 0.24,
+  ease: [0.16, 1, 0.3, 1],
+};
+const SIDEBAR_HOVER_OPEN_DELAY_MS = 40;
+const SIDEBAR_HOVER_CLOSE_DELAY_MS = 160;
+
 // Config-driven navigation layout
 const navigationConfig = [
   {
@@ -34,7 +45,6 @@ const navigationConfig = [
     icon: LayoutDashboard,
     items: [
       { name: "Dashboard", href: "/admin/dashboard" },
-      { name: "Analytics", href: "/admin/partners/metrics" },
     ],
   },
   {
@@ -44,6 +54,7 @@ const navigationConfig = [
       { name: "Orders", href: "/admin/orders" },
       { name: "Bookings", href: "/admin/bookings" },
       { name: "Offered Bookings", href: "/admin/offered-bookings" },
+      { name: "Auto Assign Analytics", href: "/admin/auto-assign-analytics" },
       { name: "Job Requests", href: "/admin/bookings/rejected-request" },
     ],
   },
@@ -419,7 +430,7 @@ const SideNav = () => {
   const navigate = useNavigate();
   const {
     isCollapsed,
-    setIsCollapsed,
+    toggleSidebar,
     selectedCity,
     setSelectedCity,
     favorites,
@@ -436,28 +447,49 @@ const SideNav = () => {
 
   // Hover states for Peek Navigation
   const [isHovered, setIsHovered] = useState(false);
-  const hoverTimeoutRef = useRef(null);
+  const hoverOpenTimeoutRef = useRef(null);
+  const hoverCloseTimeoutRef = useRef(null);
 
   const isVisualExpanded = !isCollapsed || isHovered;
 
   const handleMouseEnter = () => {
-    if (hoverTimeoutRef.current) {
-      clearTimeout(hoverTimeoutRef.current);
-      hoverTimeoutRef.current = null;
+    if (!isCollapsed) return;
+
+    if (hoverCloseTimeoutRef.current) {
+      clearTimeout(hoverCloseTimeoutRef.current);
+      hoverCloseTimeoutRef.current = null;
     }
-    setIsHovered(true);
+
+    if (hoverOpenTimeoutRef.current) return;
+
+    hoverOpenTimeoutRef.current = setTimeout(() => {
+      setIsHovered(true);
+      hoverOpenTimeoutRef.current = null;
+    }, SIDEBAR_HOVER_OPEN_DELAY_MS);
   };
 
   const handleMouseLeave = () => {
-    if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-    hoverTimeoutRef.current = setTimeout(() => {
+    if (!isCollapsed) return;
+
+    if (hoverOpenTimeoutRef.current) {
+      clearTimeout(hoverOpenTimeoutRef.current);
+      hoverOpenTimeoutRef.current = null;
+    }
+
+    if (hoverCloseTimeoutRef.current) {
+      clearTimeout(hoverCloseTimeoutRef.current);
+    }
+
+    hoverCloseTimeoutRef.current = setTimeout(() => {
       setIsHovered(false);
-    }, 500); // 500ms delay
+      hoverCloseTimeoutRef.current = null;
+    }, SIDEBAR_HOVER_CLOSE_DELAY_MS);
   };
 
   useEffect(() => {
     return () => {
-      if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
+      if (hoverOpenTimeoutRef.current) clearTimeout(hoverOpenTimeoutRef.current);
+      if (hoverCloseTimeoutRef.current) clearTimeout(hoverCloseTimeoutRef.current);
     };
   }, []);
 
@@ -522,6 +554,7 @@ const SideNav = () => {
       "/admin/banners": "banners",
       "/admin/orders": "orders",
       "/admin/bookings": "bookings",
+      "/admin/auto-assign-analytics": "bookings",
       "/admin/offered-bookings": "bookings",
       "/admin/bookings/rejected-request": "bookings",
       "/admin/categories": "services",
@@ -594,15 +627,16 @@ const SideNav = () => {
   }));
 
   return (
-    <div
+    <motion.div
       className="fixed top-0 bottom-0 left-0 z-50 flex"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      style={{ width: isVisualExpanded ? 320 : 92 }} // 20px Smart Hover Buffer Zone
+      animate={{ width: isVisualExpanded ? EXPANDED_HIT_WIDTH : COLLAPSED_HIT_WIDTH }}
+      transition={SIDEBAR_TRANSITION}
     >
       <motion.div
-        animate={{ width: isVisualExpanded ? 300 : 72 }}
-        transition={{ duration: isVisualExpanded ? 0.28 : 0.3, ease: [0.16, 1, 0.3, 1] }}
+        animate={{ width: isVisualExpanded ? EXPANDED_PANEL_WIDTH : COLLAPSED_PANEL_WIDTH }}
+        transition={SIDEBAR_TRANSITION}
         className="h-full flex flex-col border-r border-[rgba(15,23,42,0.06)] overflow-hidden select-none w-full shadow-lg"
         style={{
           background: "rgba(255, 255, 255, 0.92)",
@@ -633,8 +667,16 @@ const SideNav = () => {
                 </motion.div>
                 <button
                   onClick={() => {
-                    setIsCollapsed(!isCollapsed);
+                    toggleSidebar();
                     if (isCollapsed) {
+                      if (hoverOpenTimeoutRef.current) {
+                        clearTimeout(hoverOpenTimeoutRef.current);
+                        hoverOpenTimeoutRef.current = null;
+                      }
+                      if (hoverCloseTimeoutRef.current) {
+                        clearTimeout(hoverCloseTimeoutRef.current);
+                        hoverCloseTimeoutRef.current = null;
+                      }
                       setIsHovered(false);
                     }
                   }}
@@ -887,7 +929,7 @@ const SideNav = () => {
 
         <CommandPalette open={isCmdOpen} setOpen={setIsCmdOpen} />
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 

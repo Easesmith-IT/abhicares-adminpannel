@@ -297,7 +297,7 @@ const Header = () => {
         if (paymentsRes.data?.payments) {
           results.payments = paymentsRes.data.payments
             .filter((p) =>
-              p.razorpay_payment_id?.toLowerCase().includes(trimmedQuery.toLowerCase()) ||
+              getPaymentReference(p).toLowerCase().includes(trimmedQuery.toLowerCase()) ||
               p.orderId?.toLowerCase().includes(trimmedQuery.toLowerCase())
             )
             .slice(0, 5);
@@ -369,6 +369,21 @@ const Header = () => {
     localStorage.removeItem("recent_searches");
   };
 
+  const getPaymentReference = (payment) => {
+    const latestTransactionWithPaymentId = [...(payment?.transactions || [])]
+      .reverse()
+      .find((transaction) => transaction?.razorpayPaymentId);
+
+    return (
+      payment?.razorpayPaymentId ||
+      payment?.razorpay_payment_id ||
+      latestTransactionWithPaymentId?.razorpayPaymentId ||
+      payment?.paymentId ||
+      payment?._id ||
+      ""
+    );
+  };
+
   const getResultLabel = (item, type) => {
     switch (type) {
       case "booking":
@@ -388,7 +403,7 @@ const Header = () => {
       case "offer":
         return item.couponCode || item.title;
       case "payment":
-        return `Payment: ${item.razorpay_payment_id || item._id}`;
+        return `Payment: ${getPaymentReference(item)}`;
       default:
         return item.name || "Search Result";
     }
@@ -442,6 +457,7 @@ const Header = () => {
       "cash-management": "Cash Management",
       "item-categories": "Services Categories",
       "seller-cashouts": "Partner Payouts",
+      "auto-assign-analytics": "Auto Assign Analytics",
       metrics: "Reports & Analytics",
       create: "Register Partner",
       add: "Add New Details",
@@ -458,21 +474,44 @@ const Header = () => {
 
   return (
     <>
-      <header
-        className="sticky top-5 z-40 select-none transition-all duration-300"
-        style={{
-          height: "76px",
-          padding: "0 24px",
-          margin: "20px 24px 10px 24px",
-          background: "rgba(255, 255, 255, 0.92)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
-          border: "1px solid rgba(255, 255, 255, 0.6)",
-          borderRadius: "28px",
-          boxShadow: "0 10px 30px rgba(15, 23, 42, 0.08)"
-        }}
-      >
-        <div className="w-full h-full flex items-center justify-between gap-4">
+      <div className="sticky top-0 z-40 px-6 pb-3 pt-5">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-0 h-full"
+          aria-hidden="true"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(214,226,245,0.985) 0%, rgba(214,226,245,0.965) 62%, rgba(214,226,245,0.88) 82%, rgba(214,226,245,0) 100%)",
+            backdropFilter: "blur(24px) saturate(155%)",
+            WebkitBackdropFilter: "blur(24px) saturate(155%)",
+          }}
+        />
+
+        <header
+          className="relative isolate overflow-hidden select-none transition-all duration-300"
+          style={{
+            height: "76px",
+            padding: "0 24px",
+            background: "rgba(248, 250, 252, 0.96)",
+            backdropFilter: "blur(28px) saturate(160%)",
+            WebkitBackdropFilter: "blur(28px) saturate(160%)",
+            border: "1px solid rgba(226, 232, 240, 0.95)",
+            borderRadius: "28px",
+            boxShadow: "0 18px 40px rgba(15, 23, 42, 0.12)"
+          }}
+        >
+          <div
+            className="pointer-events-none absolute inset-0"
+            aria-hidden="true"
+            style={{
+              background:
+                "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(248,250,252,0.98) 72%, rgba(241,245,249,1) 100%)",
+              backdropFilter: "blur(34px) saturate(180%)",
+              WebkitBackdropFilter: "blur(34px) saturate(180%)",
+            }}
+          />
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-b from-transparent to-slate-100/90" aria-hidden="true" />
+
+          <div className="relative z-10 flex h-full w-full items-center justify-between gap-4">
           
           {/* 1. Global Search Input */}
           <motion.div
@@ -783,7 +822,7 @@ const Header = () => {
                             >
                               <div className="flex items-center gap-3">
                                 <Tag className="size-4 text-[#64748B]" />
-                                <span className="font-semibold text-[#0F172A] font-mono text-xs">{p.razorpay_payment_id || p._id}</span>
+                                <span className="font-semibold text-[#0F172A] font-mono text-xs">{getPaymentReference(p)}</span>
                                 <span className="text-xs text-[#64748B]">(Order #{p.orderId})</span>
                               </div>
                               <span className="text-xs font-semibold text-slate-800">
@@ -995,8 +1034,9 @@ const Header = () => {
             </motion.div>
 
           </div>
-        </div>
-      </header>
+          </div>
+        </header>
+      </div>
 
       {/* Logout Confirmation Modal */}
       {isLogoutModalOpen && (

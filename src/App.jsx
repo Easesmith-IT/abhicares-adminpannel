@@ -8,6 +8,7 @@ import { SidebarLayoutProvider } from "@/components/layout/sidebarContext";
 import PrivateRoute from "./components/protected-route/PrivateRoute";
 import AdminLogin from "./pages/AdminLogin";
 import Banners from "./pages/banners/Banners";
+import CityBannerConfig from "./pages/banners/CityBannerConfig";
 import BookingDetails from "./pages/bookings/BookingDetails";
 import Bookings from "./pages/bookings/Bookings";
 import RejectedBookingRequests from "./pages/bookings/SellerRejectRequests";
@@ -101,6 +102,7 @@ function App() {
             element={<RejectedBookingRequestDetails />}
           />
           <Route path="/admin/bookings/:id" element={<BookingDetails />} />
+          <Route path="/admin/auto-assign-analytics" element={<Metrics />} />
 
           <Route path="/admin/offered-bookings" element={<OfferedBookings />} />
           <Route
@@ -264,6 +266,7 @@ function App() {
           <Route path="/admin/seller-cashouts" element={<SellerCashouts />} />
 
           <Route path="/admin/banners" exact element={<Banners />} />
+          <Route path="/admin/banners/configure/:cityId" exact element={<CityBannerConfig />} />
           <Route
             path="/admin/homepage-trending"
             exact

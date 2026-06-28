@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import Wrapper from "../../components/wrappers/Wrapper";
 import { H2 } from "../../components/shared/typography";
 import { Button } from "@/components/ui/button";
@@ -58,6 +59,7 @@ import {
   ChevronRight,
   Sparkles,
   ExternalLink,
+  MapPin,
 } from "lucide-react";
 
 import useGetApiReq from "@/hooks/useGetApiReq";
@@ -69,6 +71,7 @@ import { useCities } from "@/components/filters/city";
 import BannerForm from "@/components/banners/BannerForm";
 
 const Banners = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("banners");
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 300);
@@ -84,7 +87,8 @@ const Banners = () => {
   const { res: announcementsRes, fetchData: getAnnouncements, isLoading: announcementsLoading } = useGetApiReq();
 
   // Mutation API Hooks
-  const { fetchData: patchBanner, res: patchBannerRes } = usePatchApiReq();
+  const { fetchData: createBannerReq, res: createBannerRes, isLoading: createBannerLoading } = usePostApiReq();
+  const { fetchData: patchBanner, res: patchBannerRes, isLoading: patchBannerLoading } = usePatchApiReq();
   const { fetchData: deleteBanner, res: deleteBannerRes } = useDeleteApiReq();
   const { fetchData: deleteVideo, res: deleteVideoRes } = useDeleteApiReq();
   const { fetchData: deleteAnnouncement, res: deleteAnnouncementRes } = useDeleteApiReq();
@@ -101,9 +105,13 @@ const Banners = () => {
 
   // States for Modals/Drawers
   const [selectedBanner, setSelectedBanner] = useState(null);
+  const [selectedCityId, setSelectedCityId] = useState(null);
   const [isPreviewDrawerOpen, setIsPreviewDrawerOpen] = useState(false);
   const [isFormDrawerOpen, setIsFormDrawerOpen] = useState(false);
   const [formDrawerMode, setFormDrawerMode] = useState("create"); // "create" | "edit"
+  const [isSelectCityDialogOpen, setIsSelectCityDialogOpen] = useState(false);
+  const [selectedCityForCreate, setSelectedCityForCreate] = useState(null);
+  const [selectedTypeForCreate, setSelectedTypeForCreate] = useState("HOME");
 
   // Video management states
   const [isVideoDialogOpen, setIsVideoDialogOpen] = useState(false);
@@ -215,6 +223,13 @@ const Banners = () => {
   }, [patchBannerRes]);
 
   useEffect(() => {
+    if (createBannerRes?.status === 201 || createBannerRes?.status === 200) {
+      loadBanners();
+      setIsFormDrawerOpen(false);
+    }
+  }, [createBannerRes]);
+
+  useEffect(() => {
     if (deleteBannerRes?.status === 200) {
       loadBanners();
       setIsDeleteConfirmOpen(false);
@@ -278,6 +293,25 @@ const Banners = () => {
     const formData = new FormData();
     formData.append("isActive", !banner.isActive);
     await patchBanner(`/banners/update-banner/${banner._id}`, formData);
+  };
+
+  const handleToggleCityStatus = async (row) => {
+    if (!row.parentBanner) return;
+
+    const updatedConfigs = row.parentBanner.cityConfigs.map((cfg) => {
+      const cityIdStr = String(cfg.cityId?._id || cfg.cityId);
+      if (cityIdStr === String(row.cityId)) {
+        return {
+          ...cfg,
+          isActive: !cfg.isActive,
+        };
+      }
+      return cfg;
+    });
+
+    const formData = new FormData();
+    formData.append("cityConfigs", JSON.stringify(updatedConfigs));
+    await patchBanner(`/banners/update-banner/${row.parentBanner._id}`, formData);
   };
 
   const handleToggleAnnouncementStatus = async (ann) => {
@@ -404,43 +438,60 @@ const Banners = () => {
   const announcementList = announcementsRes?.data?.data || [];
 
   const filteredBanners = useMemo(() => {
-    return bannerList.filter((b) => {
-      // Type Filter
-      if (bannerType !== "ALL" && b.type !== bannerType) return false;
+    const targetType = bannerType === "ALL" ? "HOME" : bannerType;
+    const targetBanner = bannerList.find((b) => b.type === targetType);
 
-      // Status Filter
-      if (bannerStatus !== "ALL") {
-        const active = bannerStatus === "ACTIVE";
-        if (b.isActive !== active) return false;
-      }
-
-      // City Filter
-      if (bannerCity !== "ALL") {
-        const hasCity = b.cityConfigs?.some(
-          (c) => c.cityId && (c.cityId._id === bannerCity || c.cityId === bannerCity)
+    return allCities
+      .map((city) => {
+        const cityConfig = targetBanner?.cityConfigs?.find(
+          (c) => String(c.cityId?._id || c.cityId) === String(city._id)
         );
-        if (!hasCity) return false;
-      }
 
-      return true;
-    });
-  }, [bannerList, bannerType, bannerCity, bannerStatus]);
+        return {
+          _id: targetBanner?._id || null,
+          type: targetType,
+          cityId: city._id,
+          cityName: city.name,
+          isActive: cityConfig ? cityConfig.isActive : false,
+          banners: cityConfig?.banners || [],
+          createdAt: targetBanner?.createdAt || new Date(),
+          cityConfig,
+          parentBanner: targetBanner,
+        };
+      })
+      .filter((row) => {
+        // Status Filter
+        if (bannerStatus !== "ALL") {
+          const active = bannerStatus === "ACTIVE";
+          if (row.isActive !== active) return false;
+        }
 
-  const normalizedBanner = selectedBanner
-    ? {
-        ...selectedBanner,
-        cityConfigs: selectedBanner.cityConfigs.map((city) => ({
-          ...city,
-          banners:
-            city.banners?.map((b) => ({
-              ...b,
-              existingImage: b.image || "",
-              file: null,
-              preview: "",
-            })) || [],
-        })),
-      }
-    : null;
+        // Search Filter
+        if (debouncedSearch) {
+          const searchLower = debouncedSearch.toLowerCase();
+          if (!row.cityName.toLowerCase().includes(searchLower)) return false;
+        }
+
+        return true;
+      });
+  }, [bannerList, allCities, bannerStatus, debouncedSearch, bannerType]);
+
+  const normalizedBanner = useMemo(() => {
+    if (!selectedBanner) return null;
+    return {
+      ...selectedBanner,
+      cityConfigs: selectedBanner.cityConfigs.map((city) => ({
+        ...city,
+        banners:
+          city.banners?.map((b) => ({
+            ...b,
+            existingImage: b.image || "",
+            file: null,
+            preview: "",
+          })) || [],
+      })),
+    };
+  }, [selectedBanner]);
 
   return (
     <Wrapper>
@@ -477,19 +528,7 @@ const Banners = () => {
               )}
             </div>
 
-            {/* Dynamic CTA Button */}
-            {activeTab === "banners" && (
-              <Button
-                onClick={() => {
-                  setSelectedBanner(null);
-                  setFormDrawerMode("create");
-                  setIsFormDrawerOpen(true);
-                }}
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm h-10 px-4"
-              >
-                <Plus className="mr-2 h-4 w-4" /> Create Banner
-              </Button>
-            )}
+
             {activeTab === "videos" && (
               <Button
                 onClick={() => {
@@ -630,109 +669,81 @@ const Banners = () => {
                     <Sparkles className="h-8 w-8" />
                   </div>
                   <div className="space-y-1">
-                    <h3 className="font-semibold text-slate-900 text-lg">No Banners Found</h3>
+                    <h3 className="font-semibold text-slate-900 text-lg">No Cities Found</h3>
                     <p className="text-slate-500 max-w-sm text-sm">
-                      Create your first marketing banner to begin campaign drives.
+                      Try resetting your search query or city filters to view available cities.
                     </p>
                   </div>
-                  <Button
-                    onClick={() => {
-                      setSelectedBanner(null);
-                      setFormDrawerMode("create");
-                      setIsFormDrawerOpen(true);
-                    }}
-                    className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm"
-                  >
-                    <Plus className="mr-2 h-4 w-4" /> Create Banner
-                  </Button>
                 </div>
               ) : (
                 <Table>
                   <TableHeader className="bg-slate-50/80">
                     <TableRow>
-                      <TableHead className="w-[160px] font-bold text-slate-700">Thumbnail</TableHead>
-                      <TableHead className="font-bold text-slate-700">Type</TableHead>
-                      <TableHead className="font-bold text-slate-700">Cities</TableHead>
+                      <TableHead className="font-bold text-slate-700">City</TableHead>
+                      <TableHead className="w-[200px] font-bold text-slate-700">Thumbnails</TableHead>
                       <TableHead className="font-bold text-slate-700">Linked To</TableHead>
                       <TableHead className="font-bold text-slate-700">Status</TableHead>
-                      <TableHead className="font-bold text-slate-700">Slots</TableHead>
+                      <TableHead className="font-bold text-slate-700">Slots Configured</TableHead>
                       <TableHead className="font-bold text-slate-700">Created</TableHead>
                       <TableHead className="w-[100px] text-right font-bold text-slate-700"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredBanners.map((banner) => {
-                      // Find first active banner image configuration
-                      const activeConfig = banner.cityConfigs?.find((c) => c.isActive && c.banners?.[0]?.image);
-                      const displayImg = activeConfig?.banners?.[0]?.image || banner.defaultImage;
-
-                      // Linked entities
-                      const firstBannerConfig = activeConfig?.banners?.[0];
-                      const linkedCat = firstBannerConfig?.categoryId?.name;
-                      const linkedService = firstBannerConfig?.serviceId?.name;
-
-                      // Active Cities
-                      const activeCities = banner.cityConfigs
-                        ?.filter((c) => c.isActive)
-                        ?.map((c) => c.cityId?.name || "Unknown City") || [];
+                    {filteredBanners.map((row, idx) => {
+                      const activeSlots = row.banners.filter((b) => b.image).length;
 
                       return (
                         <TableRow
-                          key={banner._id}
-                          className="hover:bg-slate-50/80 transition-colors duration-200"
+                          key={row.cityId || idx}
+                          className="hover:bg-slate-50/80 transition-colors duration-200 cursor-pointer"
+                          onClick={() => {
+                            navigate(`/admin/banners/configure/${row.cityId}`);
+                          }}
                         >
+                          <TableCell className="align-middle font-extrabold text-slate-800 capitalize">
+                            {row.cityName}
+                          </TableCell>
+
                           <TableCell className="align-middle">
-                            {displayImg ? (
-                              <div className="relative h-14 w-24 overflow-hidden rounded-lg border border-slate-200 bg-slate-50 shadow-inner group">
-                                <img
-                                  src={`${import.meta.env.VITE_APP_IMAGE_URL}/${displayImg}`}
-                                  alt="Banner"
-                                  className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-110"
-                                />
+                            {row.banners?.length > 0 && row.banners.some((b) => b.image) ? (
+                              <div className="flex gap-1.5 flex-wrap max-w-[200px]">
+                                {row.banners.map((b, idx) => {
+                                  if (!b.image) return null;
+                                  return (
+                                    <div key={idx} className="relative h-10 w-16 overflow-hidden rounded-md border border-slate-200 bg-slate-50 shadow-inner group" title={`Slot ${idx + 1}`}>
+                                      <img
+                                        src={`${import.meta.env.VITE_APP_IMAGE_URL}/${b.image}`}
+                                        alt={`Slot ${idx + 1}`}
+                                        className="h-full w-full object-cover transition-transform duration-200 group-hover:scale-110"
+                                      />
+                                    </div>
+                                  );
+                                })}
                               </div>
                             ) : (
-                              <div className="h-14 w-24 bg-slate-100 rounded-lg flex items-center justify-center text-xs text-slate-400 font-medium italic border border-slate-200">
+                              <div className="h-10 w-16 bg-slate-100 rounded-md flex items-center justify-center text-[10px] text-slate-400 font-medium italic border border-slate-200">
                                 No Preview
                               </div>
                             )}
                           </TableCell>
 
                           <TableCell className="align-middle">
-                            {banner.type === "HOME" && (
-                              <Badge className="bg-blue-50 text-blue-700 hover:bg-blue-50 font-bold border border-blue-100 py-1 px-3.5 rounded-full">
-                                HOME
-                              </Badge>
-                            )}
-                            {banner.type === "OFFER" && (
-                              <Badge className="bg-amber-50 text-amber-700 hover:bg-amber-50 font-bold border border-amber-100 py-1 px-3.5 rounded-full">
-                                OFFER
-                              </Badge>
-                            )}
-                            {banner.type === "REFER" && (
-                              <Badge className="bg-emerald-50 text-emerald-700 hover:bg-emerald-50 font-bold border border-emerald-100 py-1 px-3.5 rounded-full">
-                                REFER
-                              </Badge>
-                            )}
-                          </TableCell>
-
-                          <TableCell className="align-middle font-semibold text-slate-700">
-                            {activeCities.length === 0 ? (
-                              <span className="text-slate-400 italic text-xs font-normal">None Configured</span>
-                            ) : activeCities.length <= 3 ? (
-                              activeCities.join(", ")
-                            ) : (
-                              `${activeCities.slice(0, 2).join(", ")} +${activeCities.length - 2}`
-                            )}
-                          </TableCell>
-
-                          <TableCell className="align-middle">
-                            {linkedCat || linkedService ? (
-                              <div className="space-y-0.5">
-                                {linkedCat && (
-                                  <div className="text-sm font-semibold text-slate-800">{linkedCat}</div>
-                                )}
-                                {linkedService && (
-                                  <div className="text-xs text-slate-500 font-medium">{linkedService}</div>
+                            {row.banners?.length ? (
+                              <div className="space-y-1 max-w-[250px]">
+                                {row.banners.map((b, idx) => {
+                                  const catName = typeof b.categoryId === "object" ? b.categoryId?.name : allCategories.find((c) => String(c._id) === String(b.categoryId))?.name;
+                                  const srvName = typeof b.serviceId === "object" ? b.serviceId?.name : null;
+                                  if (!catName && !srvName) return null;
+                                  return (
+                                    <div key={idx} className="text-xs">
+                                      <span className="font-extrabold text-[10px] text-slate-400 uppercase mr-1">S{idx + 1}:</span>
+                                      {catName && <span className="font-semibold text-slate-700">{catName}</span>}
+                                      {srvName && <span className="text-slate-500 font-medium text-[11px]"> ({srvName})</span>}
+                                    </div>
+                                  );
+                                })}
+                                {row.banners.every((b) => !b.categoryId && !b.serviceId) && (
+                                  <span className="text-slate-400 text-xs font-medium">Not Linked</span>
                                 )}
                               </div>
                             ) : (
@@ -744,22 +755,22 @@ const Banners = () => {
                             <div className="flex items-center gap-2">
                               <span
                                 className={`h-2.5 w-2.5 rounded-full ${
-                                  banner.isActive ? "bg-emerald-500" : "bg-slate-300"
+                                  row.isActive ? "bg-emerald-500" : "bg-slate-300"
                                 }`}
                               />
                               <span className="text-sm font-bold text-slate-700">
-                                {banner.isActive ? "Active" : "Inactive"}
+                                {row.isActive ? "Active" : "Inactive"}
                               </span>
                             </div>
                           </TableCell>
 
                           <TableCell className="align-middle font-bold text-slate-600">
-                            {banner.type === "HOME" ? "3 / 3" : "1 / 1"}
+                            {activeSlots} / 3
                           </TableCell>
 
                           <TableCell className="align-middle">
                             <div className="text-sm font-semibold text-slate-800">
-                              {new Date(banner.createdAt).toLocaleDateString("en-GB", {
+                              {new Date(row.createdAt).toLocaleDateString("en-GB", {
                                 day: "2-digit",
                                 month: "short",
                                 year: "numeric",
@@ -768,46 +779,61 @@ const Banners = () => {
                             <div className="text-xs text-slate-400 font-medium">Admin Panel</div>
                           </TableCell>
 
-                          <TableCell className="align-middle text-right">
+                          <TableCell className="align-middle text-right" onClick={(e) => e.stopPropagation()}>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-400 hover:text-slate-800">
                                   <MoreVertical className="h-4.5 w-4.5" />
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="w-[160px] rounded-lg shadow-md border-slate-200">
+                              <DropdownMenuContent align="end" className="w-[180px] rounded-lg shadow-md border-slate-200">
                                 <DropdownMenuItem
                                   onClick={() => {
-                                    setSelectedBanner(banner);
-                                    setIsPreviewDrawerOpen(true);
+                                    if (row.parentBanner) {
+                                      setSelectedBanner(row.parentBanner);
+                                      setSelectedCityId(row.cityId);
+                                      setIsPreviewDrawerOpen(true);
+                                    } else {
+                                      toast.info("Please configure the banner first to preview.");
+                                    }
                                   }}
                                   className="font-medium cursor-pointer"
                                 >
                                   <Eye className="mr-2 h-4 w-4 text-slate-500" /> Preview
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                  onClick={() => handleOpenEditBanner(banner)}
+                                  onClick={() => {
+                                    navigate(`/admin/banners/configure/${row.cityId}`);
+                                  }}
                                   className="font-medium cursor-pointer"
                                 >
-                                  <Edit className="mr-2 h-4 w-4 text-slate-500" /> Edit
+                                  <Edit className="mr-2 h-4 w-4 text-slate-500" /> Configure Banners
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                  onClick={() => handleToggleBannerStatus(banner)}
+                                  onClick={() => {
+                                    if (row.parentBanner) {
+                                      handleToggleCityStatus(row);
+                                    } else {
+                                      toast.info("Please configure the banner first to change status.");
+                                    }
+                                  }}
                                   className="font-medium cursor-pointer"
                                 >
                                   <Switch
-                                    checked={banner.isActive}
+                                    checked={row.isActive}
                                     className="scale-75 -ml-1 mr-1"
                                     onCheckedChange={() => {}}
                                   />
                                   Toggle Active
                                 </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => handleDeleteClick(banner._id, "banner")}
-                                  className="text-red-600 focus:text-red-700 font-medium cursor-pointer"
-                                >
-                                  <Trash2 className="mr-2 h-4 w-4" /> Delete
-                                </DropdownMenuItem>
+                                {row.parentBanner && (
+                                  <DropdownMenuItem
+                                    onClick={() => handleDeleteClick(row.parentBanner._id, "banner")}
+                                    className="text-red-600 focus:text-red-700 font-medium cursor-pointer"
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" /> Delete
+                                  </DropdownMenuItem>
+                                )}
                               </DropdownMenuContent>
                             </DropdownMenu>
                           </TableCell>
@@ -1083,36 +1109,61 @@ const Banners = () => {
                 <Label className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">
                   Preview Graphic
                 </Label>
-                {selectedBanner.cityConfigs?.map((cfg, i) => {
-                  const activeImg = cfg.banners?.[0]?.image;
-                  if (!activeImg) return null;
-                  return (
-                    <Card key={i} className="overflow-hidden border border-slate-200 shadow-xs rounded-xl bg-white">
-                      <div className="relative h-44 bg-slate-100 flex items-center justify-center">
-                        <img
-                          src={`${import.meta.env.VITE_APP_IMAGE_URL}/${activeImg}`}
-                          alt="Banner Location"
-                          className="w-full h-full object-cover"
-                        />
-                        <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
-                          {cfg.cityId?.name || "Global / Unknown"}
+                {selectedBanner.cityConfigs
+                  ?.filter((cfg) => !selectedCityId || String(cfg.cityId?._id || cfg.cityId) === String(selectedCityId))
+                  .map((cfg, i) => {
+                    if (!cfg.isActive) return null;
+                    const hasBanners = cfg.banners?.some((b) => b.image);
+                    if (!hasBanners) return null;
+
+                    const cityName = (typeof cfg.cityId === "object" && cfg.cityId?.name) || cfg.cityName || allCities.find(c => String(c._id) === String(cfg.cityId))?.name || "Global / Unknown";
+
+                    return (
+                      <div key={i} className="space-y-3">
+                        <div className="text-xs font-extrabold text-slate-400 uppercase tracking-widest flex items-center gap-1 border-b pb-1">
+                          <MapPin className="h-3 w-3 text-blue-600" />
+                          {cityName} Banners
                         </div>
-                      </div>
-                      <CardContent className="p-3 bg-slate-50/50 flex flex-col gap-1 text-xs">
-                        {cfg.banners?.[0]?.categoryId?.name && (
-                          <div>
-                            <span className="font-semibold text-slate-500">Category: </span>
-                            <span className="font-bold text-slate-700">{cfg.banners[0].categoryId.name}</span>
-                          </div>
-                        )}
-                        {cfg.banners?.[0]?.serviceId?.name && (
-                          <div>
-                            <span className="font-semibold text-slate-500">Service: </span>
-                            <span className="font-bold text-slate-700">{cfg.banners[0].serviceId.name}</span>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
+                      {cfg.banners?.map((b, idx) => {
+                        if (!b.image) return null;
+                        return (
+                          <Card key={idx} className="overflow-hidden border border-slate-200 shadow-xs rounded-xl bg-white">
+                            <div className="relative h-44 bg-slate-100 flex items-center justify-center">
+                              <img
+                                src={`${import.meta.env.VITE_APP_IMAGE_URL}/${b.image}`}
+                                alt={`Slot ${idx + 1}`}
+                                className="w-full h-full object-cover"
+                              />
+                              <div className="absolute top-3 left-3 bg-black/60 backdrop-blur-xs px-2.5 py-1 rounded-full text-[10px] font-bold text-white uppercase tracking-wider">
+                                Slot {idx + 1}
+                              </div>
+                            </div>
+                            <CardContent className="p-3 bg-slate-50/50 flex flex-col gap-1 text-xs">
+                              {b.categoryId && (
+                                <div>
+                                  <span className="font-semibold text-slate-500">Category: </span>
+                                  <span className="font-bold text-slate-700">
+                                    {typeof b.categoryId === "object" && b.categoryId?.name
+                                      ? b.categoryId.name
+                                      : allCategories.find((c) => String(c._id) === String(b.categoryId))?.name || "Unknown Category"}
+                                  </span>
+                                </div>
+                              )}
+                              {b.serviceId && (
+                                <div>
+                                  <span className="font-semibold text-slate-500">Service: </span>
+                                  <span className="font-bold text-slate-700">
+                                    {typeof b.serviceId === "object" && b.serviceId?.name
+                                      ? b.serviceId.name
+                                      : "Linked Service"}
+                                  </span>
+                                </div>
+                              )}
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </div>
                   );
                 })}
               </div>
@@ -1189,40 +1240,101 @@ const Banners = () => {
 
       {/* 2. CREATE/EDIT BANNER SLIDE OVER DRAWER */}
       <Sheet open={isFormDrawerOpen} onOpenChange={setIsFormDrawerOpen}>
-        <SheetContent className="sm:max-w-2xl w-[700px] overflow-y-auto p-6 bg-slate-50 border-l shadow-2xl">
+        <SheetContent className="sm:max-w-4xl w-[850px] overflow-y-auto p-6 bg-slate-50 border-l shadow-2xl">
           <SheetHeader className="pb-4 border-b">
             <SheetTitle className="text-xl font-extrabold text-slate-900">
-              {formDrawerMode === "create" ? "Create New Marketing Banner" : "Edit Banner Configuration"}
+              Configure Marketing Banners
             </SheetTitle>
           </SheetHeader>
 
           <div className="mt-6">
             {formDrawerMode === "create" ? (
-              <BannerForm
-                onSubmit={async (formData) => {
-                  await patchBanner("/banners/create-banner", formData);
-                }}
-                isLoading={bannersLoading}
-                defaultValues={{
-                  type: "HOME",
-                  cityConfigs: [],
-                }}
-              />
+              selectedBanner && (
+                <BannerForm
+                  key={`create-banner-form-${selectedCityId}-${selectedBanner.type}`}
+                  initialData={selectedBanner}
+                  selectedCityId={selectedCityId}
+                  availableCities={allCities}
+                  availableCategories={allCategories}
+                  onSubmit={async (formData) => {
+                    await createBannerReq("/banners/create-banner", formData);
+                  }}
+                  isLoading={createBannerLoading}
+                />
+              )
             ) : (
               normalizedBanner && (
                 <BannerForm
+                  key={`edit-banner-form-${selectedBanner._id}-${selectedCityId}`}
                   initialData={normalizedBanner}
+                  selectedCityId={selectedCityId}
+                  availableCities={allCities}
+                  availableCategories={allCategories}
                   onSubmit={async (formData) => {
                     await patchBanner(`/banners/update-banner/${selectedBanner._id}`, formData);
                   }}
                   isEdit
-                  isLoading={bannersLoading}
+                  isLoading={patchBannerLoading}
                 />
               )
             )}
           </div>
         </SheetContent>
       </Sheet>
+
+      {/* 2.5 SELECT CITY DIALOG FOR CREATING/CONFIGURING */}
+      <Dialog open={isSelectCityDialogOpen} onOpenChange={setIsSelectCityDialogOpen}>
+        <DialogContent className="sm:max-w-md rounded-xl border border-slate-200 shadow-2xl bg-white p-5">
+          <DialogHeader>
+            <DialogTitle className="text-base font-extrabold text-slate-900">
+              Select City to Configure Banners
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-bold text-slate-500 uppercase tracking-wider">Target City</Label>
+              <Select
+                value={selectedCityForCreate || ""}
+                onValueChange={(val) => setSelectedCityForCreate(val)}
+              >
+                <SelectTrigger className="w-full bg-slate-50 border-slate-200 h-10 rounded-lg">
+                  <SelectValue placeholder="Select target city" />
+                </SelectTrigger>
+                <SelectContent className="rounded-lg shadow-md border-slate-200">
+                  {allCities.map((city) => (
+                    <SelectItem key={city._id} value={city._id}>
+                      {city.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex gap-2 justify-end pt-2">
+              <Button
+                variant="outline"
+                onClick={() => setIsSelectCityDialogOpen(false)}
+                className="rounded-lg text-xs font-bold cursor-pointer"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  if (!selectedCityForCreate) {
+                    toast.error("Please select a city");
+                    return;
+                  }
+                  setIsSelectCityDialogOpen(false);
+                  navigate(`/admin/banners/configure/${selectedCityForCreate}`);
+                }}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-xs font-bold cursor-pointer"
+              >
+                Configure
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* 3. UPLOAD/EDIT VIDEO DIALOG */}
       <Dialog open={isVideoDialogOpen} onOpenChange={setIsVideoDialogOpen}>
