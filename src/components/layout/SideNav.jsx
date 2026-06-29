@@ -563,6 +563,7 @@ const SideNav = () => {
       "/admin/partners?status=IN-REVIEW": "partners",
       "/admin/customers": "customers",
       "/admin/offers": "offers",
+      "/admin/notifications": "notifications",
       "/admin/available-cities": "availableCities",
       "/admin/payments": "payments",
       "/admin/help-center": "helpCenter",
