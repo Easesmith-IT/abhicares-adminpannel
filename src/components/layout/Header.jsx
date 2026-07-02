@@ -487,7 +487,7 @@ const Header = () => {
         />
 
         <header
-          className="relative isolate overflow-hidden select-none transition-all duration-300"
+          className="relative isolate select-none transition-all duration-300"
           style={{
             height: "76px",
             padding: "0 24px",
@@ -499,17 +499,19 @@ const Header = () => {
             boxShadow: "0 18px 40px rgba(15, 23, 42, 0.12)"
           }}
         >
-          <div
-            className="pointer-events-none absolute inset-0"
-            aria-hidden="true"
-            style={{
-              background:
-                "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(248,250,252,0.98) 72%, rgba(241,245,249,1) 100%)",
-              backdropFilter: "blur(34px) saturate(180%)",
-              WebkitBackdropFilter: "blur(34px) saturate(180%)",
-            }}
-          />
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-b from-transparent to-slate-100/90" aria-hidden="true" />
+          {/* Background overlay with rounded corners to match the header border radius */}
+          <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[28px]" aria-hidden="true">
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(180deg, rgba(255,255,255,0.96) 0%, rgba(248,250,252,0.98) 72%, rgba(241,245,249,1) 100%)",
+                backdropFilter: "blur(34px) saturate(180%)",
+                WebkitBackdropFilter: "blur(34px) saturate(180%)",
+              }}
+            />
+            <div className="absolute inset-x-0 bottom-0 h-6 bg-gradient-to-b from-transparent to-slate-100/90" />
+          </div>
 
           <div className="relative z-10 flex h-full w-full items-center justify-between gap-4">
           
