@@ -57,38 +57,37 @@ const ItemCategories = () => {
     <Wrapper>
       <div className="space-y-6">
         <div className="flex justify-between items-center gap-3">
-          <div className="flex items-center gap-3">
-            <H2>Invoice Item Categories</H2>
-            <div className="relative w-full max-w-xs">
-              <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
-              <Input
-                id="search"
-                placeholder="Search categories..."
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-                className="pl-9 bg-white"
-              />
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <PageSizeSelect
-              value={limit}
-              onChange={(value) => {
-                setLimit(value);
+          <H2>Invoice Item Categories</H2>
+          <Button asChild variant="abhicares">
+            <Link to={"/admin/invoice-item-categories/add"}>
+              <PlusIcon />
+              <span>Add Invoice Item Category</span>
+            </Link>
+          </Button>
+        </div>
+
+        <div className="flex justify-between items-center gap-3">
+          <div className="relative w-full max-w-xs">
+            <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+            <Input
+              id="search"
+              placeholder="Search categories..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
                 setPage(1);
               }}
-              label=""
+              className="pl-9 bg-white"
             />
-            <Button asChild variant="abhicares">
-              <Link to={"/admin/invoice-item-categories/add"}>
-                <PlusIcon />
-                <span>Add Invoice Item Category</span>
-              </Link>
-            </Button>
           </div>
+          <PageSizeSelect
+            value={limit}
+            onChange={(value) => {
+              setLimit(value);
+              setPage(1);
+            }}
+            label=""
+          />
         </div>
 
         <div className="table-container">

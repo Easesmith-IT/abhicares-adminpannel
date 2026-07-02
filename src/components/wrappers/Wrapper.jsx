@@ -1,5 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
+import PageLoadingChrome from "@/components/loading/PageLoadingChrome";
 import Header from "../layout/Header";
 import SideNav from "../layout/SideNav";
 import { useCustomSidebar } from "@/components/layout/sidebarContext";
@@ -22,8 +23,9 @@ const WrapperContent = ({ children }) => {
         <Header />
 
         {/* Page content with slide-up and fade transition keyed by pathname to trigger on route change */}
-        <main className="px-[30px] pt-[20px] pb-[30px] flex-1">
-          <div key={location.pathname} className="animate-page-transition">
+        <main className="relative px-[30px] pt-[20px] pb-[30px] flex-1">
+          <PageLoadingChrome />
+          <div key={location.pathname} className="animate-page-transition relative">
             {children}
           </div>
         </main>

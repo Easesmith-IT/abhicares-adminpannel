@@ -3,6 +3,7 @@ import "leaflet/dist/leaflet.css";
 import "./App.css";
 
 import { Navigate, Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { PageLoadingProvider } from "@/components/loading/PageLoadingProvider";
 import { Toaster } from "sonner";
 import { SidebarLayoutProvider } from "@/components/layout/sidebarContext";
 import PrivateRoute from "./components/protected-route/PrivateRoute";
@@ -83,11 +84,12 @@ function App() {
   return (
     <Router>
       <SidebarLayoutProvider>
-        <Toaster richColors position="top-center" />
-        <Routes>
-        <Route path="/" element={<AdminLogin />} />
-        <Route element={<PrivateRoute />}>
-          <Route path="/admin/dashboard" exact element={<AdminPage />} />
+        <PageLoadingProvider>
+          <Toaster richColors position="top-center" />
+          <Routes>
+            <Route path="/" element={<AdminLogin />} />
+            <Route element={<PrivateRoute />}>
+            <Route path="/admin/dashboard" exact element={<AdminPage />} />
 
           <Route path="/admin/orders" element={<Orders />} />
           <Route path="/admin/orders/:id" element={<OrderDetails />} />
@@ -317,10 +319,11 @@ function App() {
             exact
             element={<EditCategoryPage />}
           />
-        </Route>
+            </Route>
 
-        <Route path="/*" element={<NotFound />} />
-      </Routes>
+            <Route path="/*" element={<NotFound />} />
+          </Routes>
+        </PageLoadingProvider>
       </SidebarLayoutProvider>
     </Router>
   );

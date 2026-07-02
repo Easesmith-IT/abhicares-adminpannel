@@ -4,6 +4,7 @@ import { readCookie } from "../utils/readCookie";
 import useCrashReporter from "./useCrashReporter";
 import useAuthActions from "./useAuthActions";
 import { axiosInstance } from "../utils/axiosInstance";
+import { usePageLoading } from "@/components/loading/PageLoadingProvider";
 
 const useGetApiReq = () => {
     const [res, setRes] = useState(null);
@@ -12,6 +13,7 @@ const useGetApiReq = () => {
 
     const { reportCrash } = useCrashReporter();
     const { getAdminStatus } = useAuthActions();
+    const { beginRequest } = usePageLoading();
 
     const fetchData = useCallback(async (url, config = {}) => {
          const {
@@ -19,8 +21,11 @@ const useGetApiReq = () => {
            screenName,
            severity = "HIGH",
            userType = "Admin",
+           loadingUi = "global",
            ...axiosConfig
          } = config;
+
+        const finishTrackedRequest = beginRequest({ loadingUi });
 
         try {
             setIsLoading(true);
@@ -53,8 +58,9 @@ const useGetApiReq = () => {
             }
         } finally {
             setIsLoading(false);
+            finishTrackedRequest();
         }
-    }, [reportCrash, getAdminStatus]);
+    }, [beginRequest, reportCrash, getAdminStatus]);
 
     return { res, isLoading, fetchData, error };
 };
