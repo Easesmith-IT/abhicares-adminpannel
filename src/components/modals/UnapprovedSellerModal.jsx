@@ -27,7 +27,7 @@ import { Trash2Icon } from "lucide-react";
 import { PaginationComp } from "../shared/PaginationComp";
 
 const UnapprovedSellerModal = ({
-  setIsUnapprovedSellerModalOpen,
+  onClose,
   getSellers,
 }) => {
   const { res, fetchData, isLoading } = useGetApiReq();
@@ -67,7 +67,7 @@ const UnapprovedSellerModal = ({
     if (approveRes?.status === 200) {
       // toast.success("Partner approved");
       fetchInReview();
-      getSellers();
+      getSellers?.();
     }
   }, [approveRes]);
 
@@ -81,13 +81,13 @@ const UnapprovedSellerModal = ({
       // toast.success("Partner deleted");
       setDeleteOpen(false);
       fetchInReview();
-      getSellers();
+      getSellers?.();
     }
   }, [deleteRes]);
 
   return (
     <>
-      <Dialog open onOpenChange={() => setIsUnapprovedSellerModalOpen(false)}>
+      <Dialog open onOpenChange={onClose}>
         <DialogContent className="sm:max-w-6xl">
           <DialogHeader>
             <DialogTitle>Unapproved Partners</DialogTitle>

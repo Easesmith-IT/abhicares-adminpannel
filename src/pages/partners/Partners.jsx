@@ -349,8 +349,8 @@ const Partners = () => {
       {/* Modals */}
       {unapprovedOpen && (
         <UnapprovedSellerModal
-          isOpen={unapprovedOpen}
           onClose={() => setUnapprovedOpen(false)}
+          getSellers={fetchSellers}
         />
       )}
 

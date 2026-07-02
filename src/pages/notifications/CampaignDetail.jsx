@@ -166,6 +166,12 @@ export default function CampaignDetail() {
                 <StatusBadge status={campaign.status} />
               </p>
             </div>
+
+            {campaign.error_summary && (
+              <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <strong>Failure Reason:</strong> {campaign.error_summary}
+              </div>
+            )}
           </CardContent>
         </Card>
 
