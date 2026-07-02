@@ -63,7 +63,7 @@ const navigationConfig = [
     icon: Wrench,
     items: [
       { name: "Categories", href: "/admin/categories" },
-      { name: "Services", href: "/admin/item-categories" },
+      { name: "Invoice Item Categories", href: "/admin/invoice-item-categories" },
       { name: "Cities", href: "/admin/available-cities" },
     ],
   },
@@ -558,7 +558,7 @@ const SideNav = () => {
       "/admin/offered-bookings": "bookings",
       "/admin/bookings/rejected-request": "bookings",
       "/admin/categories": "services",
-      "/admin/item-categories": "services",
+      "/admin/invoice-item-categories": "services",
       "/admin/partners": "partners",
       "/admin/partners?status=IN-REVIEW": "partners",
       "/admin/customers": "customers",

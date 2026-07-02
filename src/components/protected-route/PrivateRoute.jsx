@@ -13,7 +13,7 @@ const PrivateRoute = () => {
         "offered-bookings": "bookings",
         "services": "services",
         "categories": "services",
-        "item-categories": "services",
+        "invoice-item-categories": "services",
         "homepage-trending": "services",
         "partners": "partners",
         "customers": "customers",

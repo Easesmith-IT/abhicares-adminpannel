@@ -455,7 +455,7 @@ const Header = () => {
       globals: "Global Configurations",
       "crash-report": "System Crash Reports",
       "cash-management": "Cash Management",
-      "item-categories": "Services Categories",
+      "invoice-item-categories": "Invoice Item Categories",
       "seller-cashouts": "Partner Payouts",
       "auto-assign-analytics": "Auto Assign Analytics",
       metrics: "Reports & Analytics",

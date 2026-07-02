@@ -58,7 +58,7 @@ const ItemCategories = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center gap-3">
           <div className="flex items-center gap-3">
-            <H2>Item Categories</H2>
+            <H2>Invoice Item Categories</H2>
             <div className="relative w-full max-w-xs">
               <Search className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
               <Input
@@ -83,9 +83,9 @@ const ItemCategories = () => {
               label=""
             />
             <Button asChild variant="abhicares">
-              <Link to={"/admin/item-categories/add"}>
+              <Link to={"/admin/invoice-item-categories/add"}>
                 <PlusIcon />
-                <span>Add Category</span>
+                <span>Add Invoice Item Category</span>
               </Link>
             </Button>
           </div>

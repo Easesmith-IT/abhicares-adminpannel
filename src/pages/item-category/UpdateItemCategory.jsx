@@ -49,7 +49,7 @@ const EditCategoryPage = () => {
         screenName: "EditCategory",
       });
 
-      navigate("/admin/item-categories");
+      navigate("/admin/invoice-item-categories");
     } catch (error) {
       toast.error("Failed to update category");
     }
@@ -63,8 +63,8 @@ const EditCategoryPage = () => {
     <Wrapper>
 
     <div className="space-y-6">
-      <BackLink href="/admin/item-categories">
-        <H2>Edit Category</H2>
+      <BackLink href="/admin/invoice-item-categories">
+        <H2>Edit Invoice Item Category</H2>
       </BackLink>
 
       <CategoryForm

@@ -47,7 +47,7 @@ export const ALL_MENU_ITEMS = [
   
   // Services
   { to: "/admin/categories", label: "Categories", icon: Layers, category: "Services" },
-  { to: "/admin/item-categories", label: "Invoice Item Categories", icon: Layers, category: "Services" },
+  { to: "/admin/invoice-item-categories", label: "Invoice Item Categories", icon: Layers, category: "Services" },
   { to: "/admin/available-cities", label: "Available Cities", icon: Globe, category: "Services" },
   
   // Professionals
@@ -106,7 +106,7 @@ const CommandPalette = ({ open, setOpen }) => {
       "/admin/offered-bookings": "bookings",
       "/admin/bookings/rejected-request": "bookings",
       "/admin/categories": "services",
-      "/admin/item-categories": "services",
+      "/admin/invoice-item-categories": "services",
       "/admin/partners": "partners",
       "/admin/partners?status=IN-REVIEW": "partners",
       "/admin/customers": "customers",

@@ -41,8 +41,8 @@ const CategoryDetailsPage = () => {
   return (
     <Wrapper>
       <div className="space-y-6">
-        <BackLink href="/admin/item-categories">
-          <H2>Category Details</H2>
+        <BackLink href="/admin/invoice-item-categories">
+          <H2>Invoice Item Category Details</H2>
         </BackLink>
 
         {isLoading ? (

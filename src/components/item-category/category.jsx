@@ -18,9 +18,9 @@ export const Category = ({ category, getItemCategories }) => {
   const [isUpdateCategoryModalOpen, setIsUpdateCategoryModalOpen] =
     useState(false);
 
-  const onView = () => navigate(`/admin/item-categories/${category?._id}`);
+  const onView = () => navigate(`/admin/invoice-item-categories/${category?._id}`);
   const onEdit = () =>
-    navigate(`/admin/item-categories/${category?._id}/update`);
+    navigate(`/admin/invoice-item-categories/${category?._id}/update`);
 
   const onDelete = () => {
     setIsAlertModalOpen(true);

@@ -298,22 +298,22 @@ function App() {
             element={<CashManagement />}
           />
           <Route
-            path="/admin/item-categories"
+            path="/admin/invoice-item-categories"
             exact
             element={<ItemCategories />}
           />
           <Route
-            path="/admin/item-categories/add"
+            path="/admin/invoice-item-categories/add"
             exact
             element={<AddItemCategory />}
           />
           <Route
-            path="/admin/item-categories/:categoryId"
+            path="/admin/invoice-item-categories/:categoryId"
             exact
             element={<CategoryDetailsPage />}
           />
           <Route
-            path="/admin/item-categories/:categoryId/update"
+            path="/admin/invoice-item-categories/:categoryId/update"
             exact
             element={<EditCategoryPage />}
           />

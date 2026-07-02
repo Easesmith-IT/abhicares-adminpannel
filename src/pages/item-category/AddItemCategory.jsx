@@ -29,15 +29,15 @@ const AddItemCategory = () => {
   
   useEffect(() => {
     if (res?.status === 200 || res?.status === 201) {
-      navigate("/admin/item-categories");
+      navigate("/admin/invoice-item-categories");
       }
     }, [res]);
 
   return (
     <Wrapper>
       <div className="space-y-6">
-        <BackLink href="/admin/item-categories">
-          <H2>Add Category</H2>
+        <BackLink href="/admin/invoice-item-categories">
+          <H2>Add Invoice Item Category</H2>
         </BackLink>
 
         <CategoryForm
