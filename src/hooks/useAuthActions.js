@@ -12,15 +12,22 @@ const useAuthActions = () => {
   const refreshAdminToken = useCallback(async () => {
     const adminInfo = readCookie("adminInfo");
     try {
+      console.log("[FRONTEND AUTH] Access token expired! Requesting new token from backend...");
       const res = await axiosInstance.post("/admin/refresh", {
         adminId: adminInfo?.id,
         role: "admin",
       });
       if (res?.status === 200 || res?.status === 201) {
+        console.log("[FRONTEND AUTH] Token refresh successful! New access token cookie set by backend.");
         dispatch(changeAdminStatus({ isAdminAuthenticated: true }));
       }
     } catch (error) {
       console.error("Error fetching admin refresh token:", error);
+      dispatch(changeAdminStatus({ isAdminAuthenticated: false }));
+      sessionStorage.removeItem("admin-status");
+      sessionStorage.removeItem("perm");
+      localStorage.removeItem("admin-status");
+      localStorage.removeItem("perm");
       reportCrash({
         error,
         screenName: "",

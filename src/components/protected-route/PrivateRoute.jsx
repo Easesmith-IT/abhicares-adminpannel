@@ -50,6 +50,7 @@ const PrivateRoute = () => {
         }
     }, [permissions, pathname, isAdminAuthenticated, navigate, hasPermission]);
 
+
     // Only render the Outlet if the user has the required permissions
     if (pathname.includes("/admin/") && isAdminAuthenticated && value && hasPermission) {
         return <Outlet />;

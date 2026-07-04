@@ -52,6 +52,7 @@ const useGetApiReq = () => {
               });
             }
             if (error?.response?.status === 401) {
+                console.warn("[FRONTEND AUTH] API request got 401 Unauthorized! Checking auth status...");
                 if (adminInfo?.role === "admin") {
                     await getAdminStatus();
                 }
