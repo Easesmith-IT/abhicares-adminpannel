@@ -60,6 +60,11 @@ import BookingDetailsSkeleton from "../../components/booking/BookingDetailsSkele
 import RefundStatusModal from "../../components/booking/RefundStatusModal";
 import AutoAsignedCard from "../../components/booking/AutoAsignedCard";
 
+const formatAmount = (value) => {
+  const num = Number(value || 0);
+  return Number(num.toFixed(2));
+};
+
 const BookingDetails = () => {
   const { id } = useParams();
 
@@ -272,7 +277,7 @@ const BookingDetails = () => {
       events.push({
         id: "refund-requested",
         title: `Refund status: ${booking.refundInfo.status.toUpperCase()}`,
-        description: `Refund of ₹${booking.refundInfo.amount} requested for reason: ${booking.refundInfo.reason || "N/A"}`,
+        description: `Refund of ₹${formatAmount(booking.refundInfo.amount)} requested for reason: ${booking.refundInfo.reason || "N/A"}`,
         date: booking.refundInfo.processedAt ? new Date(booking.refundInfo.processedAt) : new Date(booking.updatedAt),
         icon: <DollarSign className="size-4 text-orange-500" />,
         color: "bg-orange-50 text-orange-600",
@@ -536,9 +541,9 @@ const BookingDetails = () => {
           {/* Quick Stats Row */}
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
             {[
-              { label: "Booking Value", value: `₹${booking.orderValue}`, color: "text-slate-900" },
-              { label: "Partner Earnings", value: `₹${booking.itemTotalValue - (booking.commissionAmount || 0)}`, color: "text-emerald-600" },
-              { label: "Platform Revenue", value: `₹${(booking.commissionAmount || 0) + (booking.convenienceAmount || 0)}`, color: "text-blue-600" },
+              { label: "Booking Value", value: `₹${formatAmount(booking.orderValue)}`, color: "text-slate-900" },
+              { label: "Partner Earnings", value: `₹${formatAmount(booking.itemTotalValue - (booking.commissionAmount || 0))}`, color: "text-emerald-600" },
+              { label: "Platform Revenue", value: `₹${formatAmount((booking.commissionAmount || 0) + (booking.convenienceAmount || 0))}`, color: "text-blue-600" },
               { label: "Payment Status", value: booking.paymentStatus.toUpperCase(), badge: true, variant: booking.paymentStatus === "completed" ? "success" : "warning" },
               { label: "Refund Status", value: booking.refundInfo?.status ? booking.refundInfo.status.toUpperCase() : "N/A", badge: true, variant: booking.refundInfo?.status === "processed" ? "success" : booking.refundInfo?.status === "pending" ? "warning" : "secondary" },
               { label: "Duration", value: `${booking.slotDurationMinutes || 60} Mins`, color: "text-slate-900" }
@@ -715,10 +720,10 @@ const BookingDetails = () => {
                           <p className="text-xs text-slate-500 font-bold">Qty: {booking.quantity}</p>
                           <p className="font-black text-slate-900 text-base">
                             ₹
-                            {booking.quantity *
+                            {formatAmount(booking.quantity *
                               (booking.package
                                 ? booking.package.offerPrice
-                                : (booking.product?.offerPrice || 0))}
+                                : (booking.product?.offerPrice || 0)))}
                           </p>
                         </div>
                       </div>
@@ -766,19 +771,19 @@ const BookingDetails = () => {
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-xs">
                     <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl">
                       <span className="text-slate-400 font-bold uppercase tracking-wider block mb-1">Total Bill</span>
-                      <span className="text-lg font-black text-slate-800">₹{ledger?.totalBillAmount ?? booking.orderValue}</span>
+                      <span className="text-lg font-black text-slate-800">₹{formatAmount(ledger?.totalBillAmount ?? booking.orderValue)}</span>
                     </div>
                     <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl">
                       <span className="text-slate-400 font-bold uppercase tracking-wider block mb-1">Total Paid</span>
-                      <span className="text-lg font-black text-green-600">₹{ledger?.totalPaid ?? 0}</span>
+                      <span className="text-lg font-black text-green-600">₹{formatAmount(ledger?.totalPaid ?? 0)}</span>
                     </div>
                     <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl">
                       <span className="text-slate-400 font-bold uppercase tracking-wider block mb-1">Total Refunded</span>
-                      <span className="text-lg font-black text-slate-800">₹{ledger?.totalRefunded ?? 0}</span>
+                      <span className="text-lg font-black text-slate-800">₹{formatAmount(ledger?.totalRefunded ?? 0)}</span>
                     </div>
                     <div className="bg-slate-50 border border-slate-100 p-4 rounded-xl">
                       <span className="text-slate-400 font-bold uppercase tracking-wider block mb-1">Remaining</span>
-                      <span className="text-lg font-black text-blue-600">₹{ledger?.remainingBalance ?? 0}</span>
+                      <span className="text-lg font-black text-blue-600">₹{formatAmount(ledger?.remainingBalance ?? 0)}</span>
                     </div>
                   </div>
 
@@ -831,26 +836,26 @@ const BookingDetails = () => {
                       <CardContent className="p-6 space-y-4 text-xs text-slate-700">
                         <div className="flex justify-between items-center">
                           <span className="text-slate-500 font-medium">Partner Earnings</span>
-                          <span className="font-black text-slate-900">₹{booking.itemTotalValue - (booking.commissionAmount || 0)}</span>
+                          <span className="font-black text-slate-900">₹{formatAmount(booking.itemTotalValue - (booking.commissionAmount || 0))}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-slate-500 font-medium">Commission Invoiced</span>
-                          <span className="font-black text-slate-900">₹{booking.commissionAmount || 0}</span>
+                          <span className="font-black text-slate-900">₹{formatAmount(booking.commissionAmount || 0)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-slate-500 font-medium">Convenience Fee</span>
-                          <span className="font-black text-slate-900">₹{booking.convenienceAmount || 0}</span>
+                          <span className="font-black text-slate-900">₹{formatAmount(booking.convenienceAmount || 0)}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-slate-500 font-medium">Tax / GST Details</span>
                           <span className="font-bold text-slate-900 font-mono">
-                            ₹{(booking.commissionGst || 0) + (booking.convenienceGst || 0) + (booking.itemTotalTax || 0)}
+                            ₹{formatAmount((booking.commissionGst || 0) + (booking.convenienceGst || 0) + (booking.itemTotalTax || 0))}
                           </span>
                         </div>
                         <Separator />
                         <div className="flex justify-between items-center">
                           <span className="text-slate-500 font-bold">Net Platform Earning</span>
-                          <span className="font-black text-blue-600 text-sm">₹{bookingPayment?.allocatedEarning || ((booking.commissionAmount || 0) + (booking.convenienceAmount || 0))}</span>
+                          <span className="font-black text-blue-600 text-sm">₹{formatAmount(bookingPayment?.allocatedEarning || ((booking.commissionAmount || 0) + (booking.convenienceAmount || 0)))}</span>
                         </div>
                       </CardContent>
                     </Card>
@@ -870,7 +875,7 @@ const BookingDetails = () => {
                         </div>
                         <div>
                           <span className="text-slate-400 font-bold uppercase tracking-wider block mb-1">Coupon Discount</span>
-                          <span className="font-black text-green-600 block mt-1">₹{booking.orderId.couponInfo.discountAmount || booking.itemTotalDiscount}</span>
+                          <span className="font-black text-green-600 block mt-1">₹{formatAmount(booking.orderId.couponInfo.discountAmount || booking.itemTotalDiscount)}</span>
                         </div>
                         <div>
                           <span className="text-slate-400 font-bold uppercase tracking-wider block mb-1">Campaign Name</span>
@@ -1072,7 +1077,7 @@ const BookingDetails = () => {
                     </div>
                     <div>
                       <span className="text-slate-400 font-bold text-[9px] uppercase block">Wallet Balance</span>
-                      <span className="text-base font-black text-slate-900 mt-0.5 block">₹{booking.userId?.wallet?.balance ?? 0}</span>
+                      <span className="text-base font-black text-slate-900 mt-0.5 block">₹{formatAmount(booking.userId?.wallet?.balance ?? 0)}</span>
                     </div>
                   </div>
 
@@ -1162,13 +1167,13 @@ const BookingDetails = () => {
                         <div>
                           <span className="text-slate-400 font-bold text-[9px] uppercase block">Cash in hand</span>
                           <span className="text-base font-black text-slate-900 mt-0.5 block">
-                            ₹{partnerWallet?.cashInHand ?? 0}
+                            ₹{formatAmount(partnerWallet?.cashInHand ?? 0)}
                           </span>
                         </div>
                         <div>
                           <span className="text-slate-400 font-bold text-[9px] uppercase block">Pending Cashout</span>
                           <span className="text-base font-black text-slate-900 mt-0.5 block">
-                            ₹{partnerWallet?.pendingCashouts ?? 0}
+                            ₹{formatAmount(partnerWallet?.pendingCashouts ?? 0)}
                           </span>
                         </div>
                       </div>
@@ -1227,24 +1232,24 @@ const BookingDetails = () => {
                 <CardContent className="p-6 space-y-4 text-xs text-slate-700">
                   <div className="flex justify-between">
                     <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Subtotal</span>
-                    <span className="font-bold text-slate-800">₹{booking.itemTotalValue}</span>
+                    <span className="font-bold text-slate-800">₹{formatAmount(booking.itemTotalValue)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Estimated GST</span>
-                    <span className="font-bold text-slate-800">₹{booking.itemTotalTax}</span>
+                    <span className="font-bold text-slate-800">₹{formatAmount(booking.itemTotalTax)}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Convenience Fee</span>
-                    <span className="font-bold text-slate-800">₹{booking.convenienceAmount}</span>
+                    <span className="font-bold text-slate-800">₹{formatAmount(booking.convenienceAmount)}</span>
                   </div>
                   <div className="flex justify-between text-green-600">
                     <span className="font-bold uppercase tracking-wider text-[9px]">Coupon Discount</span>
-                    <span className="font-black">- ₹{booking.itemTotalDiscount}</span>
+                    <span className="font-black">- ₹{formatAmount(booking.itemTotalDiscount)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-slate-950 font-black text-sm">
                     <span>Invoice Total</span>
-                    <span>₹{booking.orderValue}</span>
+                    <span>₹{formatAmount(booking.orderValue)}</span>
                   </div>
                   
                   <Separator />
@@ -1279,7 +1284,7 @@ const BookingDetails = () => {
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Amount</span>
-                      <span className="font-black text-slate-800">₹{booking.refundInfo.amount}</span>
+                      <span className="font-black text-slate-800">₹{formatAmount(booking.refundInfo.amount)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Reason</span>
