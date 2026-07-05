@@ -59,6 +59,11 @@ const ServiceInfoPage = () => {
     setSelectedCity(selectedCityId || "");
   }, [selectedCityId]);
 
+  useEffect(() => {
+    setPage(1);
+    setPage1(1);
+  }, [selectedCity]);
+
   /* -------- API hooks -------- */
   const { res: serviceRes, fetchData: fetchService } = useGetApiReq();
   const {
@@ -103,7 +108,7 @@ const ServiceInfoPage = () => {
   const getServicePackages = () => {
     const query = buildQuery({
       cityId: selectedCity,
-      page1,
+      page: page1,
       limit: packageLimit,
       serviceId,
       isActive: true,
@@ -174,19 +179,9 @@ const ServiceInfoPage = () => {
     }
   };
 
-  /* -------- City filtering (client-side) -------- */
-  const getCityId = (val) => {
-    if (!val) return "";
-    return typeof val === "object" ? val._id : val;
-  };
-
-  const filteredProducts = selectedCity
-    ? products.filter((p) => getCityId(p.cityId) === getCityId(selectedCity))
-    : products;
-
-  const filteredPackages = selectedCity
-    ? packages.filter((pkg) => getCityId(pkg.cityId) === getCityId(selectedCity))
-    : packages;
+  /* -------- Lists are already city-filtered by the backend -------- */
+  const filteredProducts = products;
+  const filteredPackages = packages;
 
   /* -------------------------------------------------- */
 
