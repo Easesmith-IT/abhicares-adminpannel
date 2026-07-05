@@ -201,47 +201,31 @@ const childVariants = {
 const NavigationItem = ({ name, href, icon: CustomIcon, isCollapsed, isActive, isFavorited, onToggleFavorite }) => {
   return (
     <motion.div
-      whileHover={{ scale: 1.02 }}
-      transition={{ duration: 0.18 }}
-      className="w-full relative"
+      whileHover={{ scale: 1.01 }}
+      transition={{ duration: 0.2 }}
+      className="w-full relative px-1"
     >
       <Link
         to={href}
         className={cn(
-          "relative flex items-center justify-between w-full h-9 px-3 rounded-xl cursor-pointer select-none transition-colors duration-200 overflow-hidden",
+          "relative group flex items-center justify-between w-full h-11 px-4 rounded-xl cursor-pointer select-none transition-all duration-200 overflow-hidden",
           isActive
-            ? "text-[#2563EB] font-semibold"
-            : "text-[#64748B] hover:text-[#0F172A] hover:bg-slate-100/50"
+            ? "text-white font-semibold bg-linear-to-r from-[#2563EB] to-[#3B82F6] shadow-[0_8px_20px_rgba(37,99,235,0.35)]"
+            : "text-sidebar-text-secondary hover:text-sidebar-text-hover hover:bg-sidebar-hover"
         )}
         style={{ zIndex: 1 }}
       >
-        {/* Animated active shared indicator & background */}
-        {isActive && (
-          <motion.div
-            layoutId="active-bg"
-            className="absolute inset-0 bg-[#EEF4FF] z-[-1] rounded-xl"
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          />
-        )}
-        {isActive && (
-          <motion.div
-            layoutId="active-indicator"
-            className="absolute left-0 top-1.5 bottom-1.5 w-[3px] bg-[#2563EB] rounded-r-md z-[2]"
-            transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-          />
-        )}
-
-        <div className="flex items-center gap-2.5 truncate flex-1">
+        <div className="flex items-center gap-3 truncate flex-1">
           {CustomIcon && (
             <CustomIcon
               className={cn(
-                "size-4 shrink-0 transition-transform duration-200 group-hover:scale-110",
-                isActive ? "text-[#2563EB]" : "text-[#64748B] group-hover:text-[#0F172A]"
+                "size-5 shrink-0 transition-colors duration-200",
+                isActive ? "text-white" : "text-sidebar-icon group-hover:text-sidebar-icon-hover"
               )}
             />
           )}
           {!isCollapsed && (
-            <span className="text-[13px] leading-none tracking-wide truncate">
+            <span className="text-[14px] tracking-wide truncate">
               {name}
             </span>
           )}
@@ -260,7 +244,7 @@ const NavigationItem = ({ name, href, icon: CustomIcon, isCollapsed, isActive, i
               isFavorited && "opacity-100 text-amber-500"
             )}
           >
-            <Star className={cn("size-3.5", isFavorited && "fill-amber-500 text-amber-500")} />
+            <Star className={cn("size-4", isFavorited && "fill-amber-500 text-amber-500")} />
           </button>
         )}
       </Link>
@@ -309,39 +293,22 @@ const NavigationGroup = ({
       layout
       animate={{
         width: isVisualExpanded ? "100%" : 44,
-        borderRadius: isVisualExpanded ? 18 : 14,
-        padding: isVisualExpanded ? 8 : 0,
       }}
-      transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-      className="bg-white border border-[#E8EDF5] shadow-[0_1px_2px_rgba(0,0,0,0.02)] mb-3 mx-auto overflow-hidden"
+      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+      className="mx-auto overflow-hidden w-full"
     >
       {isVisualExpanded ? (
         <>
           <button
             onClick={onToggle}
-            className="flex items-center justify-between w-full px-3 py-2 text-[#0F172A] hover:bg-slate-50 rounded-xl transition-colors select-none text-[13px] font-semibold"
+            className="flex items-center justify-between w-full px-2 py-1 text-[#6B7A92] hover:text-white rounded-lg transition-colors select-none text-[12px] font-bold tracking-[0.08em] uppercase"
           >
-            <div className="flex items-center gap-2 truncate flex-1">
-              <Icon className="size-4 text-[#64748B] shrink-0" />
-              <AnimatePresence>
-                {isVisualExpanded && (
-                  <motion.div
-                    variants={cardContentVariants}
-                    initial="collapsed"
-                    animate="expanded"
-                    exit="collapsed"
-                    className="flex items-center justify-between flex-1 truncate pl-1"
-                  >
-                    <span className="truncate">{title}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+            <span className="truncate pl-1 text-left">{title}</span>
             <motion.div
               animate={{ rotate: isOpen ? 180 : 0 }}
-              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.2, ease: "easeInOut" }}
             >
-              <ChevronDown className="size-3.5 text-[#64748B]" />
+              <ChevronDown className="size-3.5 text-[#6B7A92]" />
             </motion.div>
           </button>
           <AnimatePresence initial={false}>
@@ -353,7 +320,7 @@ const NavigationGroup = ({
                 variants={groupVariants}
                 className="overflow-hidden"
               >
-                <div className="mt-1 space-y-0.5">
+                <div className="mt-1.5 space-y-1.5">
                   {items.map((item) => (
                     <motion.div key={item.href} variants={childVariants}>
                       <NavigationItem
@@ -377,8 +344,8 @@ const NavigationGroup = ({
           <button
             onClick={onToggle}
             className={cn(
-              "w-full h-full flex items-center justify-center text-[#64748B] hover:text-[#0F172A] hover:bg-slate-50 transition-colors rounded-[13px] cursor-pointer h-11 w-11",
-              isGroupActive && "bg-[#EEF4FF] text-[#2563EB]"
+              "w-11 h-11 flex items-center justify-center text-sidebar-icon hover:text-sidebar-text-hover hover:bg-sidebar-hover transition-all duration-200 rounded-[10px] cursor-pointer mx-auto",
+              isGroupActive && "bg-sidebar-active text-white shadow-[0_8px_24px_rgba(37,99,235,0.22)]"
             )}
           >
             <Icon className="size-5 shrink-0" />
@@ -638,33 +605,36 @@ const SideNav = () => {
       <motion.div
         animate={{ width: isVisualExpanded ? EXPANDED_PANEL_WIDTH : COLLAPSED_PANEL_WIDTH }}
         transition={SIDEBAR_TRANSITION}
-        className="h-full flex flex-col border-r border-[rgba(15,23,42,0.06)] overflow-hidden select-none w-full shadow-lg"
+        className="h-full flex flex-col border-r border-sidebar-border overflow-hidden select-none w-full"
         style={{
-          background: "rgba(255, 255, 255, 0.92)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
+          background: "var(--sidebar-bg, #F3F6FB)",
         }}
       >
         {/* 1. Header */}
         <div className={cn(
-          "flex flex-col pt-4 pb-3 border-b border-[#E8EDF5] shrink-0",
-          isVisualExpanded ? "px-4" : "px-2"
+          "flex flex-col pt-5 pb-4 border-b border-sidebar-border shrink-0",
+          isVisualExpanded ? "px-5" : "px-3"
         )}>
           <div className="flex items-center justify-between">
             {isVisualExpanded ? (
-              <div className="flex items-center justify-between w-full">
+              <div className="flex items-center justify-between gap-3 w-full">
                 <motion.div
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.08, duration: 0.2 }}
-                  className="flex items-center cursor-pointer select-none"
+                  className="flex items-center gap-3.5 cursor-pointer select-none flex-1 bg-white/8 border border-[rgba(255,255,255,0.08)] backdrop-blur-[10px] rounded-[14px] py-[10px] px-[14px]"
                   onClick={() => navigate("/admin/dashboard")}
                 >
-                  <img
-                    src={logo}
-                    alt="AbhiCares Logo"
-                    className="h-8 w-auto object-contain shrink-0"
-                  />
+                  <div className="w-9 h-9 bg-white rounded-[8px] flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.15)] shrink-0 overflow-hidden">
+                    <img
+                      src={logo}
+                      alt="AbhiCares Icon"
+                      className="w-6 h-6 object-cover object-left shrink-0"
+                    />
+                  </div>
+                  <span className="text-[#F8FAFC] font-bold text-[16px] tracking-wide">
+                    AbhiCares
+                  </span>
                 </motion.div>
                 <button
                   onClick={() => {
@@ -681,7 +651,7 @@ const SideNav = () => {
                       setIsHovered(false);
                     }
                   }}
-                  className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-500 hover:text-slate-900 transition-colors cursor-pointer shrink-0 ml-2"
+                  className="p-1.5 rounded-lg hover:bg-sidebar-hover text-sidebar-text-secondary hover:text-sidebar-text-primary transition-colors cursor-pointer shrink-0"
                   title={isCollapsed ? "Pin Sidebar Open" : "Collapse Sidebar"}
                 >
                   {isCollapsed ? (
@@ -692,39 +662,43 @@ const SideNav = () => {
                 </button>
               </div>
             ) : (
-              <img
-                src={logo}
-                alt="AbhiCares Logo"
-                className="h-8 w-8 object-cover object-left cursor-pointer mx-auto transition-transform hover:scale-105"
+              <div
+                className="w-9 h-9 bg-white rounded-[8px] flex items-center justify-center shadow-[0_4px_12px_rgba(0,0,0,0.15)] cursor-pointer mx-auto transition-transform hover:scale-105 overflow-hidden"
                 onClick={() => navigate("/admin/dashboard")}
-              />
+              >
+                <img
+                  src={logo}
+                  alt="AbhiCares Logo"
+                  className="w-6 h-6 object-cover object-left shrink-0"
+                />
+              </div>
             )}
           </div>
         </div>
 
         {/* 2. Enterprise Search Navigation Bar */}
         <div className={cn(
-          "py-2 shrink-0",
-          isVisualExpanded ? "px-4" : "px-2"
+          "py-3 shrink-0",
+          isVisualExpanded ? "px-5" : "px-3"
         )}>
           <Tooltip content="Search (⌘K)" active={!isVisualExpanded}>
             <motion.button
               onClick={() => setIsCmdOpen(true)}
               animate={{ width: isVisualExpanded ? "100%" : 44 }}
-              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
               className={cn(
-                "flex items-center bg-white hover:bg-slate-50 text-[#64748B] border border-[#E8EDF5] shadow-[0_1px_2px_rgba(0,0,0,0.02)] font-medium overflow-hidden mx-auto cursor-pointer h-11 rounded-[14px]",
+                "flex items-center bg-white/6 backdrop-blur-[12px] hover:bg-white/10 text-sidebar-text-secondary border border-[rgba(255,255,255,0.08)] font-medium overflow-hidden mx-auto cursor-pointer h-11 rounded-[14px]",
                 isVisualExpanded ? "px-3 justify-start gap-2.5 w-full" : "justify-center w-11"
               )}
             >
-              <Search className="size-4.5 text-[#64748B] shrink-0" />
+              <Search className="size-4.5 text-sidebar-icon shrink-0" />
               {isVisualExpanded && (
                 <>
                   <motion.span
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.1, duration: 0.15 }}
-                    className="text-[13px] text-[#64748B] font-normal flex-1 text-left whitespace-nowrap"
+                    className="text-[13px] text-[#94A3B8] font-normal flex-1 text-left whitespace-nowrap"
                   >
                     Search...
                   </motion.span>
@@ -732,7 +706,7 @@ const SideNav = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.1, duration: 0.15 }}
-                    className="text-[9px] text-[#64748B] font-mono bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded-lg shrink-0"
+                    className="text-[9px] text-[#94A3B8] font-mono bg-sidebar-hover border border-sidebar-border px-1.5 py-0.5 rounded-lg shrink-0"
                   >
                     ⌘K
                   </motion.span>
@@ -748,8 +722,8 @@ const SideNav = () => {
           initial="collapsed"
           animate={isVisualExpanded ? "expanded" : "collapsed"}
           className={cn(
-            "flex-1 overflow-y-auto overflow-x-hidden scrollbar-hide py-2 space-y-1",
-            isVisualExpanded ? "px-4" : "px-2"
+            "flex-1 overflow-y-auto overflow-x-hidden thin-scrollbar py-3 space-y-1.5",
+            isVisualExpanded ? "px-5" : "px-3"
           )}
         >
           {/* Favorites Section */}
@@ -794,54 +768,59 @@ const SideNav = () => {
 
           {/* Divider if Favorites/Recents are shown */}
           {(favoritesItems.length > 0 || recentsItems.length > 0) && isVisualExpanded && (
-            <div className="h-px bg-slate-200/85 my-3 mx-2" />
+            <div className="h-px bg-sidebar-border my-6 mx-1" />
           )}
 
           {/* Config Groups */}
-          {resolvedNavigation.map((group) => (
-            <motion.div key={group.title} variants={groupCardVariants}>
-              <NavigationGroup
-                title={group.title}
-                icon={group.icon}
-                items={group.items}
-                isOpen={expandedSections[group.title]}
-                onToggle={() => toggleSection(group.title)}
-                isVisualExpanded={isVisualExpanded}
-                pathname={pathname}
-                favorites={favorites}
-                onToggleFavorite={toggleFavorite}
-                isActivePath={isActivePath}
-              />
-            </motion.div>
+          {resolvedNavigation.map((group, index) => (
+            <React.Fragment key={group.title}>
+              <motion.div variants={groupCardVariants}>
+                <NavigationGroup
+                  title={group.title}
+                  icon={group.icon}
+                  items={group.items}
+                  isOpen={expandedSections[group.title]}
+                  onToggle={() => toggleSection(group.title)}
+                  isVisualExpanded={isVisualExpanded}
+                  pathname={pathname}
+                  favorites={favorites}
+                  onToggleFavorite={toggleFavorite}
+                  isActivePath={isActivePath}
+                />
+              </motion.div>
+              {index < resolvedNavigation.length - 1 && isVisualExpanded && (
+                <div className="h-px bg-sidebar-border my-6 mx-1" />
+              )}
+            </React.Fragment>
           ))}
         </motion.div>
 
         {/* 4. Footer (UserProfile & Context Menu) */}
         <div className={cn(
-          "mt-auto border-t border-[#E8EDF5] shrink-0 relative bg-transparent",
-          isVisualExpanded ? "p-4" : "p-2"
+          "mt-auto border-t border-sidebar-border shrink-0 relative bg-transparent",
+          isVisualExpanded ? "p-5" : "p-3"
         )}>
           <div className="flex items-center justify-between">
             {isVisualExpanded ? (
               <div
-                className="flex items-center gap-3 cursor-pointer w-full group select-none"
+                className="flex items-center gap-3 cursor-pointer w-full group select-none bg-sidebar-profile-bg border border-[rgba(255,255,255,0.08)] p-2.5 rounded-[14px]"
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
               >
                 {/* Avatar */}
                 <motion.div
                   variants={avatarVariants}
                   animate={isVisualExpanded ? "expanded" : "collapsed"}
-                  className="size-9 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-semibold text-xs shrink-0 border border-[#2563EB]/20 shadow-sm"
+                  className="size-8 rounded-full bg-primary flex items-center justify-center text-white font-bold text-[11px] shrink-0 shadow-sm"
                 >
                   AD
                 </motion.div>
-                <div className="flex flex-col truncate flex-1 pl-1">
+                <div className="flex flex-col truncate flex-1 pl-0.5">
                   <motion.span
                     custom={0}
                     initial="collapsed"
                     animate={isVisualExpanded ? "expanded" : "collapsed"}
                     variants={textFadeVariants}
-                    className="text-[12px] font-semibold text-[#0F172A] truncate"
+                    className="text-[12px] font-bold text-sidebar-text-primary truncate"
                   >
                     AbhiCares Admin
                   </motion.span>
@@ -850,7 +829,7 @@ const SideNav = () => {
                     initial="collapsed"
                     animate={isVisualExpanded ? "expanded" : "collapsed"}
                     variants={textFadeVariants}
-                    className="text-[10px] text-[#64748B] truncate"
+                    className="text-[10px] text-sidebar-text-secondary truncate"
                   >
                     admin@abhicares.com
                   </motion.span>
@@ -862,13 +841,13 @@ const SideNav = () => {
                   variants={textFadeVariants}
                   className="shrink-0"
                 >
-                  <ChevronDown className="size-3.5 text-[#64748B] group-hover:text-[#0F172A] transition-colors" />
+                  <ChevronDown className="size-3.5 text-sidebar-icon group-hover:text-sidebar-text-primary transition-colors" />
                 </motion.div>
               </div>
             ) : (
               <Tooltip content="Profile Options" active={true}>
                 <div
-                  className="size-9 rounded-full bg-[#2563EB] flex items-center justify-center text-white font-semibold text-xs shrink-0 cursor-pointer border border-[#2563EB]/20 shadow-sm mx-auto hover:scale-105 transition-transform duration-200"
+                  className="size-10 rounded-[14px] bg-sidebar-profile-bg border border-[rgba(255,255,255,0.08)] flex items-center justify-center text-primary font-bold text-xs shrink-0 cursor-pointer mx-auto hover:scale-105 transition-transform duration-200"
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                 >
                   AD
@@ -886,13 +865,13 @@ const SideNav = () => {
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
                 className={cn(
-                  "absolute bottom-16 left-4 right-4 bg-white border border-[#E2E8F0] rounded-xl shadow-xl z-50 py-1.5 overflow-hidden",
-                  !isVisualExpanded && "left-[48px] bottom-4 w-48 right-auto"
+                  "absolute bottom-[72px] left-5 right-5 bg-white border border-sidebar-border rounded-xl shadow-xl z-50 py-1.5 overflow-hidden",
+                  !isVisualExpanded && "left-[80px] bottom-4 w-48 right-auto"
                 )}
               >
-                <div className="px-3 py-1.5 border-b border-slate-100 mb-1">
-                  <p className="text-[9px] uppercase font-bold text-[#64748B]">Current Scope</p>
-                  <p className="text-xs text-[#0F172A] font-semibold truncate mt-0.5">
+                <div className="px-3 py-1.5 border-b border-sidebar-border mb-1">
+                  <p className="text-[9px] uppercase font-bold text-sidebar-text-secondary">Current Scope</p>
+                  <p className="text-xs text-sidebar-text-primary font-semibold truncate mt-0.5">
                     City: {selectedCity}
                   </p>
                 </div>
@@ -901,9 +880,9 @@ const SideNav = () => {
                     setIsProfileOpen(false);
                     navigate("/admin/settings");
                   }}
-                  className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-xs text-[#0F172A] hover:bg-slate-50 transition-colors font-medium cursor-pointer"
+                  className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-xs text-sidebar-text-primary hover:bg-sidebar-hover transition-colors font-medium cursor-pointer"
                 >
-                  <SettingsIcon className="size-3.5 text-[#64748B]" />
+                  <SettingsIcon className="size-3.5 text-sidebar-icon" />
                   <span>Platform Settings</span>
                 </button>
                 <button
@@ -918,7 +897,7 @@ const SideNav = () => {
                       navigate("/");
                     }
                   }}
-                  className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-xs text-red-650 hover:bg-red-50 transition-colors font-semibold border-t border-slate-100 pt-2 mt-1 cursor-pointer"
+                  className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-xs text-red-650 hover:bg-red-50 transition-colors font-semibold border-t border-sidebar-border pt-2 mt-1 cursor-pointer"
                 >
                   <LogOut className="size-3.5 text-red-500" />
                   <span>Log Out</span>
