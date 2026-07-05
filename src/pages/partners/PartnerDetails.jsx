@@ -4,10 +4,8 @@ import {
   Briefcase,
   CheckCircle2,
   Eye,
-  ShieldCheck,
   TrendingUp,
   Wallet,
-  ArrowLeft,
   Mail,
   Phone,
   Calendar,
@@ -28,17 +26,13 @@ import {
   ExternalLink,
   MessageSquare,
   Sparkles,
-  ShieldAlert,
   Download,
-  Filter,
   Check,
   FileMinus,
   Map,
   Users,
   Search,
   Trash2,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "sonner";
@@ -47,7 +41,6 @@ import { Link, useParams, useNavigate } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -90,6 +83,8 @@ import SellerAssignedOrdersModal from "../../components/modals/SellerAssignedOrd
 import SellerOrderInfoModal from "../../components/modals/SellerOrderInfoModal";
 import WalletViewModal from "../../components/modals/WalletViewModal";
 import CashOutReq from "../../components/partner/CashOutReq";
+import { PaginationComp } from "../../components/shared/PaginationComp";
+import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import {
   OrdersTableSkeleton,
   PartnerInfoSkeleton,
@@ -102,6 +97,34 @@ import PartnerMetrics from "./PartnerMetrics";
 import VerifyCashSubmissionModal from "./cash-submission/CashSubmissionVerifyModal";
 import UpdatePartnerModal from "../../components/modals/UpdatePartnerModal";
 import useDeleteApiReq from "../../hooks/useDeleteApiReq";
+
+const DOCUMENT_EVENT_LABELS = {
+  panCard: "PAN Card",
+  aadhaarFront: "Aadhaar Front",
+  aadhaarBack: "Aadhaar Back",
+  documentFront: "Document Front",
+  documentBack: "Document Back",
+  policeVerificationCertificate: "Police Verification Certificate",
+  bankProof: "Bank Proof",
+  shopLicense: "Shop License",
+};
+
+const APPROVED_CASHOUT_STATUSES = new Set(["APPROVED", "Completed", "COMPLETED"]);
+
+function getPartnerCityName(seller) {
+  return seller?.city?.cityName || seller?.city?.name || "Unknown city";
+}
+
+function getSafeDate(value) {
+  if (!value) return null;
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function formatCurrencyValue(value) {
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue.toFixed(2) : "0.00";
+}
 
 const PartnerDetails = () => {
   const { partnerId } = useParams();
@@ -150,6 +173,7 @@ const PartnerDetails = () => {
   const [reviewStatusFilter, setReviewStatusFilter] = useState("all");
   const [previewDocUrl, setPreviewDocUrl] = useState(null);
   const [activityPage, setActivityPage] = useState(1);
+  const [activityPageSize, setActivityPageSize] = useState("10");
 
   useEffect(() => {
     setActivityPage(1);
@@ -453,27 +477,66 @@ const PartnerDetails = () => {
   /* ---------------- CHRONOLOGICAL ACTIVITY LOG ---------------- */
   const timelineEvents = useMemo(() => {
     const events = [];
+    const partnerCityName = getPartnerCityName(seller);
 
-    if (seller?.createdAt) {
+    const sellerCreatedAt = getSafeDate(seller?.createdAt);
+    if (sellerCreatedAt) {
       events.push({
         id: "created",
         title: "Partner Profile Created",
-        description: `Partner onboarded to Lucknow active operations desk.`,
-        date: new Date(seller.createdAt),
+        description: `Partner onboarded to ${partnerCityName} operations.`,
+        date: sellerCreatedAt,
         type: "info",
         icon: Users,
       });
     }
 
+    const profilePhotoUploadedAt = getSafeDate(seller?.profilePhoto?.uploadedAt);
+    if (seller?.profilePhoto?.url && profilePhotoUploadedAt) {
+      events.push({
+        id: `profile-photo-${seller.profilePhoto.url}`,
+        title: "Profile Photo Uploaded",
+        description: seller.profilePhoto.verified
+          ? "Profile photo uploaded and currently marked verified."
+          : "Profile photo uploaded and pending verification.",
+        date: profilePhotoUploadedAt,
+        type: seller.profilePhoto.verified ? "success" : "warning",
+        icon: BadgeCheck,
+      });
+    }
+
     const docs = seller?.documents || {};
-    Object.keys(docs).forEach((key) => {
+    Object.entries(DOCUMENT_EVENT_LABELS).forEach(([key, label]) => {
       const doc = docs[key];
-      if (doc && doc.uploadedAt && doc.url) {
+      const uploadedAt = getSafeDate(doc?.uploadedAt);
+      if (doc?.url && uploadedAt) {
+        const bankProofDetail =
+          key === "bankProof" && doc?.type
+            ? ` (${String(doc.type).replaceAll("_", " ")})`
+            : "";
         events.push({
-          id: `upload-${key}`,
-          title: `Document Uploaded: ${key.replace(/([A-Z])/g, " $1").toUpperCase()}`,
-          description: doc.verified ? "Document was verified by operations team." : "Document is pending verification.",
-          date: new Date(doc.uploadedAt),
+          id: `upload-${key}-${doc.url}`,
+          title: `Document Uploaded: ${label}${bankProofDetail}`,
+          description: doc.verified
+            ? "Document uploaded. Current verification status: verified."
+            : "Document uploaded. Current verification status: pending.",
+          date: uploadedAt,
+          type: doc.verified ? "success" : "warning",
+          icon: FileText,
+        });
+      }
+    });
+
+    (docs.otherDocuments || []).forEach((doc, idx) => {
+      const uploadedAt = getSafeDate(doc?.uploadedAt);
+      if (doc?.url && uploadedAt) {
+        events.push({
+          id: `upload-other-${doc.url || idx}`,
+          title: `Additional Document Uploaded: ${doc.name || `File ${idx + 1}`}`,
+          description: doc.verified
+            ? "Additional document uploaded. Current verification status: verified."
+            : "Additional document uploaded. Current verification status: pending.",
+          date: uploadedAt,
           type: doc.verified ? "success" : "warning",
           icon: FileText,
         });
@@ -481,41 +544,97 @@ const PartnerDetails = () => {
     });
 
     orders.forEach((o) => {
-      if (o.status === "completed" && o.updatedAt) {
+      const orderStatus = String(o?.status || "").toLowerCase();
+      const completedAt = getSafeDate(o?.updatedAt || o?.completedAt);
+      if (orderStatus === "completed" && completedAt) {
         events.push({
           id: `booking-${o._id}`,
           title: `Booking Completed: ${o.bookingId}`,
           description: `Service delivered successfully. Value: ₹${o.orderValue}.`,
-          date: new Date(o.updatedAt),
+          date: completedAt,
           type: "success",
           icon: CheckCircle2,
         });
       }
     });
 
+    walletTransactions.forEach((tx) => {
+      const transactionDate = getSafeDate(tx?.date || tx?.createdAt);
+      if (!transactionDate) return;
+
+      const isCredit = tx?.transactionType === "credit";
+      const reason = tx?.comment || tx?.reason || tx?.type || "Wallet transaction recorded";
+      const bookingRef = tx?.bookingId?.bookingId
+        ? ` Booking: ${tx.bookingId.bookingId}.`
+        : "";
+
+      events.push({
+        id: `wallet-${tx._id}`,
+        title: `Wallet ${isCredit ? "Credited" : "Debited"}: Rs${formatCurrencyValue(
+          tx?.amount,
+        )}`,
+        description: `${reason}.${bookingRef}`.trim(),
+        date: transactionDate,
+        type: isCredit ? "success" : "warning",
+        icon: Wallet,
+      });
+    });
+
     cashouts.forEach((c) => {
-      if (c.createdAt) {
+      const createdAt = getSafeDate(c?.createdAt);
+      if (createdAt) {
+        const status = String(c?.status || "PENDING");
         events.push({
           id: `cashout-${c._id}`,
           title: `Payout Requested: ₹${c.value}`,
-          description: `Status: ${c.status}. Reference: ${c.cashoutId || c._id}`,
-          date: new Date(c.createdAt),
-          type: c.status === "APPROVED" || c.status === "Completed" ? "success" : c.status === "REJECTED" ? "danger" : "warning",
+          description: `Status: ${status}. Reference: ${c.cashoutId || c._id}`,
+          date: createdAt,
+          type: APPROVED_CASHOUT_STATUSES.has(status)
+            ? "success"
+            : status === "REJECTED"
+            ? "danger"
+            : "warning",
           icon: DollarSign,
         });
       }
     });
 
-    return events.sort((a, b) => b.date.getTime() - a.date.getTime());
-  }, [seller, orders, cashouts]);
+    reviews.forEach((review) => {
+      const createdAt = getSafeDate(review?.createdAt);
+      if (!createdAt) return;
 
-  const activityPerPage = 10;
-  const totalActivityPages = Math.ceil(timelineEvents.length / activityPerPage);
+      events.push({
+        id: `review-${review._id}`,
+        title: `Customer Review Added: ${review?.rating || 0} Star`,
+        description:
+          review?.content ||
+          review?.title ||
+          `Feedback recorded for booking ${
+            review?.bookingId?.bookingId || review?.bookingId || "-"
+          }.`,
+        date: createdAt,
+        type: "info",
+        icon: Heart,
+      });
+    });
+
+    return events.sort((a, b) => b.date.getTime() - a.date.getTime());
+  }, [seller, orders, cashouts, walletTransactions, reviews]);
+
+  const activityItemsPerPage = Number(activityPageSize) || 10;
+  const totalActivityPages = Math.max(
+    Math.ceil(timelineEvents.length / activityItemsPerPage),
+    1,
+  );
 
   const paginatedTimelineEvents = useMemo(() => {
-    const startIndex = (activityPage - 1) * activityPerPage;
-    return timelineEvents.slice(startIndex, startIndex + activityPerPage);
-  }, [timelineEvents, activityPage]);
+    const startIndex = (activityPage - 1) * activityItemsPerPage;
+    return timelineEvents.slice(startIndex, startIndex + activityItemsPerPage);
+  }, [timelineEvents, activityPage, activityItemsPerPage]);
+
+  useEffect(() => {
+    setActivityPage((currentPage) => Math.min(currentPage, totalActivityPages));
+  }, [totalActivityPages]);
 
   const showSkeleton = sellerLoading || !seller;
 
@@ -667,7 +786,7 @@ const PartnerDetails = () => {
                         </span>
                         <span className="flex items-center gap-1.5 font-medium">
                           <MapPin className="size-4 text-slate-400" />
-                          {seller.city?.cityName || seller.city?.name || "Lucknow"}
+                          {getPartnerCityName(seller)}
                         </span>
                       </div>
                     </div>
@@ -811,17 +930,23 @@ const PartnerDetails = () => {
                       <div>
                         <h3 className="font-bold text-slate-900 text-sm mb-3">Key Contact Person</h3>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm bg-slate-50 p-4 rounded-xl border border-slate-100">
-                          <div>
+                          <div className="min-w-0">
                             <span className="text-slate-400 block text-xs">Name</span>
-                            <span className="font-semibold text-slate-800 mt-0.5 block">{seller?.contactPerson?.name || seller?.name || "-"}</span>
+                            <span className="font-semibold text-slate-800 mt-0.5 block break-words">
+                              {seller?.contactPerson?.name || seller?.name || "-"}
+                            </span>
                           </div>
-                          <div>
+                          <div className="min-w-0">
                             <span className="text-slate-400 block text-xs">Phone</span>
-                            <span className="font-semibold text-slate-800 mt-0.5 block">{seller?.contactPerson?.phone || seller?.phone || "-"}</span>
+                            <span className="font-semibold text-slate-800 mt-0.5 block break-words">
+                              {seller?.contactPerson?.phone || seller?.phone || "-"}
+                            </span>
                           </div>
-                          <div>
+                          <div className="min-w-0">
                             <span className="text-slate-400 block text-xs">Email</span>
-                            <span className="font-semibold text-slate-800 mt-0.5 block">{seller?.contactPerson?.email || seller?.email || "-"}</span>
+                            <span className="font-semibold text-slate-800 mt-0.5 block break-all">
+                              {seller?.contactPerson?.email || seller?.email || "-"}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -897,7 +1022,7 @@ const PartnerDetails = () => {
                         </div>
                         <div>
                           <span className="font-semibold text-slate-400 block mb-1">Active Cities</span>
-                          <span className="font-medium text-slate-900">{seller?.city?.cityName || seller?.city?.name || "Lucknow"}</span>
+                          <span className="font-medium text-slate-900">{getPartnerCityName(seller)}</span>
                         </div>
                       </div>
 
@@ -1405,10 +1530,10 @@ const PartnerDetails = () => {
                     </CardHeader>
                     <CardContent className="p-6 text-sm text-slate-700 space-y-2">
                       <p className="font-medium text-slate-900">
-                        Operational Zone: <span className="font-bold text-slate-950">{seller?.city?.cityName || seller?.city?.name || "Lucknow"}</span>
+                        Operational Zone: <span className="font-bold text-slate-950">{getPartnerCityName(seller)}</span>
                       </p>
                       <p className="text-xs text-slate-500">
-                        This partner handles requests centered in Lucknow state division and adjoining regions. Polygon boundaries are enforced on automatic assignments.
+                        This partner handles requests in the mapped operating territory for this city. Polygon boundaries are enforced on automatic assignments.
                       </p>
                     </CardContent>
                   </Card>
@@ -1537,11 +1662,25 @@ const PartnerDetails = () => {
                     </div>
                   ) : (
                     <div className="space-y-6">
+                      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <p className="text-xs text-slate-500">
+                          {timelineEvents.length} activity events recorded
+                        </p>
+                        <PageSizeSelect
+                          value={activityPageSize}
+                          onChange={(value) => {
+                            setActivityPageSize(value);
+                            setActivityPage(1);
+                          }}
+                          label="Show"
+                        />
+                      </div>
+
                       <div className="relative border-l border-slate-200 ml-4 pl-6 space-y-6">
-                        {paginatedTimelineEvents.map((evt, idx) => {
+                        {paginatedTimelineEvents.map((evt) => {
                           const Icon = evt.icon || Activity;
                           return (
-                            <div key={idx} className="relative">
+                            <div key={evt.id} className="relative">
                               {/* Dot indicator */}
                               <span className="absolute -left-[35px] top-1 flex size-5.5 items-center justify-center rounded-full bg-white border border-slate-200 shadow-sm">
                                 <Icon className={`size-3 ${
@@ -1571,39 +1710,19 @@ const PartnerDetails = () => {
 
                       {/* Pagination Controls */}
                       {totalActivityPages > 1 && (
-                        <div className="flex items-center justify-between pt-4 border-t border-slate-100 mt-6">
+                        <div className="flex flex-col gap-3 pt-4 border-t border-slate-100 mt-6 sm:flex-row sm:items-center sm:justify-between">
                           <p className="text-xs text-slate-500">
-                            Showing <span className="font-medium text-slate-700">{(activityPage - 1) * activityPerPage + 1}</span> to{" "}
+                            Showing <span className="font-medium text-slate-700">{(activityPage - 1) * activityItemsPerPage + 1}</span> to{" "}
                             <span className="font-medium text-slate-700">
-                              {Math.min(activityPage * activityPerPage, timelineEvents.length)}
+                              {Math.min(activityPage * activityItemsPerPage, timelineEvents.length)}
                             </span>{" "}
                             of <span className="font-medium text-slate-700">{timelineEvents.length}</span> events
                           </p>
-                          <div className="flex items-center gap-2">
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled={activityPage === 1}
-                              onClick={() => setActivityPage((prev) => Math.max(prev - 1, 1))}
-                              className="h-8 px-2 border-slate-200 bg-white"
-                            >
-                              <ChevronLeft className="size-4" />
-                              <span className="sr-only">Previous Page</span>
-                            </Button>
-                            <span className="text-xs font-medium text-slate-600 whitespace-nowrap">
-                              Page {activityPage} of {totalActivityPages}
-                            </span>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              disabled={activityPage === totalActivityPages}
-                              onClick={() => setActivityPage((prev) => Math.min(prev + 1, totalActivityPages))}
-                              className="h-8 px-2 border-slate-200 bg-white"
-                            >
-                              <ChevronRight className="size-4" />
-                              <span className="sr-only">Next Page</span>
-                            </Button>
-                          </div>
+                          <PaginationComp
+                            page={activityPage}
+                            pageCount={totalActivityPages}
+                            setPage={setActivityPage}
+                          />
                         </div>
                       )}
                     </div>
