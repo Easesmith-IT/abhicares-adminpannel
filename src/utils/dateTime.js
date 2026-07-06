@@ -328,6 +328,20 @@ export const combineBusinessDateAndTime = (dateValue, timeValue) => {
   return isValidDate(combined) ? combined.toISOString() : null;
 };
 
+export const isPastBusinessDate = (value) => {
+  const ymd = toDateInputValue(value);
+  if (!ymd) return true;
+
+  return ymd < getBusinessTodayYmd();
+};
+
+export const isPastBusinessSlot = (dateValue, timeValue) => {
+  const combinedIso = combineBusinessDateAndTime(dateValue, timeValue);
+  if (!combinedIso) return true;
+
+  return new Date(combinedIso).getTime() < Date.now();
+};
+
 const resolveSlotStartAt = (booking) => {
   if (!booking) return null;
 

@@ -402,17 +402,14 @@ const SideNav = () => {
     isCollapsed,
     toggleSidebar,
     selectedCity,
-    setSelectedCity,
     favorites,
     toggleFavorite,
     recents,
-    addRecent,
   } = useCustomSidebar();
 
   const permissions = getSecureItem("perm", true) || {};
 
   const [isCmdOpen, setIsCmdOpen] = useState(false);
-  const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   // Hover states for Peek Navigation
@@ -596,6 +593,11 @@ const SideNav = () => {
     href: item.to,
     icon: item.icon,
   }));
+
+  const selectedCityLabel =
+    typeof selectedCity === "string" && selectedCity.trim()
+      ? selectedCity
+      : "All Cities";
 
   return (
     <motion.div
@@ -868,14 +870,14 @@ const SideNav = () => {
                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
                 className={cn(
-                  "absolute bottom-[72px] left-5 right-5 bg-white border border-sidebar-border rounded-xl shadow-xl z-50 py-1.5 overflow-hidden",
+                  "absolute bottom-[72px] left-5 right-5 z-50 overflow-hidden rounded-xl border border-slate-200 bg-white py-1.5 shadow-xl",
                   !isVisualExpanded && "left-[80px] bottom-4 w-48 right-auto"
                 )}
               >
-                <div className="px-3 py-1.5 border-b border-sidebar-border mb-1">
-                  <p className="text-[9px] uppercase font-bold text-sidebar-text-secondary">Current Scope</p>
-                  <p className="text-xs text-sidebar-text-primary font-semibold truncate mt-0.5">
-                    City: {selectedCity}
+                <div className="mb-1 border-b border-slate-200 px-3 py-1.5">
+                  <p className="text-[9px] font-bold uppercase text-slate-400">Current Scope</p>
+                  <p className="mt-0.5 truncate text-xs font-semibold text-slate-900">
+                    City: {selectedCityLabel}
                   </p>
                 </div>
                 <button
@@ -883,9 +885,9 @@ const SideNav = () => {
                     setIsProfileOpen(false);
                     navigate("/admin/settings");
                   }}
-                  className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-xs text-sidebar-text-primary hover:bg-sidebar-hover transition-colors font-medium cursor-pointer"
+                  className="flex w-full cursor-pointer items-center gap-2.5 px-3 py-2 text-left text-xs font-medium text-slate-800 transition-colors hover:bg-slate-50"
                 >
-                  <SettingsIcon className="size-3.5 text-sidebar-icon" />
+                  <SettingsIcon className="size-3.5 text-slate-500" />
                   <span>Platform Settings</span>
                 </button>
                 <button
@@ -896,7 +898,7 @@ const SideNav = () => {
                       navigate("/");
                     }
                   }}
-                  className="flex items-center gap-2.5 w-full text-left px-3 py-2 text-xs text-red-650 hover:bg-red-50 transition-colors font-semibold border-t border-sidebar-border pt-2 mt-1 cursor-pointer"
+                  className="mt-1 flex w-full cursor-pointer items-center gap-2.5 border-t border-slate-200 px-3 pt-2 py-2 text-left text-xs font-semibold text-red-600 transition-colors hover:bg-red-50"
                 >
                   <LogOut className="size-3.5 text-red-500" />
                   <span>Log Out</span>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import {
   Sheet,
   SheetContent,
@@ -7,7 +7,13 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { getLocalYmd, toDateInputValue } from "@/utils/dateTime";
+import {
+  getBusinessTodayYmd,
+  getLocalYmd,
+  isPastBusinessSlot,
+  toDateInputValue,
+} from "@/utils/dateTime";
+import { generateTimeOptions } from "@/utils/generateTimeOptions";
 
 const generateDates = () => {
   const days = [];
@@ -28,41 +34,33 @@ const generateDates = () => {
   return days;
 };
 
-const generateTimeSlots = () => {
-  const slots = [];
-
-  const startHour = 15; // 3 PM (24hr format)
-  const endHour = 21; // 9 PM
-
-  for (let hour = startHour; hour < endHour; hour++) {
-    for (let min of [0, 30]) {
-      const date = new Date();
-      date.setHours(hour, min, 0, 0);
-
-      let hrs = hour;
-      const suffix = hrs >= 12 ? "PM" : "AM";
-
-      if (hrs > 12) hrs -= 12;
-      if (hrs === 0) hrs = 12;
-
-      const formatted = `${hrs.toString().padStart(2, "0")}:${min
-        .toString()
-        .padStart(2, "0")} ${suffix}`;
-
-      slots.push(formatted);
-    }
-  }
-
-  return slots;
-};
-
-const timeSlots = generateTimeSlots();
-
 const SelectSlotSheet = ({ open, onOpenChange, onSelect, initialSlot }) => {
   const dates = generateDates();
+  const allTimeSlots = useMemo(
+    () =>
+      generateTimeOptions({
+        startHour: 8,
+        endHour: 22,
+        intervalMinutes: 30,
+        includeEnd: true,
+      }),
+    [],
+  );
 
   const [selectedDate, setSelectedDate] = useState(dates[0]);
   const [selectedTime, setSelectedTime] = useState(null);
+
+  const availableTimeSlots = useMemo(() => {
+    if (!selectedDate?.fullDate) return allTimeSlots;
+
+    if (selectedDate.fullDate !== getBusinessTodayYmd()) {
+      return allTimeSlots;
+    }
+
+    return allTimeSlots.filter(
+      (slot) => !isPastBusinessSlot(selectedDate.fullDate, slot),
+    );
+  }, [allTimeSlots, selectedDate]);
 
   useEffect(() => {
     if (open) {
@@ -76,7 +74,7 @@ const SelectSlotSheet = ({ open, onOpenChange, onSelect, initialSlot }) => {
         );
 
         setSelectedDate(matchedDate || dates[0]);
-        setSelectedTime(initialSlot.time);
+        setSelectedTime(initialSlot.time || null);
       } else {
         setSelectedDate(dates[0]);
         setSelectedTime(null);
@@ -84,61 +82,148 @@ const SelectSlotSheet = ({ open, onOpenChange, onSelect, initialSlot }) => {
     }
   }, [open, initialSlot]);
 
+  useEffect(() => {
+    if (selectedTime && !availableTimeSlots.includes(selectedTime)) {
+      setSelectedTime(null);
+    }
+  }, [availableTimeSlots, selectedTime]);
+
+  const scrollRef = useRef(null);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+    let hasMoved = false;
+
+    const onMouseDown = (e) => {
+      isDown = true;
+      startX = e.pageX - el.offsetLeft;
+      scrollLeft = el.scrollLeft;
+      hasMoved = false;
+    };
+
+    const onMouseLeave = () => {
+      isDown = false;
+    };
+
+    const onMouseUp = () => {
+      isDown = false;
+    };
+
+    const onMouseMove = (e) => {
+      if (!isDown) return;
+      const x = e.pageX - el.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      if (Math.abs(walk) > 5) {
+        hasMoved = true;
+      }
+      el.scrollLeft = scrollLeft - walk;
+    };
+
+    const onClickCapture = (e) => {
+      if (hasMoved) {
+        e.stopPropagation();
+        e.preventDefault();
+      }
+    };
+
+    const onWheel = (e) => {
+      if (e.deltaY === 0) return;
+      e.preventDefault();
+      el.scrollTo({
+        left: el.scrollLeft + e.deltaY * 1.5,
+        behavior: "auto",
+      });
+    };
+
+    el.addEventListener("mousedown", onMouseDown);
+    el.addEventListener("mouseleave", onMouseLeave);
+    el.addEventListener("mouseup", onMouseUp);
+    el.addEventListener("mousemove", onMouseMove);
+    el.addEventListener("click", onClickCapture, true);
+    el.addEventListener("wheel", onWheel, { passive: false });
+
+    return () => {
+      el.removeEventListener("mousedown", onMouseDown);
+      el.removeEventListener("mouseleave", onMouseLeave);
+      el.removeEventListener("mouseup", onMouseUp);
+      el.removeEventListener("mousemove", onMouseMove);
+      el.removeEventListener("click", onClickCapture, true);
+      el.removeEventListener("wheel", onWheel);
+    };
+  }, []);
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="p-4">
-        <SheetHeader>
+      <SheetContent side="right" className="p-4 flex flex-col h-full gap-4">
+        <SheetHeader className="shrink-0">
           <SheetTitle>Select date and time</SheetTitle>
           <SheetDescription>
             Choose the service date and slot for this cart item.
           </SheetDescription>
         </SheetHeader>
 
-        {/* Dates */}
-        <div className="flex gap-3 mt-4 overflow-x-auto p-4">
-          {dates.map((d, i) => {
-            const active = selectedDate.day === d.day;
-
-            return (
-              <div
-                key={i}
-                onClick={() => setSelectedDate(d)}
-                className={`min-w-[70px] text-center p-3 rounded-lg border cursor-pointer
-                  ${active ? "border-primary bg-primary/5" : ""}
-                `}
-              >
-                <p className="text-xs">{d.label}</p>
-                <p className="font-semibold">{d.day}</p>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Time */}
-        <div className="mt-6">
-          <h3 className="text-sm font-medium mb-3">Select a time slot</h3>
-
-          <div className="grid grid-cols-3 gap-3">
-            {timeSlots.map((slot) => {
-              const active = selectedTime === slot;
+        {/* Scrollable middle content area */}
+        <div className="flex-1 overflow-y-auto pr-1 thin-scrollbar flex flex-col gap-6">
+          {/* Dates */}
+          <div
+            ref={scrollRef}
+            className="flex shrink-0 gap-3 overflow-x-auto overflow-y-visible px-1 py-2 thin-scrollbar select-none cursor-grab active:cursor-grabbing"
+          >
+            {dates.map((d, i) => {
+              const active = selectedDate.fullDate === d.fullDate;
 
               return (
                 <div
-                  key={slot}
-                  onClick={() => setSelectedTime(slot)}
-                  className={`border rounded-lg py-2 text-center cursor-pointer text-sm
+                  key={i}
+                  onClick={() => setSelectedDate(d)}
+                  className={`flex min-h-[68px] min-w-[86px] shrink-0 flex-col items-center justify-center rounded-lg border px-3 py-2 text-center cursor-pointer
                     ${active ? "border-primary bg-primary/5" : ""}
                   `}
                 >
-                  {slot}
+                  <p className="text-xs">{d.label}</p>
+                  <p className="font-semibold">{d.day}</p>
                 </div>
               );
             })}
           </div>
+
+          {/* Time */}
+          <div>
+            <h3 className="text-sm font-medium mb-3">Select a time slot</h3>
+
+            {availableTimeSlots.length === 0 ? (
+              <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-3 text-sm text-amber-800">
+                No slots are available for the selected date. Choose another day between 8:00 AM and 10:00 PM.
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-3">
+                {availableTimeSlots.map((slot) => {
+                  const active = selectedTime === slot;
+
+                  return (
+                    <div
+                      key={slot}
+                      onClick={() => setSelectedTime(slot)}
+                      className={`border rounded-lg py-2 text-center cursor-pointer text-sm
+                      ${active ? "border-primary bg-primary/5" : ""}
+                    `}
+                    >
+                      {slot}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </div>
 
         <Button
-          className="mt-6 w-full"
+          className="w-full shrink-0"
           variant="abhicares"
           disabled={!selectedTime}
           onClick={() => {

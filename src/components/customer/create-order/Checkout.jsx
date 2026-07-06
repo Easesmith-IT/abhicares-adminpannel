@@ -24,6 +24,8 @@ import {
   combineBusinessDateAndTime,
   formatDateOnly,
   formatSlotTime,
+  isPastBusinessDate,
+  isPastBusinessSlot,
 } from "@/utils/dateTime";
 
 const amount = (value) => Number(value || 0);
@@ -219,6 +221,18 @@ const Checkout = () => {
     const missingSlot = cartItems.find((item) => !item.slot);
     if (missingSlot) {
       toast.error(`Select a slot for ${missingSlot.name}`);
+      return;
+    }
+
+    const invalidPastSlot = cartItems.find(
+      (item) =>
+        !item.slot?.date ||
+        !item.slot?.time ||
+        isPastBusinessDate(item.slot.date) ||
+        isPastBusinessSlot(item.slot.date, item.slot.time),
+    );
+    if (invalidPastSlot) {
+      toast.error(`Choose a valid upcoming slot for ${invalidPastSlot.name}`);
       return;
     }
 
