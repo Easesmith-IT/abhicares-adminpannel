@@ -16,22 +16,7 @@ import {
   ShieldCheck,
   User,
 } from "lucide-react";
-
-const formatDate = (value) => {
-  if (!value) return "-";
-
-  try {
-    return new Date(value).toLocaleString("en-IN", {
-      day: "2-digit",
-      month: "short",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return "-";
-  }
-};
+import { formatDateOnly, formatInstant, formatSlotTime } from "@/utils/dateTime";
 
 const getResponseMinutes = (offeredAt, respondedAt) => {
   if (!offeredAt || !respondedAt) return "-";
@@ -182,11 +167,11 @@ export default function PartnerOfferedBookingDetails() {
               <Info label="Booking Status">{booking?.status}</Info>
 
               <Info label="Booking Date">
-                {formatDate(booking?.bookingDate)}
+                {formatDateOnly(booking?.bookingDate, "dd MMM yyyy")}
               </Info>
 
               <Info label="Booking Time">
-                {formatDate(booking?.bookingTime)}
+                {formatSlotTime(booking?.bookingTime, "hh:mm aa")}
               </Info>
 
               <Info label="Assigned Seller">
@@ -202,11 +187,11 @@ export default function PartnerOfferedBookingDetails() {
             <h3 className="text-xl font-semibold mb-6">Offer Details</h3>
 
             <div className="grid md:grid-cols-2 gap-6">
-              <Info label="Offered At">{formatDate(offer?.offeredAt)}</Info>
+              <Info label="Offered At">{formatInstant(offer?.offeredAt, "dd MMM yyyy, hh:mm aa")}</Info>
 
-              <Info label="Responded At">{formatDate(offer?.respondedAt)}</Info>
+              <Info label="Responded At">{formatInstant(offer?.respondedAt, "dd MMM yyyy, hh:mm aa")}</Info>
 
-              <Info label="Expires At">{formatDate(offer?.expiresAt)}</Info>
+              <Info label="Expires At">{formatInstant(offer?.expiresAt, "dd MMM yyyy, hh:mm aa")}</Info>
 
               <Info label="Response Duration">
                 {getResponseMinutes(offer?.offeredAt, offer?.respondedAt)}
@@ -252,7 +237,7 @@ export default function PartnerOfferedBookingDetails() {
                         <Info label="Reason">{event?.reason}</Info>
 
                         <Info label="Created At">
-                          {formatDate(event?.createdAt)}
+                          {formatInstant(event?.createdAt, "dd MMM yyyy, hh:mm aa")}
                         </Info>
 
                         {/* <Info label="Metadata">
@@ -362,7 +347,7 @@ function TimelineItem({
         </p>
 
         <p className="text-sm text-muted-foreground">
-          {formatDate(time)}
+          {formatInstant(time, "dd MMM yyyy, hh:mm aa")}
         </p>
       </div>
     </div>

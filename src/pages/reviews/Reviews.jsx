@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { useEffect, useState } from "react";
 
 import useGetApiReq from "../../hooks/useGetApiReq";
@@ -100,7 +99,7 @@ const Reviews = () => {
   const filterReviews = async () => {
     filterReviewsFun(
       `/admin/filter-review?date=${
-        filters.date ? format(new Date(filters.date), "yyyy-MM-dd") : ""
+        filters.date || ""
       }&serviceType=${filters.serviceType}&reviewType=${filters.type}&page=${currentPage}&limit=${limit}`,
     );
   };

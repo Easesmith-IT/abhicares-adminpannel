@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { getSecureItem } from "../../utils/secureStorage";
+import useAuthActions from "../../hooks/useAuthActions";
 
 const PrivateRoute = () => {
     const perm = {
@@ -35,8 +36,10 @@ const PrivateRoute = () => {
 
     const { pathname } = useLocation();
     const { isAdminAuthenticated } = useSelector((state) => state.user)
+    const { getAdminStatus } = useAuthActions();
     const permissions = getSecureItem("perm", true) || {};
     const navigate = useNavigate();
+    const [isCheckingAuth, setIsCheckingAuth] = useState(true);
     const value = pathname.split("/admin/").join("").split("/")[0];
     const foundValue = perm[value];
     const hasPermission = Boolean(
@@ -45,13 +48,41 @@ const PrivateRoute = () => {
     );
 
     useEffect(() => {
-        if (!isAdminAuthenticated || !permissions || !hasPermission) {
-            navigate("/");
+        let isMounted = true;
+
+        const verifySession = async () => {
+            const isAuthenticated = await getAdminStatus();
+            if (!isMounted) {
+                return;
+            }
+
+            if (!isAuthenticated) {
+                navigate("/", { replace: true });
+                return;
+            }
+
+            setIsCheckingAuth(false);
+        };
+
+        void verifySession();
+
+        return () => {
+            isMounted = false;
+        };
+    }, [getAdminStatus, navigate, pathname]);
+
+    useEffect(() => {
+        if (!isCheckingAuth && (!isAdminAuthenticated || !permissions || !hasPermission)) {
+            navigate("/", { replace: true });
         }
-    }, [permissions, pathname, isAdminAuthenticated, navigate, hasPermission]);
+    }, [permissions, pathname, isAdminAuthenticated, navigate, hasPermission, isCheckingAuth]);
 
 
     // Only render the Outlet if the user has the required permissions
+    if (isCheckingAuth) {
+        return null;
+    }
+
     if (pathname.includes("/admin/") && isAdminAuthenticated && value && hasPermission) {
         return <Outlet />;
     }

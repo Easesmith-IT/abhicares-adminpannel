@@ -14,10 +14,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { format } from "date-fns";
 import html2PDF from "jspdf-html2canvas";
 import { useEffect, useState } from "react";
 import usePostApiReq from "../../hooks/usePostApiReq";
+import { formatDateOnly, formatSlotTime } from "@/utils/dateTime";
 
 const MonthlyBookingModal = ({ isModalOpen, setIsModalOpen }) => {
   const {
@@ -123,18 +123,18 @@ const MonthlyBookingModal = ({ isModalOpen, setIsModalOpen }) => {
                       </TableCell>
 
                       <TableCell>
-                        {format(new Date(booking.createdAt), "dd-MM-yyyy")}
+                        {formatDateOnly(booking.createdAt, "dd-MM-yyyy")}
                       </TableCell>
 
                       <TableCell>
-                        {format(new Date(booking.bookingDate), "dd-MM-yyyy")}
+                        {formatDateOnly(booking.bookingDate, "dd-MM-yyyy")}
                       </TableCell>
 
                       <TableCell>₹{booking.itemTotalValue}</TableCell>
 
                       <TableCell>
                         {booking.bookingTime
-                          ? format(new Date(booking.bookingTime), "hh:mm a")
+                          ? formatSlotTime(booking.bookingTime, "hh:mm a")
                           : "-"}
                       </TableCell>
 

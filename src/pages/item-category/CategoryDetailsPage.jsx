@@ -15,6 +15,7 @@ import useGetApiReq from "@/hooks/useGetApiReq";
 import { H2 } from "../../components/shared/typography";
 import { CategoryDetailsSkeleton } from "../../components/item-category/category-details-skeleton";
 import Wrapper from "../../components/wrappers/Wrapper";
+import { formatInstant } from "@/utils/dateTime";
 
 const CategoryDetailsPage = () => {
   const params = useParams();
@@ -74,7 +75,7 @@ const CategoryDetailsPage = () => {
 
                 <p>
                   <strong>Created At:</strong>{" "}
-                  {new Date(category.createdAt).toLocaleString()}
+                  {formatInstant(category.createdAt, "dd MMM yyyy, hh:mm aa")}
                 </p>
 
                 <p>

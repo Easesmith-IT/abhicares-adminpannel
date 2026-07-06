@@ -10,6 +10,7 @@ import { Skeleton } from "../ui/skeleton";
 import { Spinner } from "../ui/spinner";
 import { Switch } from "../ui/switch";
 import { TableCell, TableRow } from "../ui/table";
+import { formatDateOnly } from "@/utils/dateTime";
 
 export const Category = ({ category, getItemCategories }) => {
   const navigate = useNavigate();
@@ -94,7 +95,7 @@ export const Category = ({ category, getItemCategories }) => {
           </div>
         </TableCell>
         <TableCell>
-          {new Date(category.createdAt).toLocaleDateString()}
+          {formatDateOnly(category.createdAt, "dd MMM yyyy")}
         </TableCell>
         {/* <TableCell>{category.createdBy || "NA"}</TableCell> */}
 

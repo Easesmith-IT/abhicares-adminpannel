@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Pencil, Trash2, Plus } from "lucide-react";
-import { format } from "date-fns";
 import { toast } from "sonner";
 
 import useGetApiReq from "../../hooks/useGetApiReq";
@@ -20,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import DeleteModal from "../modals/DeleteModal";
 import EditFaqModal from "../modals/EditFaqModal";
+import { formatDateOnly } from "@/utils/dateTime";
 
 const FaqRowSkeleton = () => (
   <TableRow>
@@ -119,7 +119,7 @@ const HelpCenterFaqs = () => {
                   </TableCell>
 
                   <TableCell className="text-sm">
-                    {format(new Date(faq.createdAt), "dd MMM yyyy")}
+                    {formatDateOnly(faq.createdAt, "dd MMM yyyy")}
                   </TableCell>
 
                   <TableCell className="text-right">

@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ReactQuill from "react-quill-new";
@@ -25,6 +24,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import { toDateInputValue } from "@/utils/dateTime";
 
 /* ---------------- Helpers ---------------- */
 
@@ -50,8 +50,7 @@ const AddOfferModal = ({ setIsModalOpen, offer = null, getAllOffers }) => {
     type: offer?.discountType ?? "",
     upTo: offer?.maxDiscount ?? "",
     offerValue: offer?.couponFixedValue ?? "",
-    expiryDate:
-      offer?.expiryDate && format(new Date(offer.expiryDate), "yyyy-MM-dd"),
+    expiryDate: toDateInputValue(offer?.expiryDate),
   });
 
   /* ---------------- Handlers ---------------- */

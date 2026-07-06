@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef, useCallback } from "react";
-import { useDispatch } from "react-redux";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -32,8 +31,7 @@ import {
 } from "lucide-react";
 
 import LogoutModal from "../modals/LogoutModal";
-import useGetApiReq from "../../hooks/useGetApiReq";
-import { changeAdminStatus } from "../../store/slices/userSlice";
+import useAuthActions from "../../hooks/useAuthActions";
 import { Button } from "../ui/button";
 import { useCustomSidebar } from "./sidebarContext";
 import { readCookie } from "../../utils/readCookie";
@@ -51,8 +49,7 @@ const getInitials = (name) => {
 const Header = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
-  const dispatch = useDispatch();
-  const { res, fetchData } = useGetApiReq();
+  const { handleAdminLogout } = useAuthActions();
 
   // Sidebar context
   const { selectedCity, selectedCityId, setSelectedCity } = useCustomSidebar();
@@ -411,18 +408,13 @@ const Header = () => {
 
   // Handle logout
   const handleLogout = async () => {
-    fetchData("/admin/logout-Admin");
-  };
-
-  useEffect(() => {
-    if (res?.status === 200 || res?.status === 201) {
-      dispatch(changeAdminStatus({ isAdminAuthenticated: false }));
-      localStorage.removeItem("perm");
-      localStorage.setItem("admin-status", false);
-      navigate("/");
+    const didLogout = await handleAdminLogout();
+    if (didLogout) {
+      setIsUserMenuOpen(false);
       setIsLogoutModalOpen(false);
+      navigate("/");
     }
-  }, [res, dispatch, navigate]);
+  };
 
   // Quick Create links list
   const quickCreateOptions = [
@@ -1024,7 +1016,7 @@ const Header = () => {
                           setIsUserMenuOpen(false);
                           setIsLogoutModalOpen(true);
                         }}
-                        className="flex items-center gap-2.5 w-full px-4 py-2.5 text-left text-xs font-semibold text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
+                        className="header-logout-btn flex items-center gap-2.5 w-full px-4 py-2.5 text-left text-xs font-semibold text-[#EF4444] hover:bg-[#FEF2F2] transition-colors cursor-pointer"
                       >
                         <LogOut className="size-3.5 text-[#EF4444]" />
                         <span>Logout</span>

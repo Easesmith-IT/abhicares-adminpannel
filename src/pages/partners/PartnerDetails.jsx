@@ -97,6 +97,7 @@ import PartnerMetrics from "./PartnerMetrics";
 import VerifyCashSubmissionModal from "./cash-submission/CashSubmissionVerifyModal";
 import UpdatePartnerModal from "../../components/modals/UpdatePartnerModal";
 import useDeleteApiReq from "../../hooks/useDeleteApiReq";
+import { formatDateOnly, formatInstant } from "@/utils/dateTime";
 
 const DOCUMENT_EVENT_LABELS = {
   panCard: "PAN Card",
@@ -454,11 +455,11 @@ const PartnerDetails = () => {
       o.bookingId,
       o.userId?.name || "N/A",
       o.product?.name || o.package?.name || "N/A",
-      o.bookingDate ? format(new Date(o.bookingDate), "dd MMM yyyy") : "N/A",
+      o.bookingDate ? formatDateOnly(o.bookingDate, "dd MMM yyyy") : "N/A",
       `₹${o.orderValue || 0}`,
       o.status,
       o.paymentStatus,
-      o.createdAt ? format(new Date(o.createdAt), "dd MMM yyyy") : "N/A",
+      o.createdAt ? formatDateOnly(o.createdAt, "dd MMM yyyy") : "N/A",
     ]);
 
     const csvContent =
@@ -782,7 +783,7 @@ const PartnerDetails = () => {
                       <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm text-slate-500 pt-2">
                         <span className="flex items-center gap-1.5 font-medium">
                           <Calendar className="size-4 text-slate-400" />
-                          Joined {seller.createdAt ? format(new Date(seller.createdAt), "dd MMM yyyy") : "N/A"}
+                          Joined {seller.createdAt ? formatDateOnly(seller.createdAt, "dd MMM yyyy") : "N/A"}
                         </span>
                         <span className="flex items-center gap-1.5 font-medium">
                           <MapPin className="size-4 text-slate-400" />
@@ -1007,7 +1008,7 @@ const PartnerDetails = () => {
                         <div>
                           <span className="font-semibold text-slate-400 block mb-1">Last Login</span>
                           <span className="font-medium text-slate-900">
-                            {seller?.updatedAt ? format(new Date(seller.updatedAt), "dd MMM yyyy hh:mm a") : "-"}
+                            {seller?.updatedAt ? formatInstant(seller.updatedAt, "dd MMM yyyy hh:mm a") : "-"}
                           </span>
                         </div>
                         <div>
@@ -1192,7 +1193,7 @@ const PartnerDetails = () => {
                                 <p className="text-[10px] text-slate-400 capitalize">{o.paymentType || "COD"}</p>
                               </TableCell>
                               <TableCell className="text-xs text-slate-600">
-                                {o.bookingDate ? format(new Date(o.bookingDate), "dd MMM yyyy") : "N/A"}
+                                {o.bookingDate ? formatDateOnly(o.bookingDate, "dd MMM yyyy") : "N/A"}
                               </TableCell>
                               <TableCell className="font-bold text-slate-900">₹{o.orderValue}</TableCell>
                               <TableCell>
@@ -1314,7 +1315,7 @@ const PartnerDetails = () => {
                                 <TableCell className="font-mono text-xs font-semibold">{sub.cashoutId || sub._id?.slice(-8)}</TableCell>
                                 <TableCell className="font-bold text-slate-900">₹{sub.value}</TableCell>
                                 <TableCell className="text-xs text-slate-600">
-                                  {sub.createdAt ? format(new Date(sub.createdAt), "dd MMM yyyy") : "-"}
+                                  {sub.createdAt ? formatDateOnly(sub.createdAt, "dd MMM yyyy") : "-"}
                                 </TableCell>
                                 <TableCell>
                                   <Badge className={
@@ -1378,7 +1379,7 @@ const PartnerDetails = () => {
                           {walletTransactions.map((tx) => (
                             <TableRow key={tx._id} className="hover:bg-slate-50/50">
                               <TableCell className="text-xs text-slate-600">
-                                {tx.date ? format(new Date(tx.date), "dd MMM yyyy hh:mm a") : "-"}
+                                {tx.date ? formatInstant(tx.date, "dd MMM yyyy hh:mm a") : "-"}
                               </TableCell>
                               <TableCell className="font-mono text-xs">
                                 {tx.bookingId?.bookingId || "-"}
@@ -1630,7 +1631,7 @@ const PartnerDetails = () => {
                             <p className="text-xs text-slate-600 italic">"{rev.content || rev.title || "No comment provided."}"</p>
                           </div>
                           <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-[10px] text-slate-400">
-                            <span>{rev.createdAt ? format(new Date(rev.createdAt), "dd MMM yyyy") : ""}</span>
+                            <span>{rev.createdAt ? formatDateOnly(rev.createdAt, "dd MMM yyyy") : ""}</span>
                             <Badge className={
                               rev.status === "APPROVED"
                                 ? "bg-green-50 text-green-700 border-green-200 border text-[9px]"

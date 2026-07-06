@@ -21,13 +21,16 @@ import { Input } from "../components/ui/input";
 
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { Spinner } from "../components/ui/spinner";
+import useAuthActions from "../hooks/useAuthActions";
 import useCrashReporter from "../hooks/useCrashReporter";
-import { setSecureItem } from "../utils/secureStorage";
+import { getSecureItem, setSecureItem } from "../utils/secureStorage";
+import { readCookie } from "../utils/readCookie";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { reportCrash } = useCrashReporter();
+  const { getAdminStatus } = useAuthActions();
 
   const [adminId, setAdminId] = useState("");
   const [password, setPassword] = useState("");
@@ -36,12 +39,45 @@ const AdminLogin = () => {
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
 
   useEffect(() => {
-    if (isAdminAuthenticated) {
-      navigate("/admin/dashboard");
-    }
-  }, [isAdminAuthenticated, navigate]);
+    let isMounted = true;
+
+    const verifyExistingSession = async () => {
+      const hasClientAuthHint = Boolean(
+        isAdminAuthenticated ||
+        getSecureItem("admin-status", true) ||
+        getSecureItem("perm", true) ||
+        readCookie("adminInfo")
+      );
+
+      if (!hasClientAuthHint) {
+        if (isMounted) {
+          setIsCheckingSession(false);
+        }
+        return;
+      }
+
+      const isAuthenticated = await getAdminStatus();
+      if (!isMounted) {
+        return;
+      }
+
+      if (isAuthenticated) {
+        navigate("/admin/dashboard", { replace: true });
+        return;
+      }
+
+      setIsCheckingSession(false);
+    };
+
+    void verifyExistingSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [getAdminStatus, isAdminAuthenticated, navigate]);
 
   const handleAdminLogin = async (e) => {
     e.preventDefault();
@@ -99,6 +135,14 @@ const AdminLogin = () => {
       setLoading(false);
     }
   };
+
+  if (isCheckingSession) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-main to-para-3 p-4">
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-main to-para-3 p-4">

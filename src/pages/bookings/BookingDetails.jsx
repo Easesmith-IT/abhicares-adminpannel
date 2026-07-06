@@ -1,4 +1,4 @@
-import { format, isValid } from "date-fns";
+import { isValid } from "date-fns";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { toast } from "sonner";
 import { Link, useParams } from "react-router-dom";
@@ -59,6 +59,13 @@ import { BackLink } from "../../components/shared/back-link";
 import BookingDetailsSkeleton from "../../components/booking/BookingDetailsSkeleton";
 import RefundStatusModal from "../../components/booking/RefundStatusModal";
 import AutoAsignedCard from "../../components/booking/AutoAsignedCard";
+import InvoiceDialog from "../orders/InvoiceDialog";
+import { formatDateOnly, formatInstant, formatSlotTime, isBookingOverdue } from "@/utils/dateTime";
+import {
+  BOOKING_STATUS_ACTION_OPTIONS,
+  getBookingStatusMeta,
+  toBookingStatusActionValue,
+} from "@/utils/bookingStatus";
 
 const formatAmount = (value) => {
   const num = Number(value || 0);
@@ -70,6 +77,11 @@ const BookingDetails = () => {
 
   // API Hooks
   const { res, fetchData: getBooking } = useGetApiReq();
+  const {
+    res: invoiceRes,
+    fetchData: getInvoice,
+    isLoading: isInvoiceLoading,
+  } = useGetApiReq();
   const { res: updateRes, fetchData: updateStatus, isLoading: isUpdateLoading } = usePatchApiReq();
   const { res: addNoteRes, fetchData: addNote, isLoading: isAddNoteLoading } = usePostApiReq();
 
@@ -78,6 +90,8 @@ const BookingDetails = () => {
   const [status, setStatus] = useState("");
   const [isPartnerModalOpen, setIsPartnerModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isInvoiceOpen, setIsInvoiceOpen] = useState(false);
+  const [pdfUrl, setPdfUrl] = useState(null);
   const [ledger, setLedger] = useState(null);
   const [bookingPayment, setBookingPayment] = useState(null);
   const [lifetimeBookings, setLifetimeBookings] = useState(0);
@@ -87,6 +101,11 @@ const BookingDetails = () => {
   
   // Note formulation
   const [noteText, setNoteText] = useState("");
+
+  const bookingStatusMeta = useMemo(
+    () => getBookingStatusMeta(booking?.status),
+    [booking?.status],
+  );
 
   const getBookingDetails = useCallback(() => {
     getBooking(`/admin/get-booking-details/${id}`);
@@ -100,7 +119,7 @@ const BookingDetails = () => {
     if (res?.status === 200) {
       const data = res.data;
       setBooking(data.bookingDetails);
-      setStatus(data.bookingDetails?.status || "");
+      setStatus(toBookingStatusActionValue(data.bookingDetails?.status || ""));
       setLedger(data.paymentLedger);
       setBookingPayment(data.bookingPayment);
       setLifetimeBookings(data.lifetimeBookings || 0);
@@ -109,6 +128,19 @@ const BookingDetails = () => {
       setCategoryName(data.categoryName || "");
     }
   }, [res]);
+
+  useEffect(() => {
+    if (invoiceRes?.status === 200 || invoiceRes?.status === 201) {
+      const url = invoiceRes?.data?.pdfUrl;
+      if (!url) {
+        toast.error("No invoice PDF was returned");
+        return;
+      }
+
+      setPdfUrl(url);
+      setIsInvoiceOpen(true);
+    }
+  }, [invoiceRes]);
 
   const handleStatusUpdate = () => {
     if (!status) return;
@@ -129,6 +161,18 @@ const BookingDetails = () => {
     addNote(`/admin/add-booking-note/${booking._id}`, {
       text: noteText,
     });
+  };
+
+  const handleViewInvoice = () => {
+    const orderId =
+      typeof booking?.orderId === "object" ? booking?.orderId?._id : booking?.orderId;
+
+    if (!orderId) {
+      toast.error("No linked order invoice is available for this booking");
+      return;
+    }
+
+    getInvoice(`/invoice/download/${orderId}`);
   };
 
   useEffect(() => {
@@ -309,10 +353,9 @@ const BookingDetails = () => {
     const alerts = [];
     if (!booking) return alerts;
 
-    const bookingDateObj = new Date(booking.bookingDate);
-    const isOverdue = bookingDateObj < new Date() && !["completed", "cancelled"].includes(booking.status);
+    const overdue = isBookingOverdue(booking);
     
-    if (isOverdue) {
+    if (overdue) {
       alerts.push({
         type: "danger",
         text: "Provider execution is late. Schedule window has expired."
@@ -391,16 +434,11 @@ const BookingDetails = () => {
                     <SelectValue placeholder="Update Status" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="assigned">Assigned</SelectItem>
-                    <SelectItem value="accepted">Accepted</SelectItem>
-                    <SelectItem value="en route">En Route</SelectItem>
-                    <SelectItem value="arrived">Arrived</SelectItem>
-                    <SelectItem value="in progress">In Progress</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="cancelled">Cancelled</SelectItem>
-                    <SelectItem value="on hold">On Hold</SelectItem>
-                    <SelectItem value="no show">No Show</SelectItem>
-                    <SelectItem value="rescheduled">Rescheduled</SelectItem>
+                    {BOOKING_STATUS_ACTION_OPTIONS.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <Button
@@ -432,23 +470,19 @@ const BookingDetails = () => {
                         View Order
                       </Link>
                     )}
-                    <Badge className={
-                      booking.status === "completed"
-                        ? "bg-green-100 text-green-700 hover:bg-green-100 border border-green-200 text-xs font-bold"
-                        : booking.status === "cancelled"
-                        ? "bg-rose-100 text-rose-700 hover:bg-rose-100 border border-rose-200 text-xs font-bold"
-                        : "bg-blue-100 text-blue-700 hover:bg-blue-100 border border-blue-200 text-xs font-bold"
-                    }>
-                      {booking.status.toUpperCase() || "ALLOTTED"}
+                    <Badge
+                      className={`${bookingStatusMeta.badgeClassName} text-xs font-bold`}
+                    >
+                      {bookingStatusMeta.label}
                     </Badge>
                     <Badge variant="outline" className="text-slate-500 border-slate-200 font-mono text-[10px]">
                       City: {booking.userAddress?.city || "Mumbai"}
                     </Badge>
                   </div>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm text-slate-500 font-medium mt-2">
-                    <span className="flex items-center gap-1"><Calendar className="size-3.5" /> Scheduled: {booking.bookingDate ? format(new Date(booking.bookingDate), "dd MMM yyyy") : "N/A"}</span>
-                    <span className="flex items-center gap-1"><Clock className="size-3.5" /> Slot: {booking.bookingTime ? format(new Date(booking.bookingTime), "hh:mm a") : "N/A"}</span>
-                    <span className="flex items-center gap-1"><User className="size-3.5" /> Created: {booking.createdAt ? format(new Date(booking.createdAt), "dd MMM yyyy") : "N/A"}</span>
+                    <span className="flex items-center gap-1"><Calendar className="size-3.5" /> Scheduled: {booking.bookingDate ? formatDateOnly(booking.bookingDate, "dd MMM yyyy") : "N/A"}</span>
+                    <span className="flex items-center gap-1"><Clock className="size-3.5" /> Slot: {booking.bookingTime ? formatSlotTime(booking.bookingTime, "hh:mm a") : "N/A"}</span>
+                    <span className="flex items-center gap-1"><User className="size-3.5" /> Created: {booking.createdAt ? formatDateOnly(booking.createdAt, "dd MMM yyyy") : "N/A"}</span>
                     <span className="flex items-center gap-1">Source: <span className="font-semibold text-slate-700 capitalize">{booking.orderId?.orderPlatform || "Mobile App"}</span></span>
                     <span className="flex items-center gap-1">Created By: <span className="font-semibold text-slate-700">Customer</span></span>
                   </div>
@@ -733,12 +767,12 @@ const BookingDetails = () => {
                           <h4 className="font-bold text-slate-800 uppercase tracking-wider text-[10px] border-b border-slate-100 pb-2">Operational Timing</h4>
                           <div className="flex justify-between">
                             <span className="text-slate-400 font-semibold">Booking Date</span>
-                            <span className="font-bold text-slate-800">{booking.bookingDate ? format(new Date(booking.bookingDate), "dd MMMM yyyy") : "-"}</span>
+                            <span className="font-bold text-slate-800">{booking.bookingDate ? formatDateOnly(booking.bookingDate, "dd MMMM yyyy") : "-"}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-slate-400 font-semibold">Scheduled Slot</span>
                             <span className="font-bold text-slate-800">
-                              {booking.bookingTime ? format(new Date(booking.bookingTime), "hh:mm a") : "-"} 
+                              {booking.bookingTime ? formatSlotTime(booking.bookingTime, "hh:mm a") : "-"} 
                               {booking.slotDurationMinutes ? ` (${booking.slotDurationMinutes} Mins)` : ""}
                             </span>
                           </div>
@@ -752,11 +786,11 @@ const BookingDetails = () => {
                           <h4 className="font-bold text-slate-800 uppercase tracking-wider text-[10px] border-b border-slate-100 pb-2">System Timestamps</h4>
                           <div className="flex justify-between">
                             <span className="text-slate-400 font-semibold">Created Date</span>
-                            <span className="font-bold text-slate-800">{booking.createdAt ? format(new Date(booking.createdAt), "dd MMM yyyy, hh:mm a") : "-"}</span>
+                            <span className="font-bold text-slate-800">{booking.createdAt ? formatInstant(booking.createdAt, "dd MMM yyyy, hh:mm a") : "-"}</span>
                           </div>
                           <div className="flex justify-between">
                             <span className="text-slate-400 font-semibold">Last Updated</span>
-                            <span className="font-bold text-slate-800">{booking.updatedAt ? format(new Date(booking.updatedAt), "dd MMM yyyy, hh:mm a") : "-"}</span>
+                            <span className="font-bold text-slate-800">{booking.updatedAt ? formatInstant(booking.updatedAt, "dd MMM yyyy, hh:mm a") : "-"}</span>
                           </div>
                         </div>
                       </div>
@@ -820,7 +854,7 @@ const BookingDetails = () => {
                         <div className="flex justify-between items-center">
                           <span className="text-slate-500 font-medium">Paid Timestamp</span>
                           <span className="font-bold text-slate-900 font-mono">
-                            {ledger?.lastPaidAt ? format(new Date(ledger.lastPaidAt), "dd MMM yyyy, hh:mm a") : "N/A"}
+                            {ledger?.lastPaidAt ? formatInstant(ledger.lastPaidAt, "dd MMM yyyy, hh:mm a") : "N/A"}
                           </span>
                         </div>
                       </CardContent>
@@ -925,7 +959,7 @@ const BookingDetails = () => {
                                     </div>
                                     <div className="whitespace-nowrap text-right text-xs text-slate-400 font-mono">
                                       <time dateTime={event.date.toISOString()}>
-                                        {format(event.date, "dd MMM, hh:mm a")}
+                                        {formatInstant(event.date, "dd MMM, hh:mm a")}
                                       </time>
                                     </div>
                                   </div>
@@ -959,7 +993,7 @@ const BookingDetails = () => {
                                   </div>
                                   <span className="font-black text-slate-700">{note.createdBy}</span>
                                 </div>
-                                <span className="font-mono">{format(new Date(note.createdAt), "dd MMM yyyy, hh:mm a")}</span>
+                                <span className="font-mono">{formatInstant(note.createdAt, "dd MMM yyyy, hh:mm a")}</span>
                               </div>
                               <p className="text-xs font-semibold text-slate-800 whitespace-pre-wrap leading-relaxed">
                                 {note.text}
@@ -1086,7 +1120,7 @@ const BookingDetails = () => {
                   <div className="flex gap-2 w-full">
                     {booking.userId?._id && (
                       <Link 
-                        to={`/admin/customers`}
+                        to={`/admin/customers/${booking.userId._id}`}
                         className="flex-1 text-center font-bold text-[10px] border border-slate-200 py-2 rounded-xl text-slate-600 bg-white hover:bg-slate-50 shadow-sm transition"
                       >
                         View Customer
@@ -1130,7 +1164,7 @@ const BookingDetails = () => {
                         </div>
                         <div>
                           <Link 
-                            to={`/admin/partners`} 
+                            to={`/admin/partners/${booking.sellerId._id}`} 
                             className="font-black text-blue-600 hover:underline text-sm block"
                           >
                             {booking.sellerId.name}
@@ -1182,7 +1216,7 @@ const BookingDetails = () => {
 
                       <div className="flex gap-2 w-full">
                         <Link 
-                          to={`/admin/partners`}
+                          to={`/admin/partners/${booking.sellerId._id}`}
                           className="flex-1 text-center font-bold text-[10px] border border-slate-200 py-2 rounded-xl text-slate-600 bg-white hover:bg-slate-50 shadow-sm transition"
                         >
                           View Partner
@@ -1257,14 +1291,11 @@ const BookingDetails = () => {
                   <Button 
                     variant="outline" 
                     size="sm" 
-                    onClick={() => {
-                      toast.success("Generating invoice PDF download...");
-                      window.print();
-                    }}
+                    onClick={handleViewInvoice}
                     className="w-full border-slate-200 text-slate-700 bg-white font-bold text-xs flex items-center justify-center gap-1.5 h-9 rounded-xl shadow-sm hover:bg-slate-50"
                   >
                     <Download className="size-3.5" />
-                    <span>Download Invoice</span>
+                    <span>{isInvoiceLoading ? "Loading Invoice..." : "Download Invoice PDF"}</span>
                   </Button>
                 </CardContent>
               </Card>
@@ -1293,7 +1324,7 @@ const BookingDetails = () => {
                     {booking.refundInfo.processedAt && (
                       <div className="flex justify-between">
                         <span className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Processed Date</span>
-                        <span className="font-bold text-slate-800 font-mono">{format(new Date(booking.refundInfo.processedAt), "dd MMM yyyy")}</span>
+                        <span className="font-bold text-slate-800 font-mono">{formatDateOnly(booking.refundInfo.processedAt, "dd MMM yyyy")}</span>
                       </div>
                     )}
                     {booking.refundInfo.refundId && (
@@ -1333,6 +1364,14 @@ const BookingDetails = () => {
           bookingId={booking._id}
           getBooking={getBookingDetails}
           assignedSellerId={booking?.assignedSellerId}
+        />
+      )}
+
+      {isInvoiceOpen && (
+        <InvoiceDialog
+          open={isInvoiceOpen}
+          setOpen={setIsInvoiceOpen}
+          pdfUrl={pdfUrl}
         />
       )}
     </>

@@ -23,7 +23,9 @@ import {
   History,
 } from "lucide-react";
 import logo from "../../assets/logo .png";
+import useAuthActions from "../../hooks/useAuthActions";
 import { cn } from "../../lib/utils";
+import { getSecureItem } from "../../utils/secureStorage";
 import { useCustomSidebar } from "./sidebarContext";
 import CommandPalette, { ALL_MENU_ITEMS } from "./CommandPalette";
 
@@ -395,6 +397,7 @@ const avatarVariants = {
 const SideNav = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { handleAdminLogout } = useAuthActions();
   const {
     isCollapsed,
     toggleSidebar,
@@ -406,7 +409,7 @@ const SideNav = () => {
     addRecent,
   } = useCustomSidebar();
 
-  const permissions = JSON.parse(localStorage.getItem("perm") || "{}");
+  const permissions = getSecureItem("perm", true) || {};
 
   const [isCmdOpen, setIsCmdOpen] = useState(false);
   const [isCityDropdownOpen, setIsCityDropdownOpen] = useState(false);
@@ -886,14 +889,10 @@ const SideNav = () => {
                   <span>Platform Settings</span>
                 </button>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setIsProfileOpen(false);
-                    const logoutBtn = document.querySelector(".header-logout-btn");
-                    if (logoutBtn) {
-                      logoutBtn.click();
-                    } else {
-                      localStorage.removeItem("perm");
-                      localStorage.setItem("admin-status", false);
+                    const didLogout = await handleAdminLogout();
+                    if (didLogout) {
                       navigate("/");
                     }
                   }}

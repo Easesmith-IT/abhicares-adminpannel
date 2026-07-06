@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { format } from "date-fns";
 import { Pencil, Trash2, Eye } from "lucide-react";
 import { toast } from "sonner";
 
@@ -15,6 +14,7 @@ import useGetApiReq from "../../hooks/useGetApiReq";
 import { Switch } from "../ui/switch";
 import usePatchApiReq from "../../hooks/usePatchApiReq";
 import { Spinner } from "../ui/spinner";
+import { formatDateOnly } from "@/utils/dateTime";
 
 const OfferRow = ({ offer, refetch, onEdit }) => {
   const { fetchData: deleteOffer, res: deleteRes } = useDeleteApiReq();
@@ -74,13 +74,13 @@ const OfferRow = ({ offer, refetch, onEdit }) => {
         <TableCell>{offer.type}</TableCell>
 
         <TableCell>
-          {offer.createdAt && format(new Date(offer.createdAt), "dd-MM-yyyy")}
+          {offer.createdAt && formatDateOnly(offer.createdAt, "dd-MM-yyyy")}
         </TableCell>
         <TableCell>
-          {offer.validTo && format(new Date(offer.validTo), "dd-MM-yyyy")}
+          {offer.validTo && formatDateOnly(offer.validTo, "dd-MM-yyyy")}
         </TableCell>
         <TableCell>
-          {offer.validFrom && format(new Date(offer.validFrom), "dd-MM-yyyy")}
+          {offer.validFrom && formatDateOnly(offer.validFrom, "dd-MM-yyyy")}
         </TableCell>
 
         <TableCell>

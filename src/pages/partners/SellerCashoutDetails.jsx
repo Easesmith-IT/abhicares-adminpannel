@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { Wallet } from "lucide-react";
 import { useParams } from "react-router-dom";
@@ -16,6 +15,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BackLink } from "../../components/shared/back-link";
 import { H2 } from "../../components/shared/typography";
+import { formatDateOnly } from "@/utils/dateTime";
 
 const SellerCashoutDetails = () => {
   const {
@@ -187,7 +187,7 @@ const SellerCashoutDetails = () => {
               <p>
                 <b>Date:</b>{" "}
                 {cashout?.createdAt &&
-                  format(new Date(cashout.createdAt), "dd-MM-yyyy")}
+                  formatDateOnly(cashout.createdAt, "dd-MM-yyyy")}
               </p>
             </CardContent>
           </Card>

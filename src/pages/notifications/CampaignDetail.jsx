@@ -19,6 +19,7 @@ import Wrapper from "../../components/wrappers/Wrapper";
 import { BackLink } from "../../components/shared/back-link";
 import useGetApiReq from "../../hooks/useGetApiReq";
 import { Skeleton } from "../../components/ui/skeleton";
+import { formatInstant } from "@/utils/dateTime";
 
 const DUMMY_CAMPAIGN = {
   id: "1",
@@ -157,7 +158,7 @@ export default function CampaignDetail() {
               <p>
                 <strong>Scheduled:</strong>{" "}
                 {campaign.scheduled_at
-                  ? new Date(campaign.scheduled_at).toLocaleString()
+                  ? formatInstant(campaign.scheduled_at, "dd MMM yyyy, hh:mm aa")
                   : "Immediate"}
               </p>
 

@@ -31,6 +31,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "../../components/ui/skeleton";
+import { formatInstant } from "@/utils/dateTime";
 
 const STATUS_VARIANT = {
   offered: "secondary",
@@ -38,18 +39,6 @@ const STATUS_VARIANT = {
   rejected: "destructive",
   expired: "outline",
   cancelled: "secondary",
-};
-
-const formatDate = (value) => {
-  if (!value) return "-";
-
-  return new Date(value).toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 };
 
 export default function PartnerOfferedBookings() {
@@ -282,9 +271,9 @@ export default function PartnerOfferedBookings() {
                       {offer.reasonMeta?.offerRejectReason || "-"}
                     </TableCell>
 
-                    <TableCell>{formatDate(offer.offeredAt)}</TableCell>
+                    <TableCell>{formatInstant(offer.offeredAt, "dd MMM yyyy, hh:mm aa")}</TableCell>
 
-                    <TableCell>{formatDate(offer.respondedAt)}</TableCell>
+                    <TableCell>{formatInstant(offer.respondedAt, "dd MMM yyyy, hh:mm aa")}</TableCell>
 
                     <TableCell className="flex justify-end">
                       <Button

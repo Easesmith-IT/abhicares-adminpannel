@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
 
 // shadcn
 import { Button } from "@/components/ui/button";
@@ -33,6 +32,7 @@ import { CityFilter, useCities } from "@/components/filters/city";
 import { PaginationComp } from "../../components/shared/PaginationComp";
 import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
+import { formatInstant } from "@/utils/dateTime";
 
 const STATUS_BADGE_STYLE = {
   pending: "bg-amber-50 text-amber-700 hover:bg-amber-50 border border-amber-200",
@@ -245,7 +245,7 @@ export default function CampaignList() {
                           {item.cities?.length ? item.cities.map((c) => c?.name || c).join(", ") : "All Cities"}
                         </TableCell>
                         <TableCell className="text-slate-500 text-xs font-mono">
-                          {item.scheduled ? format(new Date(item.scheduled), "dd MMM yyyy, hh:mm aa") : "Immediate"}
+                          {item.scheduled ? formatInstant(item.scheduled, "dd MMM yyyy, hh:mm aa") : "Immediate"}
                         </TableCell>
                         <TableCell>
                           <Badge

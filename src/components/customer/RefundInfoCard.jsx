@@ -1,8 +1,8 @@
 "use client";
 
-import { format } from "date-fns";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { formatInstant } from "@/utils/dateTime";
 
 export default function RefundInfoCard({ order }) {
   const refund = order?.refundInfo;
@@ -42,7 +42,7 @@ export default function RefundInfoCard({ order }) {
             label="Processed At"
             value={
               refund.processedAt
-                ? format(new Date(refund.processedAt), "dd MMM yyyy, hh:mm a")
+                ? formatInstant(refund.processedAt, "dd MMM yyyy, hh:mm a")
                 : "-"
             }
           />
@@ -68,8 +68,8 @@ export default function RefundInfoCard({ order }) {
                 label="Processed At"
                 value={
                   transaction.processedAt
-                    ? format(
-                        new Date(transaction.processedAt),
+                    ? formatInstant(
+                        transaction.processedAt,
                         "dd MMM yyyy, hh:mm a",
                       )
                     : "-"

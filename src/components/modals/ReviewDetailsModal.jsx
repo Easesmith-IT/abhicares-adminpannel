@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { X, Star } from "lucide-react";
-import { format } from "date-fns";
 import parse from "html-react-parser";
 import { useNavigate } from "react-router-dom";
 
@@ -17,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { formatDateOnly, formatSlotTime } from "@/utils/dateTime";
 
 const ReviewDetailsModal = ({ setIsModalOpen, review }) => {
 
@@ -84,7 +84,7 @@ const ReviewDetailsModal = ({ setIsModalOpen, review }) => {
 
                 <p className="text-sm text-muted-foreground">
                   {review?.createdAt &&
-                    format(new Date(review.createdAt), "dd-MM-yyyy")}
+                    formatDateOnly(review.createdAt, "dd-MM-yyyy")}
                 </p>
 
                 <Badge variant="secondary">{reviewDetails.reviewType}</Badge>
@@ -208,15 +208,15 @@ const ReviewDetailsModal = ({ setIsModalOpen, review }) => {
                     <p>
                       <span className="font-medium">Booking Date:</span>{" "}
                       {reviewDetails.bookingId.bookingDate &&
-                        format(
-                          new Date(reviewDetails.bookingId.bookingDate),
+                        formatDateOnly(
+                          reviewDetails.bookingId.bookingDate,
                           "dd-MM-yyyy",
                         )}
                     </p>
                     <p>
                       <span className="font-medium">Booking Time:</span>{" "}
-                      {format(
-                        new Date(reviewDetails.bookingId.bookingTime),
+                      {formatSlotTime(
+                        reviewDetails.bookingId.bookingTime,
                         "hh:mm aa",
                       )}
                     </p>

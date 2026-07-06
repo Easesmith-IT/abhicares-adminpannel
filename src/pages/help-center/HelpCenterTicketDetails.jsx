@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { format } from "date-fns";
 import {
   Calendar,
   MapPin,
@@ -26,6 +25,7 @@ import ServiceDetailsModal from "../../components/modals/ServiceDetailsModal";
 import HelpCenterTicketDetailsSkeleton from "../../components/help-center/HelpCenterTicketDetailsSkeleton";
 import { BackLink } from "../../components/shared/back-link";
 import { H2 } from "../../components/shared/typography";
+import { formatInstant, formatSlotTime } from "@/utils/dateTime";
 
 const HelpCenterTicketDetails = () => {
   const { ticketId } = useParams();
@@ -88,8 +88,8 @@ const HelpCenterTicketDetails = () => {
                     <p>{ticketDetails?.ticketId}</p>
                     <p>
                       {ticketDetails?.createdAt &&
-                        format(
-                          new Date(ticketDetails.createdAt),
+                        formatInstant(
+                          ticketDetails.createdAt,
                           "dd MMM yyyy, hh:mm aa",
                         )}
                     </p>
@@ -206,8 +206,8 @@ const HelpCenterTicketDetails = () => {
                     <p className="mt-4">
                       <Clock className="inline h-4 w-4 mr-2" />
                       {ticketDetails?.bookingId?.bookingTime &&
-                        format(
-                          new Date(ticketDetails.bookingId.bookingTime),
+                        formatSlotTime(
+                          ticketDetails.bookingId.bookingTime,
                           "hh:mm aa",
                         )}
                     </p>

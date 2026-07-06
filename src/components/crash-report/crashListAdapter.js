@@ -1,5 +1,6 @@
 // crashListAdapter.ts
 import { formatDistanceToNow, format } from "date-fns";
+import { formatInstant } from "@/utils/dateTime";
 
 export function adaptCrashForList(crash) {
   return {
@@ -24,7 +25,7 @@ export function adaptCrashForList(crash) {
     user: crash?.userId ? `${crash?.userType}` : "Anonymous",
 
     timeAgo: formatDistanceToNow(new Date(crash.crashAt), { addSuffix: true }),
-    timestamp: format(new Date(crash.crashAt), "dd MMM yyyy, hh:mm a"),
+    timestamp: formatInstant(crash.crashAt, "dd MMM yyyy, hh:mm a"),
 
     status: crash.resolved ? "Resolved" : "Open",
   };

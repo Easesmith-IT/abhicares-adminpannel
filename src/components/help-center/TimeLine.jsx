@@ -1,5 +1,7 @@
 import { Check, X } from "lucide-react";
 
+import { formatInstant } from "@/utils/dateTime";
+
 const Timeline = ({ title, time, status, className, desc }) => {
   return (
     <div className="flex gap-3 relative">
@@ -14,7 +16,11 @@ const Timeline = ({ title, time, status, className, desc }) => {
       <div className="flex flex-col">
         <span className="text-sm font-medium text-foreground">{title}</span>
 
-        {time && <span className="text-xs text-muted-foreground">{time}</span>}
+        {time && (
+          <span className="text-xs text-muted-foreground">
+            {formatInstant(time, "dd MMM yyyy, hh:mm aa")}
+          </span>
+        )}
 
         {desc && <span className="text-xs text-muted-foreground">{desc}</span>}
       </div>

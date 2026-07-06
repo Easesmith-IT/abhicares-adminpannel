@@ -2,10 +2,12 @@ import React, { useEffect, useState } from "react";
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { getLocalYmd, toDateInputValue } from "@/utils/dateTime";
 
 const generateDates = () => {
   const days = [];
@@ -19,7 +21,7 @@ const generateDates = () => {
       date: d,
       label: d.toLocaleDateString("en-IN", { weekday: "short" }),
       day: d.getDate(),
-      fullDate: d.toISOString().split("T")[0], // useful later
+      fullDate: getLocalYmd(d),
     });
   }
 
@@ -67,10 +69,10 @@ const SelectSlotSheet = ({ open, onOpenChange, onSelect, initialSlot }) => {
       const dates = generateDates();
 
       if (initialSlot) {
+        const initialDateKey =
+          toDateInputValue(initialSlot.date) || getLocalYmd(initialSlot.date);
         const matchedDate = dates.find(
-          (d) =>
-            new Date(d.date).toDateString() ===
-            new Date(initialSlot.date).toDateString(),
+          (d) => d.fullDate === initialDateKey,
         );
 
         setSelectedDate(matchedDate || dates[0]);
@@ -87,6 +89,9 @@ const SelectSlotSheet = ({ open, onOpenChange, onSelect, initialSlot }) => {
       <SheetContent side="right" className="p-4">
         <SheetHeader>
           <SheetTitle>Select date and time</SheetTitle>
+          <SheetDescription>
+            Choose the service date and slot for this cart item.
+          </SheetDescription>
         </SheetHeader>
 
         {/* Dates */}
@@ -138,7 +143,7 @@ const SelectSlotSheet = ({ open, onOpenChange, onSelect, initialSlot }) => {
           disabled={!selectedTime}
           onClick={() => {
             onSelect({
-              date: selectedDate.date,
+              date: selectedDate.fullDate,
               time: selectedTime,
             });
             onOpenChange(false);

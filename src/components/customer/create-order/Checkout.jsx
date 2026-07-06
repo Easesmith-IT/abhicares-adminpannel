@@ -1,240 +1,353 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  Navigate,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { AlertTriangle, Info } from "lucide-react";
+import { toast } from "sonner";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
-import CustomerAddresses from "../CustomerAddresses";
-
-import { setItemSlot } from "../../../store/slices/cartSlice";
-import { toast } from "sonner";
+import { clearCart, setItemSlot } from "../../../store/slices/cartSlice";
+import {
+  clearCreateOrderDraft,
+  setAppliedCoupon,
+  setCouponCode,
+  setPricingSnapshot,
+} from "../../../store/slices/createOrderDraftSlice";
 import SelectSlotSheet from "./SelectSlotSheet";
 import usePostApiReq from "../../../hooks/usePostApiReq";
 import { Spinner } from "../../ui/spinner";
+import {
+  combineBusinessDateAndTime,
+  formatDateOnly,
+  formatSlotTime,
+} from "@/utils/dateTime";
+
+const amount = (value) => Number(value || 0);
+
+const CheckoutAlert = ({ title, description, actionLabel, onAction, tone = "warning" }) => {
+  const tones = {
+    warning: "border-amber-200 bg-amber-50 text-amber-900",
+    danger: "border-rose-200 bg-rose-50 text-rose-900",
+    info: "border-blue-200 bg-blue-50 text-blue-900",
+  };
+
+  return (
+    <div className={`rounded-2xl border p-4 ${tones[tone] || tones.warning}`}>
+      <div className="flex items-start gap-3">
+        <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
+        <div className="space-y-2">
+          <h4 className="font-semibold">{title}</h4>
+          <p className="text-sm">{description}</p>
+          {actionLabel && onAction && (
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              className="bg-white"
+              onClick={onAction}
+            >
+              {actionLabel}
+            </Button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Checkout = () => {
   const dispatch = useDispatch();
-  const cartItems = useSelector((state) => state.cart.items);
-  const params = useParams();
   const navigate = useNavigate();
-  const { state } = useLocation();
+  const params = useParams();
+  const cartItems = useSelector((state) => state.cart.items);
+  const draft = useSelector((state) => state.createOrderDraft);
 
-
-  const [orderType, setOrderType] = useState("COD");
-
-  // slot
   const [slotOpen, setSlotOpen] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
-  const [couponCode, setCouponCode] = useState("");
-  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [checkoutAlert, setCheckoutAlert] = useState(null);
+  const [createdOrderId, setCreatedOrderId] = useState("");
 
   const {
     res: calculateChargeRes,
     fetchData: calculateCharge,
     isLoading: calculateChargeLoading,
+    error: calculateChargeError,
   } = usePostApiReq();
   const {
     res: createOrderRes,
     fetchData: createOrder,
     isLoading: createOrderLoading,
+    error: createOrderError,
   } = usePostApiReq();
 
-  // calculations
+  const selectedAddress = draft.selectedAddress;
+
   const subtotal = useMemo(() => {
     return cartItems.reduce(
-      (acc, item) => acc + item.offerPrice * item.quantity,
+      (acc, item) => acc + amount(item.offerPrice) * amount(item.quantity),
       0,
     );
   }, [cartItems]);
 
-  // const discount = useMemo(() => {
-  //   if (!appliedCoupon) return 0;
+  const pricing = calculateChargeRes?.data || draft.pricingSnapshot || {};
 
-  //   if (appliedCoupon.type === "FLAT") {
-  //     return appliedCoupon.value;
-  //   }
+  const calculateChargePreview = useCallback(() => {
+    if (!draft.cityId || cartItems.length === 0) return;
 
-  //   if (appliedCoupon.type === "PERCENT") {
-  //     return Math.round((subtotal * appliedCoupon.value) / 100);
-  //   }
-
-  //   return 0;
-  // }, [appliedCoupon, subtotal]);
-
-  const tax = Math.round(subtotal * 0.05);
-  // const total = subtotal - discount + tax;
-
-  if (cartItems.length === 0) {
-    return (
-      <Navigate to={`/admin/customers/${params.customerId}/create-order`} />
-    );
-  }
-
-  const handleCreateOrder = () => {
-    if (!state?.address?._id) {
-      toast.error("Select address");
-      return;
-    }
-
-    const missing = cartItems.find((i) => !i.slot);
-    if (missing) {
-      toast.error(`Select slot for ${missing.name}`);
-      return;
-    }
-
-    const data = calculateChargeRes?.data;
-    const items = data?.items || [];
-
-    const combineDateTime = (date, time) => {
-      const d = new Date(date);
-
-      // parse "03:00 PM"
-      const [timePart, modifier] = time.split(" ");
-      let [hours, minutes] = timePart.split(":");
-
-      hours = parseInt(hours, 10);
-
-      if (modifier === "PM" && hours !== 12) hours += 12;
-      if (modifier === "AM" && hours === 12) hours = 0;
-
-      d.setHours(hours, minutes, 0, 0);
-
-      return d.toISOString(); // backend-safe
-    };
-
-    const payload = {
-      userId: params?.customerId,
-      userAddressId: state?.address?._id,
-      offerCode: couponCode,
-      cityId: state?.address?.cityBoundary,
-      cart: {
-        items: cartItems.map((i) => ({
-          type: i.type.toLowerCase(),
-          quantity: i.quantity,
-          prod: {
-            ...i,
-            _id: i._id,
-            name: i.name,
-          },
-          ...(i?.type?.toLowerCase() === "package"
-            ? {
-                package: {
-                  ...i,
-                  _id: i._id,
-                  name: i.name,
-                },
-              }
-            : {}),
-          serviceId: i.serviceId,
-          bookDate: i.slot?.date,
-          bookTime: combineDateTime(i.slot?.date, i.slot?.time),
-          totalForItem: items.find((item) => item.itemId === i._id)?.charges
-            ?.totalForItem,
-          itemDiscount: items.find((item) => item.itemId === i._id)?.charges
-            ?.discount,
-          itemTotaltax: items.find((item) => item.itemId === i._id)?.charges
-            ?.itemTotalTax,
-        })),
-
-        totalAmount: data?.totalPayable,
-        totalCommission: data?.totalCommission,
-        totalConvenience: data?.totalConvenience,
-        totalDiscount: data?.totalDiscount,
-        totalvalue: data?.totalAmount,
-        serviceGst: data?.totalServiceGST,
-        totalTax: data?.totalTax,
-        totalTaxOnCommission: data?.totalTaxOnCommission,
-      },
-    };
-
-    createOrder("admin/create-cod-order-for-user", payload);
-
-  };
-
-  useEffect(() => {
-    if (createOrderRes?.status === 200 || createOrderRes?.status === 201) {
-      navigate(`/admin/orders/${createOrderRes?.data?.data?.order?._id}`);
-    }
-  }, [createOrderRes]);
-
-  const caluclateCharge = async () => {
-    const modifiedItems = cartItems?.map((item) => ({
-      type: item?.type.toLowerCase(),
+    const modifiedItems = cartItems.map((item) => ({
+      type: String(item?.type || "").toLowerCase(),
       serviceId: item?.serviceId,
       quantity: item?.quantity,
-      prodId: item?.type === "Package" ? item?._id : item?._id,
+      prodId: item?._id,
     }));
 
     calculateCharge("/shopping/caluclate-charge", {
       items: modifiedItems,
-      cityId: state?.address?.cityBoundary,
-      offerCode: couponCode,
+      cityId: draft.cityId,
+      offerCode: draft.couponCode,
+      userId: params?.customerId,
+      applyRewardPoints: true,
     });
+  }, [calculateCharge, cartItems, draft.cityId, draft.couponCode, params?.customerId]);
+
+  useEffect(() => {
+    if (selectedAddress?._id && cartItems.length > 0) {
+      calculateChargePreview();
+    }
+  }, [calculateChargePreview, cartItems.length, selectedAddress?._id]);
+
+  useEffect(() => {
+    if (calculateChargeRes?.status === 200 || calculateChargeRes?.status === 201) {
+      dispatch(setAppliedCoupon(calculateChargeRes?.data?.offerApplied || null));
+      dispatch(
+        setPricingSnapshot({
+          pricingSnapshot: calculateChargeRes?.data || null,
+          pricingHash:
+            calculateChargeRes?.data?.pricingHash ||
+            calculateChargeRes?.data?.pricing?.pricingHash ||
+            "",
+        }),
+      );
+      setCheckoutAlert(null);
+    }
+  }, [calculateChargeRes, dispatch]);
+
+  useEffect(() => {
+    const reasonCode = calculateChargeError?.response?.data?.reasonCode;
+
+    if (!reasonCode) return;
+
+    if (reasonCode === "OFFER_NOT_APPLICABLE") {
+      setCheckoutAlert({
+        tone: "warning",
+        title: "Offer is no longer valid",
+        description:
+          "The current coupon cannot be applied to this cart. Update the code or continue without it.",
+      });
+      return;
+    }
+
+    if (reasonCode === "OFFER_LIMIT_REACHED") {
+      setCheckoutAlert({
+        tone: "danger",
+        title: "Offer usage limit reached",
+        description:
+          "This offer cannot be applied anymore. Remove it and refresh pricing before checkout.",
+      });
+    }
+  }, [calculateChargeError]);
+
+  useEffect(() => {
+    if (createOrderRes?.status === 200 || createOrderRes?.status === 201) {
+      const order = createOrderRes?.data?.data?.order;
+      setCreatedOrderId(order?._id || "");
+      dispatch(clearCart());
+      dispatch(clearCreateOrderDraft());
+      setCheckoutAlert(null);
+      toast.success(`Order created: ${order?.orderId || order?._id}`);
+    }
+  }, [createOrderRes, dispatch]);
+
+  useEffect(() => {
+    const reasonCode = createOrderError?.response?.data?.reasonCode;
+
+    if (!reasonCode) return;
+
+    if (reasonCode === "PRICING_HASH_MISMATCH") {
+      setCheckoutAlert({
+        tone: "warning",
+        title: "Pricing changed before submit",
+        description:
+          "Refresh pricing with the latest cart totals, then retry checkout.",
+        actionLabel: "Refresh Pricing",
+        onAction: calculateChargePreview,
+      });
+      return;
+    }
+
+    if (reasonCode === "OFFER_NOT_APPLICABLE") {
+      setCheckoutAlert({
+        tone: "warning",
+        title: "Offer is not applicable anymore",
+        description:
+          "Remove the coupon or replace it, then refresh pricing before submitting.",
+      });
+      return;
+    }
+
+    if (reasonCode === "OFFER_LIMIT_REACHED") {
+      setCheckoutAlert({
+        tone: "danger",
+        title: "Offer limit reached",
+        description:
+          "This offer has already exhausted its usage limit. Remove it and retry checkout.",
+      });
+    }
+  }, [calculateChargePreview, createOrderError]);
+
+  const handleCreateOrder = () => {
+    if (!selectedAddress?._id) {
+      toast.error("Select an address first");
+      navigate(`/admin/customers/${params.customerId}/create-order`);
+      return;
+    }
+
+    const missingSlot = cartItems.find((item) => !item.slot);
+    if (missingSlot) {
+      toast.error(`Select a slot for ${missingSlot.name}`);
+      return;
+    }
+
+    if (!pricing?.items?.length) {
+      toast.error("Refresh pricing before creating the order");
+      return;
+    }
+
+    const payload = {
+      userId: params?.customerId,
+      userAddressId: selectedAddress?._id,
+      offerCode: draft.couponCode,
+      pricingHash: draft.pricingHash,
+      cityId: draft.cityId,
+      cart: {
+        items: cartItems.map((item) => {
+          const chargeItem = pricing.items.find(
+            (pricingItem) => pricingItem.itemId === item._id,
+          );
+
+          return {
+            type: String(item.type || "").toLowerCase(),
+            quantity: item.quantity,
+            prod: {
+              ...item,
+              _id: item._id,
+              name: item.name,
+            },
+            ...(String(item.type || "").toLowerCase() === "package"
+              ? {
+                  package: {
+                    ...item,
+                    _id: item._id,
+                    name: item.name,
+                  },
+                }
+              : {}),
+            serviceId: item.serviceId,
+            bookDate: item.slot?.date,
+            bookTime: combineBusinessDateAndTime(item.slot?.date, item.slot?.time),
+            totalForItem: chargeItem?.charges?.totalForItem,
+            itemDiscount: chargeItem?.charges?.discount,
+            itemTotaltax: chargeItem?.charges?.itemTotalTax,
+          };
+        }),
+        totalAmount: pricing?.totalPayable,
+        totalCommission: pricing?.totalCommission,
+        totalConvenience: pricing?.totalConvenience,
+        totalDiscount: pricing?.totalDiscount,
+        totalvalue: pricing?.totalAmount,
+        serviceGst: pricing?.totalServiceGST,
+        totalTax: pricing?.totalTax,
+        totalTaxOnCommission: pricing?.totalTaxOnCommission,
+        pricingHash: draft.pricingHash,
+      },
+    };
+
+    createOrder("admin/create-cod-order-for-user", payload);
   };
 
-  useEffect(() => {
-    state?.address?.cityBoundary && caluclateCharge();
-  }, [state]);
+  if (createdOrderId) {
+    return <Navigate to={`/admin/orders/${createdOrderId}`} replace />;
+  }
 
-  useEffect(() => {
-    if (
-      calculateChargeRes?.status === 200 ||
-      calculateChargeRes?.status === 201
-    ) {
-      setAppliedCoupon(calculateChargeRes?.data?.offerApplied);
-    }
-  }, [calculateChargeRes]);
+  if (!selectedAddress?._id) {
+    return (
+      <Navigate to={`/admin/customers/${params.customerId}/create-order`} replace />
+    );
+  }
 
-  const {
-    totalConvenience = 0,
-    totalPayable = 0,
-    totalTax = 0,
-    totalAmount = 0,
-    offerDiscount = 0,
-  } = calculateChargeRes?.data || {};
+  if (cartItems.length === 0) {
+    return (
+      <Navigate
+        to={`/admin/customers/${params.customerId}/create-order/userAddresses/categories`}
+        replace
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* LEFT */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Address */}
-          {/* <Card>
-            <CardContent className="p-5">
-              <h3 className="font-medium mb-3">Shipping Address</h3>
-              <CustomerAddresses
-                selectedId={selectedAddressId}
-                onSelect={setSelectedAddressId}
-              />
-            </CardContent>
-          </Card> */}
+      {checkoutAlert && <CheckoutAlert {...checkoutAlert} />}
 
-          {/* 🔥 SLOT PER ITEM */}
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
           <Card>
-            <CardContent className="p-5 space-y-4">
-              <h3 className="font-medium">Service Slots</h3>
+            <CardContent className="space-y-3 p-5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium">Selected Address</h3>
+                  <p className="text-sm text-slate-600">
+                    {selectedAddress.addressLine}, {selectedAddress.city}
+                  </p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    navigate(`/admin/customers/${params.customerId}/create-order`)
+                  }
+                >
+                  Change
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="space-y-4 p-5">
+              <div>
+                <h3 className="font-medium">Service Slots</h3>
+                <p className="text-sm text-slate-600">
+                  Each item keeps its own scheduled slot inside the same mixed
+                  cart.
+                </p>
+              </div>
 
               {cartItems.map((item) => (
                 <div
                   key={item._id}
-                  className="flex justify-between items-center border rounded-lg p-3"
+                  className="flex items-center justify-between rounded-lg border p-3"
                 >
                   <div>
                     <p className="text-sm font-medium">{item.name}</p>
 
                     {item.slot ? (
                       <p className="text-xs text-muted-foreground">
-                        {new Date(item.slot.date).toDateString()} •{" "}
-                        {item.slot.time}
+                        {formatDateOnly(item.slot.date, "dd MMM yyyy")} -{" "}
+                        {formatSlotTime(item.slot.time, "hh:mm aa")}
                       </p>
                     ) : (
                       <p className="text-xs text-red-500">No slot selected</p>
@@ -256,74 +369,58 @@ const Checkout = () => {
             </CardContent>
           </Card>
 
-          {/* Order Type */}
           <Card>
-            <CardContent className="p-5 space-y-4">
-              <h3 className="font-medium">Order Type</h3>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div
-                  onClick={() => setOrderType("COD")}
-                  className={`border p-4 rounded-lg cursor-pointer ${
-                    orderType === "COD" ? "border-primary bg-primary/5" : ""
-                  }`}
-                >
-                  COD
+            <CardContent className="space-y-4 p-5">
+              <div className="flex items-start gap-3 rounded-2xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+                <Info className="mt-0.5 h-5 w-5 shrink-0" />
+                <div className="space-y-1">
+                  <h3 className="font-medium">COD only admin checkout</h3>
+                  <p>
+                    This flow creates COD orders only. Wallet usage is disabled
+                    and pricing is revalidated against the backend at submit.
+                  </p>
                 </div>
-
-                {/* <div
-                  onClick={() => setOrderType("ONLINE")}
-                  className={`border p-4 rounded-lg cursor-pointer ${
-                    orderType === "ONLINE" ? "border-primary bg-primary/5" : ""
-                  }`}
-                >
-                  ONLINE
-                </div> */}
               </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-5 space-y-4">
-              <div className="flex gap-2 w-full">
+            <CardContent className="space-y-4 p-5">
+              <div className="flex gap-2">
                 <input
                   type="text"
                   placeholder="Enter coupon code"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value)}
-                  className="flex-1 border rounded-md px-3 py-2 text-sm"
+                  value={draft.couponCode}
+                  onChange={(event) =>
+                    dispatch(setCouponCode(event.target.value))
+                  }
+                  className="flex-1 rounded-md border px-3 py-2 text-sm"
                 />
 
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    if (!couponCode) {
-                      toast.error("Enter coupon code");
-                      return;
-                    }
-
-                    caluclateCharge();
-                  }}
-                >
+                <Button variant="outline" onClick={calculateChargePreview}>
                   {calculateChargeLoading ? <Spinner /> : "Apply"}
                 </Button>
               </div>
+
+              <p className="text-xs text-slate-500">
+                You can still go back and add more products or packages before
+                confirming the order.
+              </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* RIGHT */}
         <div>
           <Card className="sticky top-6">
-            <CardContent className="p-5 space-y-4">
+            <CardContent className="space-y-4 p-5">
               <h3 className="font-medium">Summary</h3>
 
-              {cartItems.map((i) => (
-                <div key={i._id} className="flex justify-between text-sm">
+              {cartItems.map((item) => (
+                <div key={item._id} className="flex justify-between text-sm">
                   <span>
-                    {i.name} × {i.quantity}
+                    {item.name} x {item.quantity}
                   </span>
-                  <span>₹{i.offerPrice * i.quantity}</span>
+                  <span>Rs {amount(item.offerPrice) * amount(item.quantity)}</span>
                 </div>
               ))}
 
@@ -331,43 +428,66 @@ const Checkout = () => {
 
               <div className="flex justify-between text-sm">
                 <span>Subtotal</span>
-                <span>₹{totalAmount}</span>
+                <span>Rs {amount(pricing.totalAmount || subtotal)}</span>
               </div>
 
               <div className="flex justify-between text-sm">
                 <span>Total Convenience</span>
-                <span>₹{totalConvenience}</span>
+                <span>Rs {amount(pricing.totalConvenience)}</span>
               </div>
+
               <div className="flex justify-between text-sm">
                 <span>Tax</span>
-                <span>₹{totalTax}</span>
+                <span>Rs {amount(pricing.totalTax)}</span>
               </div>
+
               <div className="flex justify-between text-sm">
                 <span>Offer Discount</span>
-                <span>₹{offerDiscount}</span>
+                <span>Rs {amount(pricing.offerDiscount)}</span>
+              </div>
+
+              <div className="flex justify-between text-sm">
+                <span>Reward Discount</span>
+                <span>Rs {amount(pricing.referralDiscount || pricing.reward?.discountAmount)}</span>
               </div>
 
               <Separator />
 
               <div className="flex justify-between font-semibold">
                 <span>Total</span>
-                <span>₹{totalPayable}</span>
+                <span>Rs {amount(pricing.totalPayable || subtotal)}</span>
               </div>
 
-              <Button
-                disabled={createOrderLoading}
-                variant="abhicares"
-                className="w-full"
-                onClick={handleCreateOrder}
-              >
-                {createOrderLoading ? <Spinner /> : "Confirm Order"}
-              </Button>
+              <p className="text-xs text-slate-500">
+                Pricing hash: {draft.pricingHash || "Pending refresh"}
+              </p>
+
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    navigate(
+                      `/admin/customers/${params.customerId}/create-order/userAddresses/categories`,
+                    )
+                  }
+                >
+                  Continue Adding Services
+                </Button>
+
+                <Button
+                  disabled={createOrderLoading}
+                  variant="abhicares"
+                  className="w-full"
+                  onClick={handleCreateOrder}
+                >
+                  {createOrderLoading ? <Spinner /> : "Confirm Order"}
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
       </div>
 
-      {/* SLOT SHEET */}
       <SelectSlotSheet
         open={slotOpen}
         initialSlot={activeItem?.slot}

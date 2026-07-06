@@ -1,10 +1,10 @@
-import { format } from "date-fns";
 import React, { useState } from "react";
 import { TableCell, TableRow } from "../ui/table";
 import { Button } from "../ui/button";
 import { CheckCircleIcon, EyeIcon, XCircleIcon } from "lucide-react";
 import ApproveRejectRequestModal from "./ApproveRejectRequestModal";
 import { useNavigate } from "react-router-dom";
+import { formatDateOnly, formatSlotTime } from "@/utils/dateTime";
 
 const getRequestStatusClasses = (status) => {
   switch (status) {
@@ -53,10 +53,10 @@ const Request = ({ item, refetch }) => {
 
         <TableCell>
           {item.booking?.bookingDate &&
-            format(new Date(item.booking.bookingDate), "dd-MM-yyyy")}
+            formatDateOnly(item.booking.bookingDate, "dd-MM-yyyy")}
           <p>
             {item.booking?.bookingTime &&
-              format(new Date(item.booking.bookingTime), "hh:mm aa")}
+              formatSlotTime(item.booking.bookingTime, "hh:mm aa")}
           </p>
         </TableCell>
 
@@ -84,7 +84,7 @@ const Request = ({ item, refetch }) => {
         </TableCell>
 
         <TableCell>
-          {item.requestedAt && format(new Date(item.requestedAt), "dd-MM-yyyy")}
+          {item.requestedAt && formatDateOnly(item.requestedAt, "dd-MM-yyyy")}
         </TableCell>
 
         <TableCell>

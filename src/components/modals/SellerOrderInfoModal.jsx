@@ -1,5 +1,3 @@
-import { format } from "date-fns";
-
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
@@ -8,6 +6,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { formatDateOnly, formatSlotTime } from "@/utils/dateTime";
 
 const SellerOrderInfoModal = ({
   setSellerOrderInfoModal,
@@ -44,10 +43,10 @@ const SellerOrderInfoModal = ({
           </p>
           <p>
             <b>Booking Date:</b>{" "}
-            {format(new Date(sellerOrder.bookingDate), "dd-MM-yyyy")}
+            {formatDateOnly(sellerOrder.bookingDate, "dd-MM-yyyy")}
           </p>
           <p>
-            <b>Booking Time:</b> {format(new Date(sellerOrder.bookingTime), "hh:mm aa")}
+            <b>Booking Time:</b> {formatSlotTime(sellerOrder.bookingTime, "hh:mm aa")}
           </p>
           <p>
             <b>Order Total:</b> ₹{sellerOrder.orderValue}

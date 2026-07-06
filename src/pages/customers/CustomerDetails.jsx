@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { format } from "date-fns";
 import {
   Phone,
   Mail,
@@ -77,6 +76,12 @@ import { PaginationComp } from "../../components/shared/PaginationComp";
 import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { BackLink } from "../../components/shared/back-link";
 import { H2 } from "../../components/shared/typography";
+import { formatDateOnly, formatInstant, formatSlotRange } from "@/utils/dateTime";
+import {
+  BOOKING_STATUS_FILTER_OPTIONS,
+  getBookingStatusMeta,
+  normalizeBookingStatus,
+} from "@/utils/bookingStatus";
 
 const CustomerDetails = () => {
   const { customerId } = useParams();
@@ -299,13 +304,13 @@ const CustomerDetails = () => {
     const rows = bookings.map(b => [
       b.bookingId || "N/A",
       b.product?.name || b.package?.name || "Service Item",
-      b.bookingDate ? format(new Date(b.bookingDate), "dd-MM-yyyy") : "N/A",
+      b.bookingDate ? formatDateOnly(b.bookingDate, "dd-MM-yyyy") : "N/A",
       b.sellerId?.name || b.assignedSellerId?.name || "Not Assigned",
       `₹${b.itemTotalValue || 0}`,
       b.paymentType || "N/A",
       b.paymentStatus || "pending",
       b.status || "N/A",
-      format(new Date(b.createdAt), "dd-MM-yyyy HH:mm")
+      formatInstant(b.createdAt, "dd-MM-yyyy HH:mm")
     ]);
 
     const csvContent = "data:text/csv;charset=utf-8," 
@@ -326,7 +331,9 @@ const CustomerDetails = () => {
       const serviceName = (b.product?.name || b.package?.name || "").toLowerCase();
       const bookingId = (b.bookingId || "").toLowerCase();
       const matchesSearch = serviceName.includes(bookingSearch.toLowerCase()) || bookingId.includes(bookingSearch.toLowerCase());
-      const matchesStatus = bookingStatusFilter === "all" || b.status === bookingStatusFilter;
+      const matchesStatus =
+        bookingStatusFilter === "all" ||
+        normalizeBookingStatus(b.status) === normalizeBookingStatus(bookingStatusFilter);
       return matchesSearch && matchesStatus;
     });
   }, [bookings, bookingSearch, bookingStatusFilter]);
@@ -510,7 +517,7 @@ const CustomerDetails = () => {
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs sm:text-sm text-slate-500 pt-1">
                       <span className="flex items-center gap-1">
                         <Calendar className="size-3.5 text-slate-400" />
-                        Joined {user?.createdAt ? format(new Date(user.createdAt), "dd MMM yyyy") : "N/A"}
+                        Joined {user?.createdAt ? formatDateOnly(user.createdAt, "dd MMM yyyy") : "N/A"}
                       </span>
                       <span className="flex items-center gap-1">
                         <MapPin className="size-3.5 text-slate-400" />
@@ -808,13 +815,13 @@ const CustomerDetails = () => {
                   <div className="grid grid-cols-3 border-b pb-2">
                     <span className="font-semibold text-slate-500">Last Booking Date</span>
                     <span className="col-span-2 text-slate-900 font-medium">
-                      {insights?.lastBookingDate ? format(new Date(insights.lastBookingDate), "dd MMM yyyy HH:mm") : "-"}
+                      {insights?.lastBookingDate ? formatInstant(insights.lastBookingDate, "dd MMM yyyy HH:mm") : "-"}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 pb-1">
                     <span className="font-semibold text-slate-500">Last Active Date</span>
                     <span className="col-span-2 text-slate-900 font-medium">
-                      {insights?.lastActiveDate ? format(new Date(insights.lastActiveDate), "dd MMM yyyy HH:mm") : "-"}
+                      {insights?.lastActiveDate ? formatInstant(insights.lastActiveDate, "dd MMM yyyy HH:mm") : "-"}
                     </span>
                   </div>
                 </CardContent>
@@ -850,14 +857,11 @@ const CustomerDetails = () => {
                     onChange={(e) => setBookingStatusFilter(e.target.value)}
                     className="border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs bg-white text-slate-700 outline-none focus:ring-1 focus:ring-blue-500"
                   >
-                    <option value="all">All Statuses</option>
-                    <option value="not-alloted">Not Allotted</option>
-                    <option value="assigned-pending">Assigned Pending</option>
-                    <option value="alloted">Allotted</option>
-                    <option value="in-progress">In Progress</option>
-                    <option value="payment-pending">Payment Pending</option>
-                    <option value="completed">Completed</option>
-                    <option value="cancelled">Cancelled</option>
+                    {BOOKING_STATUS_FILTER_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
                   </select>
                   <PageSizeSelect
                     value={bookingLimit}
@@ -912,10 +916,10 @@ const CustomerDetails = () => {
                           </TableCell>
                           <TableCell>
                             <div className="flex flex-col text-xs">
-                              <span className="font-medium text-slate-700">{b.bookingDate ? format(new Date(b.bookingDate), "dd-MM-yyyy") : "-"}</span>
+                              <span className="font-medium text-slate-700">{b.bookingDate ? formatDateOnly(b.bookingDate, "dd-MM-yyyy") : "-"}</span>
                               {b.slotStartAt && b.slotEndAt && (
                                 <span className="text-slate-400 font-mono text-[10px]">
-                                  {format(new Date(b.slotStartAt), "HH:mm")} - {format(new Date(b.slotEndAt), "HH:mm")}
+                                  {formatSlotRange(b.slotStartAt, b.slotEndAt)}
                                 </span>
                               )}
                             </div>
@@ -946,13 +950,14 @@ const CustomerDetails = () => {
                             </div>
                           </TableCell>
                           <TableCell>
-                            <Badge className={
-                              b.status === "completed" ? "bg-green-100 text-green-700 hover:bg-green-100" :
-                              b.status === "cancelled" ? "bg-rose-100 text-rose-700 hover:bg-rose-100" :
-                              "bg-amber-100 text-amber-700 hover:bg-amber-100"
-                            }>
-                              {b.status}
-                            </Badge>
+                            {(() => {
+                              const statusMeta = getBookingStatusMeta(b.status);
+                              return (
+                                <Badge className={statusMeta.badgeClassName}>
+                                  {statusMeta.label}
+                                </Badge>
+                              );
+                            })()}
                           </TableCell>
                           <TableCell className="text-right pr-6">
                             <Button
@@ -1159,7 +1164,7 @@ const CustomerDetails = () => {
                         filteredWalletTxs.map((tx) => (
                           <TableRow key={tx._id} className="hover:bg-slate-50 transition border-b">
                             <TableCell className="pl-6 text-xs text-slate-600 font-mono">
-                              {tx.date ? format(new Date(tx.date), "dd-MM-yyyy HH:mm") : "-"}
+                              {tx.date ? formatInstant(tx.date, "dd-MM-yyyy HH:mm") : "-"}
                             </TableCell>
                             <TableCell>
                               <Badge className={tx.transactionType === "credit" ? "bg-green-100 text-green-700 hover:bg-green-100" : "bg-rose-100 text-rose-700 hover:bg-rose-100"}>
@@ -1294,7 +1299,7 @@ const CustomerDetails = () => {
                         rewardProfile.transactions.map((t, idx) => (
                           <TableRow key={idx} className="hover:bg-slate-50 transition border-b">
                             <TableCell className="pl-6 text-xs text-slate-600 font-mono">
-                              {t.createdAt ? format(new Date(t.createdAt), "dd-MM-yyyy HH:mm") : "-"}
+                              {t.createdAt ? formatInstant(t.createdAt, "dd-MM-yyyy HH:mm") : "-"}
                             </TableCell>
                             <TableCell className="capitalize text-xs font-bold text-slate-800">
                               {t.type} Points
@@ -1336,7 +1341,7 @@ const CustomerDetails = () => {
                       <div className="space-y-1">
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
                           <h4 className="font-bold text-sm text-slate-900">{ev.title}</h4>
-                          <span className="text-slate-400 text-xs font-mono font-medium">{format(ev.date, "dd MMM yyyy HH:mm")}</span>
+                          <span className="text-slate-400 text-xs font-mono font-medium">{formatInstant(ev.date, "dd MMM yyyy HH:mm")}</span>
                         </div>
                         <p className="text-xs sm:text-sm text-slate-600 font-medium">{ev.description}</p>
                         {ev.link && (

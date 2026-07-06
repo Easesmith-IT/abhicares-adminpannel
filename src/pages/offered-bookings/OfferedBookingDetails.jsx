@@ -15,18 +15,7 @@ import {
   BarChart3,
   Scale,
 } from "lucide-react";
-
-const formatDate = (value) => {
-  if (!value) return "-";
-
-  return new Date(value).toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+import { formatInstant } from "@/utils/dateTime";
 
 const getResponseTime = (offeredAt, respondedAt) => {
   if (!offeredAt || !respondedAt) return "-";
@@ -155,7 +144,7 @@ const OfferedBookingDetails = () => {
                 <p className="text-muted-foreground text-sm">Offered At</p>
 
                 <p className="font-medium mt-1">
-                  {formatDate(offer?.offeredAt)}
+                  {formatInstant(offer?.offeredAt, "dd MMM yyyy, hh:mm aa")}
                 </p>
               </div>
 
@@ -163,7 +152,7 @@ const OfferedBookingDetails = () => {
                 <p className="text-muted-foreground text-sm">Responded At</p>
 
                 <p className="font-medium mt-1">
-                  {formatDate(offer?.respondedAt)}
+                  {formatInstant(offer?.respondedAt, "dd MMM yyyy, hh:mm aa")}
                 </p>
               </div>
 
@@ -302,7 +291,7 @@ const OfferedBookingDetails = () => {
                   <p className="font-medium">Offer Generated</p>
 
                   <p className="text-sm text-muted-foreground">
-                    {formatDate(offer?.offeredAt)}
+                    {formatInstant(offer?.offeredAt, "dd MMM yyyy, hh:mm aa")}
                   </p>
                 </div>
               </div>
@@ -317,7 +306,7 @@ const OfferedBookingDetails = () => {
                     <p className="font-medium">Seller Response</p>
 
                     <p className="text-sm text-muted-foreground">
-                      {formatDate(offer?.respondedAt)}
+                      {formatInstant(offer?.respondedAt, "dd MMM yyyy, hh:mm aa")}
                     </p>
                   </div>
                 </div>

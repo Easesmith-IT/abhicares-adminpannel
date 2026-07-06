@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import { format } from "date-fns";
 import { Eye, Search, RefreshCw, DollarSign } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -31,6 +30,7 @@ import { PaginationComp } from "../../components/shared/PaginationComp";
 import { PageSizeSelect } from "../../components/shared/PageSizeSelect";
 import { H2 } from "../../components/shared/typography";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
+import { formatDateOnly } from "@/utils/dateTime";
 
 const STATUS_BADGE_STYLE = {
   PENDING: "bg-amber-50 text-amber-700 hover:bg-amber-50 border border-amber-200",
@@ -239,7 +239,7 @@ const SellerCashouts = () => {
                         </TableCell>
                         <TableCell className="text-slate-600">
                           {cashout.createdAt &&
-                            format(new Date(cashout.createdAt), "dd MMM yyyy")}
+                            formatDateOnly(cashout.createdAt, "dd MMM yyyy")}
                         </TableCell>
                         <TableCell>
                           <Badge

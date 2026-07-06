@@ -1,6 +1,6 @@
 import React from "react";
 
-const steps = [
+export const steps = [
   { id: 1, label: "User Addresses" },
   { id: 2, label: "Categories" },
   { id: 3, label: "Services" },
@@ -8,36 +8,45 @@ const steps = [
   { id: 5, label: "Checkout" },
 ];
 
-export default function Stepper({ currentStep, onStepClick }) {
+export default function Stepper({
+  currentStep,
+  onStepClick,
+  isStepEnabled = () => true,
+}) {
   return (
-    <div className="w-full flex items-center justify-between">
+    <div className="flex w-full items-center justify-between">
       {steps.map((step, index) => {
         const isActive = currentStep === step.id;
         const isCompleted = currentStep > step.id;
+        const isEnabled = isStepEnabled(step.id);
 
         return (
-          <div key={step.id} className="flex-1 flex items-center">
-            {/* Step Circle */}
-            <div
-              onClick={() => onStepClick?.(step.id)}
-              className={`flex items-center justify-center w-10 h-10 rounded-full cursor-pointer
-                ${
-                  isCompleted
-                    ? "bg-green-500 text-white"
-                    : isActive
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-200 text-gray-600"
-                }`}
+          <div key={step.id} className="flex flex-1 items-center">
+            <button
+              type="button"
+              onClick={() => isEnabled && onStepClick?.(step.id)}
+              disabled={!isEnabled}
+              className={`flex h-10 w-10 items-center justify-center rounded-full transition ${
+                isCompleted
+                  ? "bg-green-500 text-white"
+                  : isActive
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-600"
+              } ${isEnabled ? "cursor-pointer" : "cursor-not-allowed opacity-50"}`}
             >
-              {isCompleted ? "✓" : step.id}
+              {step.id}
+            </button>
+
+            <div
+              className={`ml-2 text-sm font-medium ${
+                isEnabled ? "text-slate-900" : "text-slate-400"
+              }`}
+            >
+              {step.label}
             </div>
 
-            {/* Label */}
-            <div className="ml-2 text-sm font-medium">{step.label}</div>
-
-            {/* Line */}
             {index !== steps.length - 1 && (
-              <div className="flex-1 h-1 mx-4 bg-gray-300">
+              <div className="mx-4 h-1 flex-1 bg-gray-300">
                 <div
                   className={`h-1 ${
                     currentStep > step.id ? "bg-green-500" : "bg-gray-300"

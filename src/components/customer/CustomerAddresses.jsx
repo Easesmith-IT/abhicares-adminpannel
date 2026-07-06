@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
-import useGetApiReq from "../../hooks/useGetApiReq";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+
+import useGetApiReq from "../../hooks/useGetApiReq";
+import { setSelectedAddress } from "../../store/slices/createOrderDraftSlice";
+import { clearCart } from "../../store/slices/cartSlice";
 import { AddressSkeleton } from "../shared/AddressSkeleton";
 
-const CustomerAddresses = ({ selectedId, onSelect = () => {} }) => {
+const CustomerAddresses = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const params = useParams();
+  const selectedAddressId = useSelector(
+    (state) => state.createOrderDraft.selectedAddress?._id,
+  );
+  const cartItems = useSelector((state) => state.cart.items);
 
   const {
     res: getAddressesRes,
@@ -14,81 +24,103 @@ const CustomerAddresses = ({ selectedId, onSelect = () => {} }) => {
     isLoading,
   } = useGetApiReq();
 
-  const params = useParams();
-  const navigate = useNavigate();
   const [allAddresses, setAllAddresses] = useState([]);
 
   const handleAddressSelect = (address) => {
-    onSelect(address?._id);
+    if (selectedAddressId && selectedAddressId !== address?._id && cartItems.length) {
+      dispatch(clearCart());
+    }
+
+    dispatch(
+      setSelectedAddress({
+        customerId: params?.customerId,
+        address,
+      }),
+    );
+
     navigate(
       `/admin/customers/${params?.customerId}/create-order/userAddresses/categories`,
-      { state: { address } },
     );
   };
 
   useEffect(() => {
-    getAddresses(`/admin/get-all-addresses/${params?.customerId}`);
-  }, []);
+    if (params?.customerId) {
+      getAddresses(`/admin/get-all-addresses/${params.customerId}`);
+    }
+  }, [getAddresses, params?.customerId]);
 
   useEffect(() => {
-    if (getAddressesRes?.status === 200 || getAddressesRes?.status === 201) {
-      const addresses = getAddressesRes?.data?.addresses || [];
-      setAllAddresses(addresses);
+    if (getAddressesRes?.status !== 200 && getAddressesRes?.status !== 201) {
+      return;
+    }
 
-      // ✅ Auto select default address
-      const defaultAddr = addresses.find((a) => a.defaultAddress);
-      if (defaultAddr && !selectedId) {
-        onSelect(defaultAddr._id);
+    const addresses = getAddressesRes?.data?.addresses || [];
+    setAllAddresses(addresses);
+
+    if (!selectedAddressId) {
+      const defaultAddress =
+        addresses.find((address) => address.defaultAddress) || addresses[0];
+
+      if (defaultAddress) {
+        dispatch(
+          setSelectedAddress({
+            customerId: params?.customerId,
+            address: defaultAddress,
+          }),
+        );
       }
     }
-  }, [getAddressesRes]);
+  }, [dispatch, getAddressesRes, params?.customerId, selectedAddressId]);
 
   return (
-    <div>
+    <div className="space-y-4">
+      <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+        Select the service address first. The city on this address decides the
+        available categories, services, and pricing for the full draft.
+      </div>
+
       {isLoading && <AddressSkeleton count={2} />}
 
       {!isLoading && allAddresses.length === 0 && (
-        <p className="text-center text-muted-foreground py-10">
+        <p className="py-10 text-center text-muted-foreground">
           No address found
         </p>
       )}
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         {allAddresses.map((address, index) => {
-          const isSelected = selectedId === address._id;
+          const isSelected = selectedAddressId === address._id;
 
           return (
             <Card
               key={address._id}
               onClick={() => handleAddressSelect(address)}
-              className={`cursor-pointer transition border
-          ${
-            isSelected
-              ? "border-primary bg-primary/5 ring-2 ring-primary"
-              : "hover:bg-muted"
-          }`}
+              className={`cursor-pointer border transition ${
+                isSelected
+                  ? "border-primary bg-primary/5 ring-2 ring-primary"
+                  : "hover:bg-muted"
+              }`}
             >
-              <CardContent className="p-4 space-y-1 text-sm">
+              <CardContent className="space-y-2 p-4 text-sm">
                 <div className="flex items-center justify-between">
                   <p className="font-semibold">Address #{index + 1}</p>
-
-                  {/* ✅ Selection Indicator (like radio) */}
                   <div
-                    className={`w-4 h-4 rounded-full border flex items-center justify-center
-                ${isSelected ? "border-primary" : "border-gray-400"}`}
+                    className={`flex h-4 w-4 items-center justify-center rounded-full border ${
+                      isSelected ? "border-primary" : "border-gray-400"
+                    }`}
                   >
                     {isSelected && (
-                      <div className="w-2 h-2 bg-primary rounded-full" />
+                      <div className="h-2 w-2 rounded-full bg-primary" />
                     )}
                   </div>
                 </div>
 
                 {address.defaultAddress && (
-                  <span className="text-xs text-green-600">Default</span>
+                  <span className="text-xs text-green-600">Default address</span>
                 )}
 
                 <p>
-                  <span className="font-medium">Address Line:</span>{" "}
+                  <span className="font-medium">Address:</span>{" "}
                   {address.addressLine}
                 </p>
                 <p>

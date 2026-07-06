@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { format } from "date-fns";
 
 import useGetApiReq from "@/hooks/useGetApiReq";
 import Wrapper from "@/components/wrappers/Wrapper";
@@ -13,6 +12,7 @@ import { Pencil } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { BackLink } from "../../components/shared/back-link";
 import { H2 } from "../../components/shared/typography";
+import { formatDateOnly } from "@/utils/dateTime";
 
 const OfferDetail = () => {
   const { offerId } = useParams();
@@ -81,11 +81,11 @@ const OfferDetail = () => {
         <InfoCard title="Validity">
           <Detail
             label="Valid From"
-            value={format(new Date(offer.validFrom), "dd MMM yyyy")}
+            value={formatDateOnly(offer.validFrom, "dd MMM yyyy")}
           />
           <Detail
             label="Valid To"
-            value={format(new Date(offer.validTo), "dd MMM yyyy")}
+            value={formatDateOnly(offer.validTo, "dd MMM yyyy")}
           />
         </InfoCard>
 

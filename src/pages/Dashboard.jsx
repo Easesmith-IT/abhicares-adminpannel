@@ -27,6 +27,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion } from "framer-motion";
+import { getBusinessTodayYmd } from "@/utils/dateTime";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -44,6 +45,34 @@ const itemVariants = {
 };
 
 const COLORS = ["#2563EB", "#22C55E", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899"];
+
+const amountFormatter = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
+
+const getOrderCityName = (order) =>
+  order?.user?.address?.city ||
+  order?.userId?.address?.city ||
+  order?.city?.cityName ||
+  order?.city?.name ||
+  order?.city ||
+  "Multi-City";
+
+const getOrderCustomerName = (order) =>
+  order?.user?.name || order?.userId?.name || "Walk-in Customer";
+
+const getDashboardOrderAmount = (order) =>
+  Number(
+    order?.orderValue ??
+      order?.paymentLedger?.totalBillAmount ??
+      order?.paymentSummary?.grossAmount ??
+      order?.itemTotal ??
+      order?.totalAmount ??
+      0,
+  );
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -80,7 +109,7 @@ const Dashboard = () => {
     getCities("/admin/get-availabe-city?limit=1");
     getPartners(`/sellers/get-all-seller?limit=1${cityQuery}`);
     getCustomers(`/users/get-all-user?limit=1${cityQuery}`);
-    const today = new Date().toISOString().split("T")[0];
+    const today = getBusinessTodayYmd();
     getFinancials(`/admin/platform-financials?from=2020-01-01&to=${today}&limit=1${cityQuery}`);
     getCategories(`/categories/get-categories?limit=1${cityQuery}`);
     getServices("/admin/get-all-service");
@@ -461,14 +490,14 @@ const Dashboard = () => {
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-slate-900 text-sm">{order.orderId || `ORD-${order._id.slice(-6)}`}</span>
                           <span className="text-xs text-slate-400">•</span>
-                          <span className="text-xs text-slate-500 capitalize">{order.city?.cityName || order.city?.name || "Multi-City"}</span>
+                          <span className="text-xs text-slate-500 capitalize">{getOrderCityName(order)}</span>
                         </div>
                         <p className="text-xs text-slate-600 font-medium">
-                          {order.userId?.name || "Walk-in Customer"} • {order.items?.[0]?.product?.name || order.items?.[0]?.package?.name || "Service Item"}
+                          {getOrderCustomerName(order)} • {order.items?.[0]?.product?.name || order.items?.[0]?.package?.name || "Service Item"}
                         </p>
                       </div>
                       <div className="flex items-center justify-between sm:justify-end gap-4">
-                        <span className="text-sm font-bold text-slate-950">₹{order.itemTotalValue || 0}</span>
+                        <span className="text-sm font-bold text-slate-950">{amountFormatter.format(getDashboardOrderAmount(order))}</span>
                         <Badge
                           className={
                             order.status === "Completed"

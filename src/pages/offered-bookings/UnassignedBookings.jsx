@@ -34,17 +34,7 @@ import {
 import useCities from "../../components/filters/city/useCities";
 import CityFilter from "../../components/filters/city/CityFilter";
 import TooltipIconButton from "../../components/shared/TooltipIconButton";
-
-const formatDate = (value) => {
-  if (!value) return "-";
-  return new Date(value).toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+import { formatInstant } from "@/utils/dateTime";
 
 const STATUS_VARIANT = {
   "not-alloted": "destructive",
@@ -209,10 +199,10 @@ const UnassignedBookings = () => {
                         <TableCell className="font-medium text-slate-700">#{item.autoAssignRetryCount || 0}</TableCell>
 
                         <TableCell className="text-slate-600">
-                          {formatDate(item.autoAssignExhaustedAt)}
+                          {formatInstant(item.autoAssignExhaustedAt, "dd MMM yyyy, hh:mm aa")}
                         </TableCell>
 
-                        <TableCell className="text-slate-600">{formatDate(item.createdAt)}</TableCell>
+                        <TableCell className="text-slate-600">{formatInstant(item.createdAt, "dd MMM yyyy, hh:mm aa")}</TableCell>
 
                         <TableCell className="text-right pr-6">
                           <Button

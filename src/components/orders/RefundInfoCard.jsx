@@ -1,6 +1,6 @@
-import { format } from "date-fns";
 import { AlertCircle, Calendar, Hash, ShieldAlert, BadgeCent } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { formatInstant } from "@/utils/dateTime";
 
 export default function RefundInfoCard({ order }) {
   const refund = order?.refundInfo;
@@ -61,7 +61,7 @@ export default function RefundInfoCard({ order }) {
             </span>
             <span className="font-medium text-gray-800 dark:text-gray-300">
               {refund.processedAt
-                ? format(new Date(refund.processedAt), "dd MMM yyyy, hh:mm a")
+                ? formatInstant(refund.processedAt, "dd MMM yyyy, hh:mm a")
                 : "-"}
             </span>
           </div>
@@ -90,7 +90,7 @@ export default function RefundInfoCard({ order }) {
               <span className="text-gray-400">Gateway Process Date</span>
               <span className="font-medium text-gray-800 dark:text-gray-300">
                 {transaction.processedAt
-                  ? format(new Date(transaction.processedAt), "dd MMM yyyy, hh:mm a")
+                  ? formatInstant(transaction.processedAt, "dd MMM yyyy, hh:mm a")
                   : "-"}
               </span>
             </div>

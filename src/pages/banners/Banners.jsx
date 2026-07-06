@@ -69,6 +69,7 @@ import useDeleteApiReq from "@/hooks/useDeleteApiReq";
 import useDebounce from "@/hooks/useDebounce";
 import { useCities } from "@/components/filters/city";
 import BannerForm from "@/components/banners/BannerForm";
+import { formatDateOnly } from "@/utils/dateTime";
 
 const Banners = () => {
   const navigate = useNavigate();
@@ -770,11 +771,7 @@ const Banners = () => {
 
                           <TableCell className="align-middle">
                             <div className="text-sm font-semibold text-slate-800">
-                              {new Date(row.createdAt).toLocaleDateString("en-GB", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                              })}
+                              {formatDateOnly(row.createdAt, "dd MMM yyyy")}
                             </div>
                             <div className="text-xs text-slate-400 font-medium">Admin Panel</div>
                           </TableCell>
@@ -1041,11 +1038,7 @@ const Banners = () => {
 
                         <TableCell className="align-middle">
                           <div className="text-sm font-semibold text-slate-800">
-                            {new Date(ann.createdAt).toLocaleDateString("en-GB", {
-                              day: "2-digit",
-                              month: "short",
-                              year: "numeric",
-                            })}
+                            {formatDateOnly(ann.createdAt, "dd MMM yyyy")}
                           </div>
                         </TableCell>
 
@@ -1201,11 +1194,7 @@ const Banners = () => {
                   <div>
                     <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">Created Date</div>
                     <div className="font-bold text-slate-700 mt-1">
-                      {new Date(selectedBanner.createdAt).toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric",
-                      })}
+                      {formatDateOnly(selectedBanner.createdAt, "dd MMMM yyyy")}
                     </div>
                   </div>
                 </div>
@@ -1625,11 +1614,10 @@ const Banners = () => {
                   <div>
                     <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">Created Date</div>
                     <div className="font-bold text-slate-700 mt-1">
-                      {new Date(selectedAnnouncementForPreview.createdAt).toLocaleDateString("en-GB", {
-                        day: "2-digit",
-                        month: "long",
-                        year: "numeric",
-                      })}
+                      {formatDateOnly(
+                        selectedAnnouncementForPreview.createdAt,
+                        "dd MMMM yyyy",
+                      )}
                     </div>
                   </div>
                 </div>

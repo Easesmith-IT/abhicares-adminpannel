@@ -1,4 +1,3 @@
-import { format } from "date-fns";
 import { motion } from "framer-motion";
 import { 
   Calendar, 
@@ -13,6 +12,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { formatDateOnly, formatSlotTime } from "@/utils/dateTime";
 
 const bookingStatusConfig = {
   completed: {
@@ -60,10 +60,10 @@ export default function ServiceItemCard({ item, onAssignClick, onViewDetails }) 
   // Booking details
   const bookingIdStr = booking.bookingId || booking._id || "N/A";
   const bookingDate = booking.bookingDate 
-    ? format(new Date(booking.bookingDate), "dd MMM yyyy") 
+    ? formatDateOnly(booking.bookingDate, "dd MMM yyyy") 
     : "-";
   const bookingTime = booking.bookingTime 
-    ? format(new Date(booking.bookingTime), "hh:mm aa") 
+    ? formatSlotTime(booking.bookingTime, "hh:mm aa") 
     : "-";
 
   // Partner status

@@ -12,14 +12,15 @@ import { H2 } from "@/components/shared/typography";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "../../components/ui/skeleton";
 import OfferFormSkeleton from "../../components/offer/OfferFormSkeleton";
+import { toCalendarDate } from "@/utils/dateTime";
 
 const normalizeOfferForForm = (offer) => ({
   ...offer,
 
   applicableUserTypes:offer.applicableUserTypes?.[0],
   // ✅ Convert dates
-  validFrom: offer.validFrom ? new Date(offer.validFrom) : null,
-  validTo: offer.validTo ? new Date(offer.validTo) : null,
+  validFrom: toCalendarDate(offer.validFrom),
+  validTo: toCalendarDate(offer.validTo),
 
   // ✅ Convert populated refs to IDs
   applicableTo: {

@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import { Trash2, Eye, Clock, AlertTriangle, ShieldCheck, CheckCircle2, MessageSquare, Search, RefreshCw } from "lucide-react";
-import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
@@ -33,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import TooltipIconButton from "../shared/TooltipIconButton";
+import { formatDateOnly } from "@/utils/dateTime";
 
 const STATUS_BADGE_STYLE = {
   raised: "bg-blue-50 text-blue-700 hover:bg-blue-50 border border-blue-200 shadow-none",
@@ -331,7 +331,7 @@ const HelpCenterTickets = () => {
                       <TableCell className="font-mono text-xs text-slate-500 pl-6">{t.ticketId}</TableCell>
                       <TableCell className="capitalize font-bold text-slate-900">{t.raisedBy || "customer"}</TableCell>
                       <TableCell className="text-slate-600">
-                        {format(new Date(t.createdAt), "dd MMM yyyy")}
+                        {formatDateOnly(t.createdAt, "dd MMM yyyy")}
                       </TableCell>
                       <TableCell>
                         <Badge className={

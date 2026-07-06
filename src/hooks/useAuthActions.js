@@ -3,11 +3,18 @@ import { useDispatch } from "react-redux";
 import { changeAdminStatus } from "../store/slices/userSlice";
 import { axiosInstance } from "../utils/axiosInstance";
 import { readCookie } from "../utils/readCookie";
+import { removeSecureItem } from "../utils/secureStorage";
 import useCrashReporter from "./useCrashReporter";
 
 const useAuthActions = () => {
   const { reportCrash } = useCrashReporter();
   const dispatch = useDispatch();
+
+  const clearAdminClientState = useCallback(() => {
+    dispatch(changeAdminStatus({ isAdminAuthenticated: false }));
+    removeSecureItem("admin-status");
+    removeSecureItem("perm");
+  }, [dispatch]);
 
   const refreshAdminToken = useCallback(async () => {
     const adminInfo = readCookie("adminInfo");
@@ -20,14 +27,11 @@ const useAuthActions = () => {
       if (res?.status === 200 || res?.status === 201) {
         console.log("[FRONTEND AUTH] Token refresh successful! New access token cookie set by backend.");
         dispatch(changeAdminStatus({ isAdminAuthenticated: true }));
+        return true;
       }
     } catch (error) {
       console.error("Error fetching admin refresh token:", error);
-      dispatch(changeAdminStatus({ isAdminAuthenticated: false }));
-      sessionStorage.removeItem("admin-status");
-      sessionStorage.removeItem("perm");
-      localStorage.removeItem("admin-status");
-      localStorage.removeItem("perm");
+      clearAdminClientState();
       reportCrash({
         error,
         screenName: "",
@@ -40,52 +44,74 @@ const useAuthActions = () => {
         userId: adminInfo?.id,
       });
     }
-  }, [dispatch, reportCrash]);
+    return false;
+  }, [clearAdminClientState, dispatch, reportCrash]);
 
   const handleAdminLogout = useCallback(async () => {
     const adminInfo = readCookie("adminInfo");
     try {
-      const logoutRes = await axiosInstance.post("/admin/logout-all", {
-        adminId: adminInfo?.id,
-        role: "admin",
-      });
+      let logoutRes = null;
+
+      if (adminInfo?.id) {
+        logoutRes = await axiosInstance.post("/admin/logout-all", {
+          adminId: adminInfo.id,
+          role: "admin",
+        });
+      } else {
+        logoutRes = await axiosInstance.get("/admin/logout-Admin");
+      }
+
       if (logoutRes?.status === 200 || logoutRes?.status === 201) {
-        dispatch(changeAdminStatus({ isAdminAuthenticated: false }));
-        // Clean up storage values
-        sessionStorage.removeItem("admin-status");
-        sessionStorage.removeItem("perm");
-        localStorage.removeItem("admin-status");
-        localStorage.removeItem("perm");
+        clearAdminClientState();
+        return true;
       }
     } catch (error) {
-      console.error("Error logging out admin:", error);
-      reportCrash({
-        error,
-        screenName: "",
-        severity: "HIGH",
-        request: {
-          url: "/admin/logout-all",
-          method: "POST",
-        },
-        userType: "ADMIN",
-        userId: adminInfo?.id,
-      });
+      try {
+        const fallbackRes = await axiosInstance.get("/admin/logout-Admin");
+        if (fallbackRes?.status === 200 || fallbackRes?.status === 201) {
+          clearAdminClientState();
+          return true;
+        }
+      } catch (fallbackError) {
+        console.error("Error logging out admin:", fallbackError);
+        reportCrash({
+          error: fallbackError,
+          screenName: "",
+          severity: "HIGH",
+          request: {
+            url: adminInfo?.id ? "/admin/logout-all" : "/admin/logout-Admin",
+            method: adminInfo?.id ? "POST" : "GET",
+          },
+          userType: "ADMIN",
+          userId: adminInfo?.id,
+        });
+      }
     }
-  }, [dispatch, reportCrash]);
+    return false;
+  }, [clearAdminClientState, reportCrash]);
 
   const getAdminStatus = useCallback(async () => {
     const adminInfo = readCookie("adminInfo");
     try {
       const res = await axiosInstance.get("/admin/status");
       if (res?.status === 200 || res?.status === 201) {
+        if (res?.data?.isAuthenticated) {
+          dispatch(changeAdminStatus({ isAdminAuthenticated: true }));
+          return true;
+        }
+
         if (res?.data?.shouldLogOut) {
           await handleAdminLogout();
-        } else if (!res?.data?.isAuthenticated) {
-          await refreshAdminToken();
+          return false;
+        }
+
+        if (!res?.data?.isAuthenticated) {
+          return await refreshAdminToken();
         }
       }
     } catch (error) {
       console.error("Error fetching admin status:", error);
+      clearAdminClientState();
       reportCrash({
         error,
         screenName: "",
@@ -98,7 +124,8 @@ const useAuthActions = () => {
         userId: adminInfo?.id,
       });
     }
-  }, [refreshAdminToken, handleAdminLogout, reportCrash]);
+    return false;
+  }, [clearAdminClientState, dispatch, refreshAdminToken, handleAdminLogout, reportCrash]);
 
   return { getAdminStatus, refreshAdminToken, handleAdminLogout };
 };

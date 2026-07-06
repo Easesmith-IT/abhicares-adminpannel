@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { useState } from "react";
 import VerifyCashSubmissionModal from "./CashSubmissionVerifyModal";
-import { format } from "date-fns";
+import { formatInstant } from "@/utils/dateTime";
 
 const STATUS_COLORS = {
   APPROVED: "bg-green-100 text-green-700 hover:bg-green-200",
@@ -34,7 +34,7 @@ const Submission = ({ submission, getData }) => {
 
         <TableCell>
           {submission.createdAt &&
-            format(new Date(submission.createdAt), "dd MMM, yyyy hh:mm a")}
+            formatInstant(submission.createdAt, "dd MMM yyyy, hh:mm a")}
         </TableCell>
 
         <TableCell>

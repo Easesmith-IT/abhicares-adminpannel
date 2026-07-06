@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { formatInstant } from "@/utils/dateTime";
 
 const statusColor = {
   PENDING: "bg-yellow-500",
@@ -57,10 +58,10 @@ export function SubmissionDetailsModal({
           <DetailItem label="Description" value={data.description || "—"} />
 
           {/* Created */}
-          <DetailItem label="Created At" value={formatDate(data.createdAt)} />
+          <DetailItem label="Created At" value={formatInstant(data.createdAt, "dd MMM yyyy, hh:mm aa")} />
 
           {/* Updated */}
-          <DetailItem label="Updated At" value={formatDate(data.updatedAt)} />
+          <DetailItem label="Updated At" value={formatInstant(data.updatedAt, "dd MMM yyyy, hh:mm aa")} />
         </div>
       </DialogContent>
     </Dialog>
@@ -81,9 +82,3 @@ function DetailItem({
 }
 
 /* 🔹 Date Formatter */
-function formatDate(date) {
-  return new Date(date).toLocaleString("en-IN", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-}

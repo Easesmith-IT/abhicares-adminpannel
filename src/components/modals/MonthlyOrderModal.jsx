@@ -14,10 +14,10 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-import { format } from "date-fns";
 import html2PDF from "jspdf-html2canvas";
 import { useEffect, useState } from "react";
 import usePostApiReq from "../../hooks/usePostApiReq";
+import { formatDateOnly, formatInstant } from "@/utils/dateTime";
 
 const MonthlyOrderModal = ({isModalOpen, setIsModalOpen }) => {
   const {
@@ -113,11 +113,11 @@ const MonthlyOrderModal = ({isModalOpen, setIsModalOpen }) => {
                         {order.orderId}
                       </TableCell>
                       <TableCell>
-                        {format(new Date(order.createdAt), "dd-MM-yyyy")}
+                        {formatDateOnly(order.createdAt, "dd-MM-yyyy")}
                       </TableCell>
                       <TableCell>₹{order.orderValue}</TableCell>
                       <TableCell>
-                        {format(new Date(order.createdAt), "hh:mm a")}
+                        {formatInstant(order.createdAt, "hh:mm a")}
                       </TableCell>
                       <TableCell>{order.user.name}</TableCell>
                       <TableCell>{order.user.phone}</TableCell>

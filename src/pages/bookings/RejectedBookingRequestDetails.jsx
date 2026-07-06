@@ -16,6 +16,7 @@ import {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BackLink } from "../../components/shared/back-link";
 import { H2, H3 } from "../../components/shared/typography";
+import { formatDateOnly, formatInstant, formatSlotTime } from "@/utils/dateTime";
 
 const requestData = {
   requestId: "69efce4326f49a73085b2ebc",
@@ -89,7 +90,7 @@ const RejectedBookingRequestDetails = () => {
                 <div>
                   <p className="text-sm text-gray-500">Requested At</p>
                   <p className="font-medium">
-                    {new Date(data.requestedAt).toLocaleString()}
+                    {formatInstant(data.requestedAt, "dd MMM yyyy, hh:mm aa")}
                   </p>
                 </div>
               </div>
@@ -183,7 +184,7 @@ const RejectedBookingRequestDetails = () => {
                 <div>
                   <p className="text-sm text-gray-500">Booking Date</p>
                   <p className="font-medium">
-                    {new Date(data.booking.bookingDate).toLocaleDateString()}
+                    {formatDateOnly(data.booking.bookingDate, "dd MMM yyyy")}
                   </p>
                 </div>
               </div>
@@ -193,7 +194,7 @@ const RejectedBookingRequestDetails = () => {
                 <div>
                   <p className="text-sm text-gray-500">Booking Time</p>
                   <p className="font-medium">
-                    {new Date(data.booking.bookingTime).toLocaleTimeString()}
+                    {formatSlotTime(data.booking.bookingTime, "hh:mm aa")}
                   </p>
                 </div>
               </div>

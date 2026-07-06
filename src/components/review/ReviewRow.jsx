@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Eye, Trash2, Star } from "lucide-react";
-import { format } from "date-fns";
 import { toast } from "sonner";
 
 import useDeleteApiReq from "../../hooks/useDeleteApiReq";
@@ -10,6 +9,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import ReviewDetailsModal from "../modals/ReviewDetailsModal";
 import { Skeleton } from "../ui/skeleton";
+import { formatDateOnly } from "@/utils/dateTime";
 
 export const ReviewRow = ({ review, fetchReviews }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -51,7 +51,7 @@ export const ReviewRow = ({ review, fetchReviews }) => {
 
         <TableCell>
           {review?.createdAt
-            ? format(new Date(review.createdAt), "dd-MM-yyyy")
+            ? formatDateOnly(review.createdAt, "dd-MM-yyyy")
             : "-"}
         </TableCell>
 

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { Eye, Pencil } from "lucide-react";
 
@@ -10,6 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import UpdateCashoutReqModal from "../modals/UpdateCashoutReqModal";
+import { formatDateOnly } from "@/utils/dateTime";
 
 
 const CashOutReq = ({
@@ -38,8 +38,7 @@ const CashOutReq = ({
             <p className="text-sm font-medium">{item?.cashoutId}</p>
             <p className="text-xs text-muted-foreground">
               Date:{" "}
-              {item?.createdAt &&
-                format(new Date(item.createdAt), "dd-MM-yyyy")}
+              {item?.createdAt && formatDateOnly(item.createdAt, "dd-MM-yyyy")}
             </p>
           </div>
 
