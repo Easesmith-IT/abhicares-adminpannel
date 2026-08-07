@@ -69,7 +69,7 @@ import {
 
 const formatAmount = (value) => {
   const num = Number(value || 0);
-  return Number(num.toFixed(2));
+  return num.toFixed(2);
 };
 
 const BookingDetails = () => {
@@ -576,8 +576,8 @@ const BookingDetails = () => {
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
             {[
               { label: "Booking Value", value: `₹${formatAmount(booking.orderValue)}`, color: "text-slate-900" },
-              { label: "Partner Earnings", value: `₹${formatAmount(bookingPayment?.allocatedEarning ?? booking.partnerEarnings ?? booking.sellerEarnings ?? (booking.itemTotalValue - (booking.commissionAmount || 0)))}`, color: "text-emerald-600" },
-              { label: "Platform Revenue", value: `₹${formatAmount((bookingPayment?.allocatedCommission != null && bookingPayment?.allocatedConvenience != null) ? (bookingPayment.allocatedCommission + bookingPayment.allocatedConvenience) : (booking.platformRevenue || ((booking.commissionAmount || 0) + (booking.convenienceAmount || 0))))}`, color: "text-blue-600" },
+              { label: "Partner Earnings", value: `₹${formatAmount(booking.partnerEarnings ?? booking.sellerEarnings ?? ((booking.itemTotalValue || booking.grossAmount || 0) - (booking.commissionAmount || 0)))}`, color: "text-emerald-600" },
+              { label: "Platform Revenue", value: `₹${formatAmount(Math.max((booking.commissionAmount || 0) + (booking.convenienceAmount || 0) - (booking.discountAmount || booking.orderId?.couponInfo?.discountAmount || booking.itemTotalDiscount || 0), 0))}`, color: "text-blue-600" },
               { label: "Payment Status", value: booking.paymentStatus.toUpperCase(), badge: true, variant: booking.paymentStatus === "completed" ? "success" : "warning" },
               { label: "Refund Status", value: booking.refundInfo?.status ? booking.refundInfo.status.toUpperCase() : "N/A", badge: true, variant: booking.refundInfo?.status === "processed" ? "success" : booking.refundInfo?.status === "pending" ? "warning" : "secondary" },
               { label: "Duration", value: `${booking.slotDurationMinutes || 60} Mins`, color: "text-slate-900" }
@@ -870,7 +870,7 @@ const BookingDetails = () => {
                       <CardContent className="p-6 space-y-4 text-xs text-slate-700">
                         <div className="flex justify-between items-center">
                           <span className="text-slate-500 font-medium">Partner Earnings</span>
-                          <span className="font-black text-slate-900">₹{formatAmount(bookingPayment?.allocatedEarning ?? booking.partnerEarnings ?? booking.sellerEarnings ?? (booking.itemTotalValue - (booking.commissionAmount || 0)))}</span>
+                          <span className="font-black text-slate-900">₹{formatAmount(booking.partnerEarnings ?? booking.sellerEarnings ?? ((booking.itemTotalValue || booking.grossAmount || 0) - (booking.commissionAmount || 0)))}</span>
                         </div>
                         <div className="flex justify-between items-center">
                           <span className="text-slate-500 font-medium">Commission Invoiced</span>
