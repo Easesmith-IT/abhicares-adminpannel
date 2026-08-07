@@ -890,12 +890,12 @@ const BookingDetails = () => {
                         
                         <div className="flex justify-between items-center py-1 border-t border-slate-100 pt-3">
                           <span className="text-emerald-700 font-semibold">Partner Received</span>
-                          <span className="font-black text-emerald-600 text-sm">₹{formatAmount(partnerEarningAmount)}</span>
+                          <span className="font-black text-emerald-600 text-sm">₹{formatAmount(partnerEarnings ?? booking.partnerEarnings ?? booking.sellerEarnings ?? Math.max((Number(booking.itemTotalValue || booking.grossAmount || 0) - Number(booking.commissionAmount || 0)), 0))}</span>
                         </div>
 
                         <div className="flex justify-between items-center py-1">
                           <span className="text-blue-700 font-semibold">Platform Kept (Net Revenue)</span>
-                          <span className="font-black text-blue-600 text-sm">₹{formatAmount(platformRevenueAmount)}</span>
+                          <span className="font-black text-blue-600 text-sm">₹{formatAmount(netRevenue ?? Math.max(Number(platformCommission || booking.commissionAmount || 0) + Number(platformConvenience || booking.convenienceAmount || 0) - Number(booking.discountAmount || booking.itemTotalDiscount || booking.orderId?.couponInfo?.discountAmount || 0), 0))}</span>
                         </div>
 
                         <div className="flex justify-between items-center py-1">
