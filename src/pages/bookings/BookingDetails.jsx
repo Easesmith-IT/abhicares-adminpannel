@@ -870,42 +870,62 @@ const BookingDetails = () => {
                       </CardContent>
                     </Card>
 
-                    <Card className="border-slate-200 bg-white rounded-2xl shadow-sm">
-                      <CardHeader className="border-b border-slate-100 px-6 py-5">
-                        <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
-                          <TrendingUp className="size-4 text-slate-400" />
-                          <span>Platform Settlement Summary</span>
-                        </CardTitle>
+                    <Card className="border-slate-200 bg-white rounded-2xl shadow-sm overflow-hidden">
+                      <CardHeader className="border-b border-slate-100 px-6 py-4 bg-slate-50/50">
+                        <div className="flex items-center justify-between">
+                          <CardTitle className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-2">
+                            <TrendingUp className="size-4 text-blue-600" />
+                            <span>Platform Settlement Summary</span>
+                          </CardTitle>
+                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] font-bold">
+                            Fully Reconciled
+                          </Badge>
+                        </div>
                       </CardHeader>
-                      <CardContent className="p-6 space-y-4 text-xs text-slate-700">
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-500 font-medium">Partner Earnings</span>
-                          <span className="font-black text-slate-900">₹{formatAmount(partnerEarnings ?? booking.partnerEarnings ?? booking.sellerEarnings ?? ((booking.itemTotalValue || booking.grossAmount || 0) - (booking.commissionAmount || 0)))}</span>
+                      <CardContent className="p-6 space-y-3.5 text-xs text-slate-700">
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-slate-700 font-bold">Customer Paid (Invoice Total)</span>
+                          <span className="font-black text-slate-950 text-sm">₹{formatAmount(booking.orderValue)}</span>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-500 font-medium">Commission Invoiced</span>
-                          <span className="font-black text-slate-900">₹{formatAmount(platformCommission ?? (booking.commissionAmount || 0))}</span>
+                        
+                        <div className="flex justify-between items-center py-1 border-t border-slate-100 pt-3">
+                          <span className="text-emerald-700 font-semibold">Partner Received</span>
+                          <span className="font-black text-emerald-600 text-sm">₹{formatAmount(partnerEarningAmount)}</span>
                         </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-500 font-medium">Convenience Fee</span>
-                          <span className="font-black text-slate-900">₹{formatAmount(platformConvenience ?? (booking.convenienceAmount || 0))}</span>
+
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-blue-700 font-semibold">Platform Kept (Net Revenue)</span>
+                          <span className="font-black text-blue-600 text-sm">₹{formatAmount(platformRevenueAmount)}</span>
                         </div>
-                        {(Number(booking.discountAmount || booking.itemTotalDiscount || booking.orderId?.couponInfo?.discountAmount || 0) > 0) && (
-                          <div className="flex justify-between items-center text-emerald-600 font-semibold">
-                            <span>Coupon Discount Absorbed</span>
-                            <span>- ₹{formatAmount(booking.discountAmount || booking.itemTotalDiscount || booking.orderId?.couponInfo?.discountAmount || 0)}</span>
-                          </div>
-                        )}
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-500 font-medium">Tax / GST Details</span>
-                          <span className="font-bold text-slate-900 font-mono">
+
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-slate-500 font-medium">Taxes Paid to Govt (GST)</span>
+                          <span className="font-bold text-slate-700 font-mono text-xs">
                             ₹{formatAmount((booking.commissionGst || 0) + (booking.convenienceGst || 0) + (booking.itemTotalTax || 0))}
                           </span>
                         </div>
-                        <Separator />
-                        <div className="flex justify-between items-center">
-                          <span className="text-slate-500 font-bold">Net Platform Revenue</span>
-                          <span className="font-black text-blue-600 text-sm">₹{formatAmount(netRevenue ?? Math.max((platformCommission || booking.commissionAmount || 0) + (platformConvenience || booking.convenienceAmount || 0) - (booking.discountAmount || booking.itemTotalDiscount || booking.orderId?.couponInfo?.discountAmount || 0), 0))}</span>
+
+                        <Separator className="my-2" />
+
+                        <div className="bg-slate-50 p-3.5 rounded-xl space-y-2 text-[11px] border border-slate-100">
+                          <div className="flex justify-between text-slate-500 font-medium">
+                            <span>Gross Service Price</span>
+                            <span>₹{formatAmount(booking.itemTotalValue || booking.grossAmount || 0)}</span>
+                          </div>
+                          <div className="flex justify-between text-slate-500 font-medium">
+                            <span>Commission Invoiced</span>
+                            <span>₹{formatAmount(platformCommission ?? (booking.commissionAmount || 0))}</span>
+                          </div>
+                          <div className="flex justify-between text-slate-500 font-medium">
+                            <span>Convenience Fee</span>
+                            <span>₹{formatAmount(platformConvenience ?? (booking.convenienceAmount || 0))}</span>
+                          </div>
+                          {appliedDiscount > 0 && (
+                            <div className="flex justify-between text-emerald-600 font-semibold">
+                              <span>Customer Coupon Absorbed</span>
+                              <span>- ₹{formatAmount(appliedDiscount)}</span>
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
