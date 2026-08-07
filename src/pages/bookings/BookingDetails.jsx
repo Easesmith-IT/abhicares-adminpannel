@@ -890,6 +890,12 @@ const BookingDetails = () => {
                           <span className="text-slate-500 font-medium">Convenience Fee</span>
                           <span className="font-black text-slate-900">₹{formatAmount(platformConvenience ?? (booking.convenienceAmount || 0))}</span>
                         </div>
+                        {(Number(booking.discountAmount || booking.itemTotalDiscount || booking.orderId?.couponInfo?.discountAmount || 0) > 0) && (
+                          <div className="flex justify-between items-center text-emerald-600 font-semibold">
+                            <span>Coupon Discount Absorbed</span>
+                            <span>- ₹{formatAmount(booking.discountAmount || booking.itemTotalDiscount || booking.orderId?.couponInfo?.discountAmount || 0)}</span>
+                          </div>
+                        )}
                         <div className="flex justify-between items-center">
                           <span className="text-slate-500 font-medium">Tax / GST Details</span>
                           <span className="font-bold text-slate-900 font-mono">
@@ -899,7 +905,7 @@ const BookingDetails = () => {
                         <Separator />
                         <div className="flex justify-between items-center">
                           <span className="text-slate-500 font-bold">Net Platform Revenue</span>
-                          <span className="font-black text-blue-600 text-sm">₹{formatAmount(netRevenue ?? platformEarning ?? ((booking.commissionAmount || 0) + (booking.convenienceAmount || 0)))}</span>
+                          <span className="font-black text-blue-600 text-sm">₹{formatAmount(netRevenue ?? Math.max((platformCommission || booking.commissionAmount || 0) + (platformConvenience || booking.convenienceAmount || 0) - (booking.discountAmount || booking.itemTotalDiscount || booking.orderId?.couponInfo?.discountAmount || 0), 0))}</span>
                         </div>
                       </CardContent>
                     </Card>
