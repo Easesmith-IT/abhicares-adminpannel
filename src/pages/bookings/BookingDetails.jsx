@@ -920,10 +920,10 @@ const BookingDetails = () => {
                             <span>Convenience Fee</span>
                             <span>₹{formatAmount(platformConvenience ?? (booking.convenienceAmount || 0))}</span>
                           </div>
-                          {appliedDiscount > 0 && (
+                          {(Number(booking.discountAmount || booking.itemTotalDiscount || booking.orderId?.couponInfo?.discountAmount || 0) > 0) && (
                             <div className="flex justify-between text-emerald-600 font-semibold">
                               <span>Customer Coupon Absorbed</span>
-                              <span>- ₹{formatAmount(appliedDiscount)}</span>
+                              <span>- ₹{formatAmount(booking.discountAmount || booking.itemTotalDiscount || booking.orderId?.couponInfo?.discountAmount || 0)}</span>
                             </div>
                           )}
                         </div>
