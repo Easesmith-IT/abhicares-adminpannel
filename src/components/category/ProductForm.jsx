@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import { X, UploadCloud, Search, SlidersHorizontal, AlertCircle } from "lucide-react";
 
 import { productSchema } from "../../schemas/service.schema";
