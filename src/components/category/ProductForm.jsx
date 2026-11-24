@@ -76,6 +76,7 @@ const ProductForm = ({
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: defaultValues?.name || "",
+      shortDescription: defaultValues?.shortDescription || "",
       description: defaultValues?.description || "",
       cityConfigs: defaultValues?.cityConfigs || [],
       durationMinutes: defaultValues?.durationMinutes || 0,
@@ -267,6 +268,9 @@ const ProductForm = ({
     const fd = new FormData();
 
     fd.append("name", values.name);
+    if (values.shortDescription) {
+      fd.append("shortDescription", values.shortDescription);
+    }
     fd.append("description", values.description);
     fd.append("serviceId", serviceId);
     fd.append("durationMinutes", values?.durationMinutes);
@@ -362,6 +366,35 @@ const ProductForm = ({
                 )}
               />
             </div>
+
+            {/* Short Description */}
+            <FormField
+              control={form.control}
+              name="shortDescription"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <Label className="font-bold text-xs text-gray-700">
+                      Short Description (Card Preview)
+                    </Label>
+                    <span className="text-[11px] text-gray-400">
+                      {(field.value || "").length}/160
+                    </span>
+                  </div>
+                  <FormControl>
+                    <Input
+                      placeholder="E.g. Deep vacuuming, fabric-safe shampoo & stain removal"
+                      maxLength={160}
+                      {...field}
+                    />
+                  </FormControl>
+                  <p className="text-[11px] text-muted-foreground">
+                    Brief 1–2 line summary displayed on the mobile app catalog cards.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Description */}
             <FormField

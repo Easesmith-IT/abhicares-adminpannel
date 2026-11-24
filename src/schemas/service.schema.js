@@ -110,6 +110,10 @@ export const CityConfigSchema = z
 
 export const productSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  shortDescription: z
+    .string()
+    .max(160, "Short description should be 160 characters or less")
+    .optional(),
   durationMinutes: z.coerce.number().min(1, "Duration Minutes is required"),
   description: z.string().min(1, "Description is required"),
 
@@ -125,6 +129,10 @@ export const productSchema = z.object({
 
 export const packageSchema = z.object({
   name: z.string().min(1, "Name is required"),
+  shortDescription: z
+    .string()
+    .max(160, "Short description should be 160 characters or less")
+    .optional(),
   durationMinutes: z.coerce.number().min(1, "Duration Minutes is required"),
   description: z.string().optional(),
   products: z

@@ -28,6 +28,7 @@ const CityGeoFenceMap = ({
   longitude,
   polygon = [],
   onChange,
+  onLocationChange,
   polygonCoords = [],
 }) => {
   const featureGroupRef = useRef(null);
@@ -59,8 +60,22 @@ const CityGeoFenceMap = ({
             zoom={12}
             className="h-full w-full"
           >
-            <Marker position={[latitude, longitude]}>
-              <Popup>City Center</Popup>
+            <Marker
+              position={[latitude, longitude]}
+              draggable={true}
+              eventHandlers={{
+                dragend: (e) => {
+                  const latlng = e.target.getLatLng();
+                  if (onLocationChange) {
+                    onLocationChange(
+                      Number(latlng.lat.toFixed(7)),
+                      Number(latlng.lng.toFixed(7))
+                    );
+                  }
+                },
+              }}
+            >
+              <Popup>City Center (Drag to adjust)</Popup>
             </Marker>
             <MapSetView latitude={latitude} longitude={longitude} />
 
@@ -103,13 +118,17 @@ const CityGeoFenceMap = ({
                     : false
                 }
                 onCreated={(e) => {
-                  const latlngs = e.layer.getLatLngs()[0];
-                  onChange(latlngs.map((p) => [p.lat, p.lng]));
+                  const raw = e.layer.getLatLngs();
+                  const ring = Array.isArray(raw[0]) ? raw[0] : raw;
+                  onChange(ring.map((p) => [p.lat, p.lng]));
                 }}
                 onEdited={(e) => {
-                  const layer = Object.values(e.layers._layers)[0];
-                  const latlngs = layer.getLatLngs()[0];
-                  onChange(latlngs.map((p) => [p.lat, p.lng]));
+                  if (!e.layers) return;
+                  e.layers.eachLayer((layer) => {
+                    const raw = layer.getLatLngs();
+                    const ring = Array.isArray(raw[0]) ? raw[0] : raw;
+                    onChange(ring.map((p) => [p.lat, p.lng]));
+                  });
                 }}
                 onDeleted={() => onChange([])}
               />

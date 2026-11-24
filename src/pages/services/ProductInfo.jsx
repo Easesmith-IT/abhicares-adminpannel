@@ -225,6 +225,12 @@ const ProductInfo = () => {
                 </span>
               </p>
 
+              {product.shortDescription && (
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-700">
+                  <span className="font-semibold text-slate-900">Card Tagline:</span> {product.shortDescription}
+                </div>
+              )}
+
               {product.description && (
                 <div className="prose max-w-none text-sm text-muted-foreground">
                   {parse(DOMPurify.sanitize(product.description))}

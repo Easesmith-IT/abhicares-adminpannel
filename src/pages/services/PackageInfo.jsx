@@ -157,6 +157,11 @@ const PackageInfo = () => {
               <p className="text-sm">
                 <b>Duration Minutes:</b> <span>{pkg.durationMinutes}</span>
               </p>
+              {pkg.shortDescription && (
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs text-slate-700">
+                  <span className="font-semibold text-slate-900">Card Tagline:</span> {pkg.shortDescription}
+                </div>
+              )}
               {pkg.description && (
                 <div className="prose text-sm text-muted-foreground">
                   {parse(pkg.description)}

@@ -64,6 +64,7 @@ const PackageForm = ({
     resolver: zodResolver(packageSchema),
     defaultValues: {
       name: defaultValues?.name || "",
+      shortDescription: defaultValues?.shortDescription || "",
       description: defaultValues?.description || "",
       cityConfigs: defaultValues?.cityConfigs || [],
       durationMinutes: defaultValues?.durationMinutes || 0,
@@ -291,6 +292,9 @@ const PackageForm = ({
     const fd = new FormData();
 
     fd.append("name", values.name);
+    if (values.shortDescription) {
+      fd.append("shortDescription", values.shortDescription);
+    }
     fd.append("description", values.description);
     fd.append("serviceId", serviceId);
     fd.append("products", JSON.stringify(values.products));
@@ -384,6 +388,36 @@ const PackageForm = ({
                 )}
               />
             </div>
+
+            {/* Short Description */}
+            <FormField
+              control={form.control}
+              name="shortDescription"
+              render={({ field }) => (
+                <FormItem className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <Label className="font-bold text-xs text-gray-700">
+                      Short Description (Card Preview)
+                    </Label>
+                    <span className="text-[11px] text-gray-400">
+                      {(field.value || "").length}/160
+                    </span>
+                  </div>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      placeholder="E.g. Full deep cleaning combo for 1-seater & cushions"
+                      maxLength={160}
+                      className="h-11 rounded-xl border-gray-200 focus-visible:ring-blue-500 text-sm"
+                    />
+                  </FormControl>
+                  <p className="text-[11px] text-muted-foreground">
+                    Brief 1–2 line summary displayed on the mobile app catalog cards.
+                  </p>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
             {/* Description */}
             <FormField
